@@ -1,3 +1,21 @@
+## 1.1.9 (2025-10-31)
+
+### Features
+
+- add support for 3840x2400@30FPS (16:10) and 3840x1600@50FPS (24:10) resolutions
+- the UserApp now supports touch knob events and included a corresponding demo
+- the touchscreen UI can now remember Wi-Fi passwords for easier connectivity
+
+### Bug Fixes
+
+- resolved an issue where kvm_vin would sometimes fail to retrieve HDMI data
+- resolved an issue preventing 3440x1440 resolution from working on certain systems
+- ensured that custom port for the reverse proxy are now correctly applied
+- fixed the incorrect HDMI passthrough state, and the signal disappears after clicking
+- fixed a bug that prevented exiting the UserApp with the knob unless the app was selected
+- fixed a bug causing the new UserApp demo to be copied repeatedly
+- fixed a bug where image download failures did not have a corresponding notification
+
 ## 1.1.8 (2025-10-29)
 
 ### Features
