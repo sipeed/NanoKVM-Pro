@@ -1,3 +1,28 @@
+## 1.2.0 (2025-11-07)
+
+### Features
+
+- display status and black screen on HDMI signal loss (H.264 WebRTC only)
+- support resetting static IP settings on the LCD screen
+- allow customizing USB information
+- add browser compatibility warning for non-Chrome users
+- support time format modification in the Web UI
+
+### Bug Fixes
+
+- prevent service status errors when `/bin/sh` is modified
+- correct vertical mouse drift when remote desktop is scaled
+- resolve issue where keyboard modifiers occasionally fail
+- optimize UserApp UI and fix logic bugs
+- ensure non-ASCII WiFi automatically reconnects after reboot
+- remove duplicate scroll bar in the web terminal
+
+### Performance Improvements
+
+- optimize H.264 encoding performance
+- rename the EDID on the web UI
+- remove MJPEG frame difference detection
+
 ## 1.1.9 (2025-10-31)
 
 ### Features
