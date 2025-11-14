@@ -1,3 +1,31 @@
+## 1.2.2 (2025-11-14)
+
+### Bug Fixes
+
+- added a mechanism to automatically reboot the device when a CMM resource leak is detected
+- fixed a potential service crash that could occur when using MJPEG video mode
+- resolved an issue where PiKVM UAC failed to enumerate on Windows system
+
+### Performance Improvements
+
+- optimized the boot sequence for a faster startup time
+
+## 1.2.1 (2025-11-12)
+
+### Features
+
+- UserApp now includes an APP Hub for easy discovery and management of applications
+- pre-installed Samba application in UserApp
+- pre-installed ATX power control application in UserApp
+- support for read-only image mounting
+
+### Bug Fixes
+
+- fixed a Wi-Fi disconnection bug
+- resolved an issue where H.264 Direct video would stop when the web page was in the background
+- fixed a bug where setting the web page title had no effect
+- corrected wrong links on the settings page
+
 ## 1.2.0 (2025-11-07)
 
 ### Features
