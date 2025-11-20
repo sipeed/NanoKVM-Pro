@@ -1,3 +1,23 @@
+## 1.2.3 (2025-11-20)
+
+### Features
+
+- add support for uploading custom EDID
+- enable static IP configuration via the Web UI
+- add boot logos for PiKVM and flashing-mode
+
+### Bug Fixes
+
+- fix potential memory leaks
+- ensure hostname and EDID are correctly reset during factory reset
+- fix unresponsive right-side modifier keys
+- fix issue where OLED sleep timeout failed to update in certain scenarios
+
+### Performance Improvements
+
+- optimize network throughput in Wi-Fi AP mode
+- optimize reading and writing of LED UI configuration file
+
 ## 1.2.2 (2025-11-14)
 
 ### Bug Fixes
