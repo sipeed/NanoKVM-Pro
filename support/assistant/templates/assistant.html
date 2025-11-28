@@ -1,0 +1,727 @@
+<!-- templates/index.html -->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Computer Use Agent</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            /* 基础样式：默认为电脑端的左右布局 */
+            body,
+            html {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            #app-container {
+                display: flex;
+                height: 100vh;
+            }
+            #header {
+                height: 50px;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 18px;
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+                flex-shrink: 0;
+            }
+            #sidebar {
+                width: 33.33%;
+                display: flex;
+                flex-direction: column;
+                border-right: 1px solid #dee2e6;
+                overflow: hidden;
+            }
+            #main-content {
+                width: 66.66%;
+                position: relative;
+                overflow: hidden;
+            }
+            #video-container {
+                width: 100%;
+                height: 100%;
+                background-color: #000;
+            }
+            #video-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            /* 关键修复：确保 tab-content 和 chat tab 的正确布局 */
+            .tab-content {
+                flex: 1;
+                overflow: hidden; /* 重要：让子元素控制滚动 */
+            }
+
+            /* Chat tab 需要是 flex 容器 */
+
+            #chat-content {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* 响应式设计：当屏幕宽度小于 768px 时（手机端），切换为上下布局 */
+            @media (max-width: 768px) {
+                #app-container {
+                    flex-direction: column; /* 改为垂直排列 */
+                }
+                #header {
+                    height: 40px;
+                    font-size: 16px;
+                }
+                #sidebar {
+                    width: 100%; /* 占据全宽 */
+                    height: 67vh; /* 占据上面 3/4 的高度 */
+                    border-right: none;
+                    border-bottom: 1px solid #dee2e6; /* 底部加边框，与图像区分开 */
+                }
+                #main-content {
+                    width: 100%;
+                    height: 33vh; /* 占据下面 1/4 的高度 */
+                }
+                #video-container {
+                    height: 100%; /* 填满 #main-content 的高度 */
+                }
+                #video-container img {
+                    object-fit: cover; /* 在手机端使用 cover，避免黑边，确保填满 */
+                }
+            }
+
+            .message-bubble {
+                max-width: 80%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 15px;
+                word-wrap: break-word;
+            }
+            .user-bubble {
+                background-color: #dcf8c6;
+                align-self: flex-end;
+                margin-left: auto;
+            }
+            .llm-bubble {
+                background-color: #e5e5ea;
+                align-self: flex-start;
+            }
+            .screenshot-bubble {
+                background-color: #f0f0f0;
+                text-align: center;
+            }
+            .screenshot-bubble img {
+                max-width: 100%;
+                max-height: 200px;
+                border: 1px solid #ccc;
+            }
+            #header-container {
+                /* 使用靛蓝色作为背景 */
+                background-color: #3f51b5;
+                color: #fff; /* 文本颜色为白色 */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                position: sticky;
+                left: 0;
+                right: 0;
+                top: 0;
+                z-index: 4;
+
+                box-shadow:
+                    0 0 0.2rem #0000,
+                    0 0.2rem 0.4rem #0000;
+                transition:
+                    background-color 0.25s,
+                    transform 0.25s cubic-bezier(0.1, 0.7, 0.1, 1),
+                    box-shadow 0.25s;
+            }
+
+            #header-container:hover {
+                /* 悬停时显示阴影 */
+                box-shadow:
+                    0 0 0.2rem rgba(0, 0, 0, 0.1),
+                    0 0.2rem 0.4rem rgba(0, 0, 0, 0.2);
+            }
+
+            .header-title-text {
+                font-size: 1.2em;
+                font-weight: bold;
+                /* 如果你引入了自定义字体，可以在这里使用 */
+                /* font-family: 'Oxanium', sans-serif; */
+                color: var(--md-primary-bg-color);
+            }
+
+            /* Log tab 样式 */
+
+            #log-content {
+                white-space: pre-wrap;
+                font-family: monospace;
+                font-size: 12px;
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px;
+            }
+
+            /* Settings tab 样式 */
+            #settings {
+                height: 100%;
+                overflow-y: auto;
+                padding: 10px;
+            }
+
+            /* 修改tab-content的样式 */
+            .tab-content {
+                flex: 1;
+                overflow: hidden;
+                display: flex; /* 添加flex布局 */
+                flex-direction: column; /* 垂直方向排列 */
+            }
+
+            /* 确保每个tab-pane都正确显示 */
+            .tab-pane {
+                display: none; /* Bootstrap默认隐藏 */
+                height: 100%; /* 占据全部高度 */
+                flex-direction: column; /* 垂直布局 */
+            }
+
+            .tab-pane.active {
+                display: flex; /* 激活的tab显示为flex */
+            }
+
+            .input-group {
+                padding: 10px;
+                background-color: #f8f9fa;
+                border-top: 1px solid #dee2e6;
+                flex-shrink: 0; /* 防止输入框被压缩 */
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app-container">
+            <!-- 侧边栏：交互、日志、设置 -->
+            <div id="sidebar">
+                <div id="header-container" class="md-header">
+                    <span class="header-title-text"
+                        >💻 NanoKVM Computer Use Agent ✨</span
+                    >
+                </div>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link active"
+                            id="chat-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#chat"
+                            type="button"
+                            role="tab"
+                        >
+                            Chat
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="log-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#log"
+                            type="button"
+                            role="tab"
+                        >
+                            Log
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button
+                            class="nav-link"
+                            id="settings-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#settings"
+                            type="button"
+                            role="tab"
+                        >
+                            Setting
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <!-- Chat Tab -->
+                    <div
+                        class="tab-pane fade show active"
+                        id="chat"
+                        role="tabpanel"
+                    >
+                        <div id="chat-content">
+                            <!-- 聊天消息将通过JS动态插入到这里 -->
+                        </div>
+                        <div class="input-group">
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="user-input"
+                                placeholder="Enter your task or message..."
+                            />
+                            <button
+                                class="btn btn-outline-secondary"
+                                type="button"
+                                id="action-btn"
+                            >
+                                Send
+                            </button>
+                            <button
+                                class="btn btn-outline-danger"
+                                type="button"
+                                id="reset-btn"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Log Tab -->
+                    <div class="tab-pane fade" id="log" role="tabpanel">
+                        <pre id="log-content"></pre>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane fade" id="settings" role="tabpanel">
+                        <div style="padding: 10px">
+                            <form id="settings-form">
+                                <div class="mb-3">
+                                    <label for="api-key" class="form-label"
+                                        >API Key</label
+                                    >
+                                    <input
+                                        type="password"
+                                        class="form-control"
+                                        id="api-key"
+                                        placeholder="Enter API Key"
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="base-url" class="form-label"
+                                        >Base URL</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="base-url"
+                                        placeholder="https://..."
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="model-name" class="form-label"
+                                        >Model Name</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="model-name"
+                                        placeholder="e.g., qwen-vl-max-2025-08-13"
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="img-keep-n" class="form-label"
+                                        >IMG_KEEP_N</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="img-keep-n"
+                                        placeholder="3"
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="max-rounds" class="form-label"
+                                        >MAX_ROUNDS</label
+                                    >
+                                    <input
+                                        type="number"
+                                        class="form-control"
+                                        id="max-rounds"
+                                        placeholder="20"
+                                    />
+                                </div>
+                                <div class="mb-3">
+                                    <label
+                                        for="initial-prompt"
+                                        class="form-label"
+                                        >Initial Prompt</label
+                                    >
+                                    <textarea
+                                        class="form-control"
+                                        id="initial-prompt"
+                                        rows="5"
+                                    ></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Submit
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主内容区：显示桌面 -->
+            <div id="main-content">
+                <div id="video-container">
+                    <img
+                        id="desktop-snapshot"
+                        src="/desktop-snapshot"
+                        alt="Desktop Stream"
+                    />
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+        <script>
+            const socket = io();
+            let isTaskRunning = false;
+            let currentTaskId = null;
+            window.addEventListener("unload", () => {
+                fetch("/api/assistant_stop", {
+                    method: "GET",
+                })
+                    .then((res) => res.json())
+                    .then((data) => {
+                        console.log(data);
+                    });
+            });
+            // 页面加载完成后，获取当前设置
+            document.addEventListener("DOMContentLoaded", function () {
+                loadSettings();
+                setupEventListeners();
+            });
+
+            function loadSettings() {
+                fetch("/settings")
+                    .then((response) => response.json())
+                    .then((data) => {
+                        document.getElementById("api-key").value = data.api_key;
+                        document.getElementById("base-url").value =
+                            data.base_url;
+                        document.getElementById("model-name").value =
+                            data.model_name;
+                        document.getElementById("img-keep-n").value =
+                            data.img_keep_n;
+                        document.getElementById("max-rounds").value =
+                            data.max_rounds;
+                        document.getElementById("initial-prompt").value =
+                            data.initial_prompt;
+                    });
+            }
+
+            function setupEventListeners() {
+                // 设置表单提交
+                document
+                    .getElementById("settings-form")
+                    .addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        const settings = {
+                            api_key: document.getElementById("api-key").value,
+                            base_url: document.getElementById("base-url").value,
+                            model_name:
+                                document.getElementById("model-name").value,
+                            img_keep_n:
+                                document.getElementById("img-keep-n").value,
+                            max_rounds:
+                                document.getElementById("max-rounds").value,
+                            initial_prompt:
+                                document.getElementById("initial-prompt").value,
+                        };
+                        fetch("/settings", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(settings),
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                alert(data.message);
+                            });
+                    });
+
+                // 发送/暂停按钮
+                const actionBtn = document.getElementById("action-btn");
+                const userInput = document.getElementById("user-input");
+                actionBtn.addEventListener("click", function () {
+                    const text = userInput.value.trim();
+                    if (!text && actionBtn.innerText === "Send") return;
+
+                    if (!isTaskRunning) {
+                        // 开始新任务
+                        startNewTask(text);
+                        // 立即更新按钮文本为"暂停"，因为任务已启动
+                        actionBtn.innerText = "Pause";
+                    } else {
+                        // 任务正在运行，点击按钮是"暂停"
+                        if (actionBtn.innerText === "Pause") {
+                            pauseTask(); // 调用暂停函数
+                            // 按钮文本暂时不变，等后端确认暂停后再更新
+                        } else if (actionBtn.innerText === "Send") {
+                            // 按钮是"发送"，说明任务处于暂停或等待用户输入状态，此时发送用户输入
+                            resumeAndSendInput(text);
+                        }
+                    }
+                });
+
+                // 重置按钮
+                document
+                    .getElementById("reset-btn")
+                    .addEventListener("click", function () {
+                        if (confirm("Confirm Reset Task?")) {
+                            fetch("/reset_task", { method: "POST" })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.status === "success") {
+                                        isTaskRunning = false;
+                                        currentTaskId = null;
+                                        document.getElementById(
+                                            "chat-content",
+                                        ).innerHTML = "";
+                                        document.getElementById(
+                                            "log-content",
+                                        ).innerText = "";
+                                        userInput.value = "";
+                                        actionBtn.innerText = "Send";
+                                        alert("任务已重置");
+                                    }
+                                });
+                        }
+                    });
+
+                // 接收任务更新
+                socket.on("task_update", function (data) {
+                    updateUI(data);
+                });
+
+                // 回车键发送消息
+                userInput.addEventListener("keypress", function (e) {
+                    if (e.key === "Enter") {
+                        actionBtn.click();
+                    }
+                });
+            }
+
+            function pauseTask() {
+                fetch("/pause_task", { method: "POST" })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.status === "success") {
+                            // 暂停成功，更新按钮文本
+                            document.getElementById("action-btn").innerText =
+                                "Send";
+                            // 可选：给用户一个视觉反馈
+                            appendLLMMessage(
+                                "⏸️ Task Paused, waiting for your input...",
+                            );
+                        } else {
+                            alert("暂停失败: " + data.message);
+                        }
+                    });
+            }
+
+            function resumeAndSendInput(userInputText) {
+                fetch("/resume_task", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ user_input: userInputText }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.status === "success") {
+                            // 将用户输入显示在聊天窗口
+                            appendUserMessage(userInputText);
+                            document.getElementById("user-input").value = "";
+                            // 任务恢复运行，按钮变回"暂停"
+                            document.getElementById("action-btn").innerText =
+                                "Pause";
+                        }
+                    });
+            }
+
+            function startNewTask(taskDesc) {
+                fetch("/start_task", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ task_desc: taskDesc }),
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.status === "success") {
+                            isTaskRunning = true;
+                            document.getElementById("action-btn").innerText =
+                                "Pause";
+                            // 将用户输入显示在聊天窗口
+                            appendUserMessage(taskDesc);
+                            document.getElementById("user-input").value = "";
+                        } else {
+                            document.getElementById("user-input").value = "";
+                            alert(data.message);
+                        }
+                    });
+            }
+
+            function pauseAndSendInput(userInputText) {
+                fetch("/pause_task", { method: "POST" })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.status === "success") {
+                            // 然后立即恢复并发送输入
+                            fetch("/resume_task", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    user_input: userInputText,
+                                }),
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    if (data.status === "success") {
+                                        isTaskRunning = true;
+                                        actionBtn.innerText = "Pause";
+                                        // 将用户输入显示在聊天窗口
+                                        appendUserMessage(userInputText);
+                                        userInput.value = "";
+                                    }
+                                });
+                        }
+                    });
+            }
+
+            // 滚动到底部的函数 - 简单有效的版本
+            function scrollChatToBottom() {
+                const chatContent = document.getElementById("chat-content");
+                //console.log('Scrolling to bottom, scrollHeight:', chatContent.scrollHeight); // 调试用
+                chatContent.scrollTop = chatContent.scrollHeight;
+            }
+
+            function appendUserMessage(text) {
+                const chatContent = document.getElementById("chat-content");
+                const bubble = document.createElement("div");
+                bubble.className = "message-bubble user-bubble";
+                bubble.innerText = text;
+                chatContent.appendChild(bubble);
+                // 立即滚动
+                scrollChatToBottom();
+            }
+
+            function appendLLMMessage(text) {
+                const chatContent = document.getElementById("chat-content");
+                const bubble = document.createElement("div");
+                bubble.className = "message-bubble llm-bubble";
+                bubble.innerText = text;
+                chatContent.appendChild(bubble);
+                // 立即滚动
+                scrollChatToBottom();
+            }
+
+            function appendScreenshot(imgBase64) {
+                const chatContent = document.getElementById("chat-content");
+                const bubble = document.createElement("div");
+                bubble.className = "message-bubble screenshot-bubble";
+                const img = document.createElement("img");
+                img.src = "data:image/jpeg;base64," + imgBase64;
+
+                bubble.appendChild(img);
+                chatContent.appendChild(bubble);
+
+                // 立即尝试滚动
+                scrollChatToBottom();
+
+                // 图片加载完成后再次滚动（图片加载会改变高度）
+                img.onload = function () {
+                    scrollChatToBottom();
+                };
+            }
+
+            function updateUI(data) {
+                // 更新日志
+                const logContent = document.getElementById("log-content");
+
+                // 将纯文本的换行符转换为HTML的<br>标签
+                let formattedLog = (data.log || "").replace(/\n/g, "<br>");
+
+                // 使用 innerHTML 而不是 innerText
+                logContent.innerHTML += formattedLog + "<br><br>";
+
+                // 日志滚动到底部
+                logContent.scrollTop = logContent.scrollHeight;
+
+                if (data.status === "done" || data.status === "error") {
+                    isTaskRunning = false;
+                    document.getElementById("action-btn").innerText = "Send";
+                    if (data.status === "done") {
+                        appendLLMMessage("✅ Task Done！");
+                    } else {
+                        appendLLMMessage("❌ Task Failed: " + data.log);
+                    }
+                } else if (
+                    data.status === "running" ||
+                    data.status === "paused" ||
+                    data.status === "waiting_for_user"
+                ) {
+                    // 显示截图
+                    if (data.screenshot_base64) {
+                        appendScreenshot(data.screenshot_base64);
+                    }
+                    // 显示LLM的思考
+                    if (data.llm_thoughts && data.llm_thoughts.length > 0) {
+                        data.llm_thoughts.forEach((thought) => {
+                            appendLLMMessage("# " + thought);
+                        });
+                    }
+                    // 显示执行的命令
+                    if (data.executed_command) {
+                        appendLLMMessage("➡️ " + data.executed_command);
+                    }
+                    // 创建一个醒目的错误消息气泡
+                    if (data.error_message) {
+                        const chatContent =
+                            document.getElementById("chat-content");
+                        const errorBubble = document.createElement("div");
+                        errorBubble.className = "message-bubble llm-bubble";
+                        errorBubble.style.backgroundColor = "#ffebee"; // 浅红色背景
+                        errorBubble.style.color = "#c62828"; // 深红色文字
+                        errorBubble.style.border = "1px solid #ef9a9a";
+                        errorBubble.innerHTML = `<strong>⚠️ Error</strong><br>${data.error_message}`;
+                        chatContent.appendChild(errorBubble);
+                        scrollChatToBottom();
+                    }
+
+                    // 如果是等待用户输入，自动将按钮改为"发送"
+                    if (
+                        data.status === "waiting_for_user" ||
+                        data.status === "paused"
+                    ) {
+                        document.getElementById("action-btn").innerText =
+                            "Send";
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

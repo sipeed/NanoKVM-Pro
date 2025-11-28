@@ -1,0 +1,214 @@
+const it = {
+  translation: {
+    head: {
+      desktop: 'Desktop Remoto',
+      login: 'Accesso',
+      changePassword: 'Cambia Password',
+      terminal: 'Terminale',
+      wifi: 'Wi-Fi'
+    },
+    auth: {
+      login: 'Accesso',
+      placeholderUsername: 'Inserisci il nome utente',
+      placeholderPassword: 'Inserisci la password',
+      placeholderPassword2: 'Inserisci nuovamente la password',
+      noEmptyUsername: 'Il nome utente non può essere vuoto',
+      noEmptyPassword: 'La password non può essere vuota',
+      noAccount:
+        'Impossibile ottenere informazioni utente, aggiorna la pagina o reimposta la password',
+      invalidUser: 'Nome utente o password non validi',
+      error: 'Errore imprevisto',
+      changePassword: 'Cambia Password',
+      changePasswordDesc:
+        'Per la sicurezza del tuo dispositivo, modifica la password di accesso web.',
+      differentPassword: 'Le password non corrispondono',
+      illegalUsername: 'Il nome utente contiene caratteri non validi',
+      illegalPassword: 'La password contiene caratteri non validi',
+      forgetPassword: 'Hai dimenticato la password',
+      ok: 'Ok',
+      cancel: 'Annulla',
+      loginButtonText: 'Accedi'
+    },
+    wifi: {
+      title: 'Wi-Fi',
+      description: 'Configure Wi-Fi for NanoKVM',
+      success: 'Please check the network status of NanoKVM and visit the new IP address.',
+      failed: 'Operation failed, please try again.',
+      confirmBtn: 'Ok',
+      finishBtn: 'Finished'
+    },
+    screen: {
+      video: 'Modalità video',
+      quality: 'Qualità',
+      qualityLossless: 'Senza perdita',
+      qualityHigh: 'Alto',
+      qualityMedium: 'Medio',
+      qualityLow: 'Basso',
+      resetHdmi: 'Reset HDMI'
+    },
+    keyboard: {
+      paste: 'Incolla',
+      tips: 'Sono supportati solo lettere e simboli standard della tastiera',
+      placeholder: 'Inserisci testo',
+      submit: 'Invia',
+      virtual: 'Tastiera',
+      ctrlaltdel: 'Ctrl+Alt+Del'
+    },
+    mouse: {
+      default: 'Cursore predefinito',
+      pointer: 'Cursore a puntatore',
+      cell: 'Cursore a cella',
+      text: 'Cursore testo',
+      grab: 'Cursore di presa',
+      hide: 'Nascondi cursore',
+      mode: 'Modalità mouse',
+      absolute: 'Modalità assoluta',
+      relative: 'Modalità relativa',
+      requestPointer:
+        'Usando la modalità relativa. Clicca sul desktop per ottenere il puntatore del mouse.',
+      resetHid: 'Reimposta HID'
+    },
+    image: {
+      title: 'Immagini',
+      loading: 'Caricamento...',
+      empty: 'Nessun risultato',
+      mountFailed: 'Montaggio immagine fallito',
+      mountDesc:
+        "In alcuni sistemi, è necessario espellere il disco virtuale sull'host remoto prima di montare l'immagine.",
+      unmountFailed: 'Smontaggio fallito',
+      unmountDesc:
+        "In alcuni sistemi, è necessario espellere manualmente sull'host remoto prima di smontare l'immagine."
+    },
+    script: {
+      title: 'Script',
+      upload: 'Carica',
+      run: 'Esegui',
+      runBackground: 'Esegui in Background',
+      runFailed: 'Esecuzione fallita',
+      attention: 'Attenzione',
+      delDesc: 'Sei sicuro di voler eliminare questo file?',
+      confirm: 'Sì',
+      cancel: 'No',
+      delete: 'Elimina',
+      close: 'Chiudi'
+    },
+    terminal: {
+      title: 'Terminale',
+      nanokvm: 'Terminale NanoKVM',
+      serial: 'Terminale Porta Seriale',
+      serialPort: 'Porta Seriale',
+      serialPortPlaceholder: 'Inserisci la porta seriale',
+      baudrate: 'Baud rate',
+      confirm: 'Ok'
+    },
+    wol: {
+      title: 'Wake-on-LAN',
+      sending: 'Invio comando...',
+      sent: 'Comando inviato',
+      input: 'Inserisci il MAC',
+      ok: 'Ok'
+    },
+    power: {
+      title: 'Accensione',
+      reset: 'Reimposta',
+      power: 'Accensione',
+      powerShort: 'Accensione (clic breve)',
+      powerLong: 'Accensione (clic lungo)'
+    },
+    settings: {
+      title: 'Settings',
+      about: {
+        title: 'Informazioni su NanoKVM',
+        information: 'Informazioni',
+        ip: 'IP',
+        mdns: 'mDNS',
+        application: 'Versione Applicazione',
+        applicationTip: 'NanoKVM web application version',
+        image: 'Versione Immagine',
+        imageTip: 'NanoKVM system image version',
+        deviceKey: 'Chiave Dispositivo',
+        community: 'Comunità'
+      },
+      appearance: {
+        title: 'Appearance',
+        display: 'Display',
+        language: 'Language',
+        menuBar: 'Menu Bar',
+        menuBarDesc: 'Display icons in the menu bar'
+      },
+      device: {
+        title: 'Device',
+        oled: {
+          title: 'OLED',
+          description: 'OLED screen automatically sleep',
+          0: 'Never',
+          15: '15 sec',
+          30: '30 sec',
+          60: '1 min',
+          180: '3 min',
+          300: '5 min',
+          600: '10 min',
+          1800: '30 min',
+          3600: '1 hour'
+        },
+        wifi: {
+          title: 'Wi-Fi',
+          description: 'Configure Wi-Fi'
+        },
+        disk: 'Virtual Disk',
+        diskDesc: 'Mount virtual U-disk on the remote host',
+        network: 'Virtual Network',
+        networkDesc: 'Mount virtual network card on the remote host'
+      },
+      tailscale: {
+        title: 'Tailscale',
+        restart: 'Are you sure to restart Tailscale?',
+        stop: 'Are you sure to stop Tailscale?',
+        stopDesc: 'Log out Tailscale and disable its automatic startup on boot.',
+        loading: 'Caricamento...',
+        notInstall: 'Tailscale non trovato! Per favore, installa.',
+        install: 'Installa',
+        installing: 'Installazione in corso',
+        failed: 'Installazione fallita',
+        retry: 'Riprova aggiornando la pagina o installa manualmente',
+        download: 'Scarica il',
+        package: 'pacchetto di installazione',
+        unzip: 'e decomprimilo',
+        upTailscale: 'Carica tailscale nella directory /usr/bin/ del NanoKVM',
+        upTailscaled: 'Carica tailscaled nella directory /usr/sbin/ del NanoKVM',
+        refresh: 'Aggiorna la pagina corrente',
+        notLogin:
+          'Il dispositivo non è ancora stato associato. Effettua il login e associa questo dispositivo al tuo account.',
+        urlPeriod: 'Questo URL è valido per 10 minuti',
+        login: 'Accedi',
+        loginSuccess: 'Accesso riuscito',
+        enable: 'Abilita Tailscale',
+        deviceName: 'Nome Dispositivo',
+        deviceIP: 'IP Dispositivo',
+        account: 'Account',
+        logout: 'Disconnetti',
+        okBtn: 'Yes',
+        cancelBtn: 'No'
+      },
+      update: {
+        title: 'Controlla Aggiornamenti',
+        queryFailed: 'Impossibile ottenere la versione',
+        updateFailed: 'Aggiornamento fallito. Riprova.',
+        isLatest: 'Hai già la versione più recente.',
+        available: 'Un aggiornamento è disponibile. Sei sicuro di voler aggiornare?',
+        updating: 'Aggiornamento avviato. Attendere prego...',
+        confirm: 'Conferma',
+        cancel: 'Annulla'
+      },
+      account: {
+        title: 'Account',
+        webAccount: 'Web Account Name',
+        password: 'Password',
+        updateBtn: 'Update',
+        logoutBtn: 'Logout'
+      }
+    }
+  }
+};
+
+export default it;

@@ -1,8 +1,10 @@
 # NanoKVM-Pro
 
-> **Note:** This project is currently in development and will be officially open-sourced next month (November).
+> ## Code Availability
 >
-> We are excited to share our work with the community soon! Stay tuned for the official release.
+> - [x] **Frontend** (Released)
+> - [x] **Backend** (Released)
+> - [ ] **Support** (in development)
 
 ## Introduction
 
@@ -24,7 +26,7 @@ NanoKVM-Pro uses the AX630 as its main control core, featuring an ARM 1.2G dual-
 | Product       | NanoKVM-Pro | NanoKVM      | GxxKVM      | JxxKVM      |
 |---------------|----------|--------------|-------------|-------------|
 | Main Control  | AX630C   | SG2002       | RV1126      | RV1106      |
-| Core          | 2xA53@1.2G | 1xC906@1.0G  | 4xA7@1.5G   | 1xA7@1.2G   |
+| Core          | <2xA53@1.2G> | <1xC906@1.0G>  | <4xA7@1.5G>   | <1xA7@1.2G>   |
 | Memory        | 1G LPDDR4X | 256M DDR3    | 1G DDR3     | 256M DDR3   |
 | Storage       | 32G eMMC | 32G microSD  | 8G eMMC     | 16G eMMC    |
 | System        | NanoKVM+PIKVM | NanoKVM      | GxxKVM      | JxxKVM      |
@@ -51,3 +53,19 @@ NanoKVM-Pro uses the AX630 as its main control core, featuring an ARM 1.2G dual-
 | Power Consumption | 0.6A@5V  | 0.2A@5V      | 0.4A@5V     | 0.2A@5V     |
 | Power Input   | USB-C/PoE | USB-C/PoE/PCIe | USB-C       | USB-C       |
 | Dimensions     | 65x65x28mm | 40x36x36mm   | 80x60x7.5mm | 60x6x24-30mm |
+
+## Where to buy
+
+- [AliExpress](https://www.aliexpress.com/item/1005010048471263.html)
+- [Pre-sale Page](https://sipeed.com/nanokvm/pro)
+
+## 💬 Community & Support
+
+- [Discord](https://discord.gg/V4sAZ9XWpN)
+- QQ group: 703230713
+- email: [support@sipeed.com](mailto:support@sipeed.com)
+- [FAQ](https://wiki.sipeed.com/hardware/en/kvm/NanoKVM_Pro/faq.html)
+
+## 📜 License
+
+This project is licensed under the GPL-3.0 License - see the LICENSE file for details.

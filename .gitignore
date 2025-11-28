@@ -1,0 +1,61 @@
+*.log
+pnpm-debug.log*
+
+web/node_modules
+web/dist
+web/web
+
+.DS_Store
+*.local
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.idea
+.vscode
+.zed
+
+NanoKVM-Server
+
+support/sg2002/kvm_system/build
+support/sg2002/kvm_system/dist
+support/sg2002/kvm_system/CMakeLists.txt
+
+support/sg2002/kvm_vision_test/build
+support/sg2002/kvm_vision_test/dist
+support/sg2002/kvm_vision_test/CMakeLists.txt
+
+support/sg2002/additional/original
+kvmapp/server/dl_lib
+kvmapp/kvm_system/kvm_system
+build/
+release/
+latest/
+
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon[
+]
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
