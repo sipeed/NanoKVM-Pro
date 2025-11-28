@@ -1,3 +1,19 @@
+## 1.2.4 (2025-11-28)
+
+### Features
+
+- Add support for hardware revision 30126F-S
+
+### Bug Fixes
+
+- Fix resource leak issue caused by improper server shutdown
+
+### Performance Improvements
+
+- Reduce power consumption by disabling the encoder when idle
+- Optimize Wi-Fi connection
+- Implement delay interval after failed login attempts
+
 ## 1.2.3 (2025-11-20)
 
 ### Features
