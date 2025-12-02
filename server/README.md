@@ -62,3 +62,27 @@ turn:
     turnUser: example_user
     turnCred: example_cred
 ```
+
+## Build & Deploy
+
+1. Install toolchains
+
+```bash
+cd ROOT/support/scripts
+./toolchain_setup.sh
+```
+
+2. Build
+
+```bash
+cd ROOT/server
+./build.sh
+```
+
+3. Deploy
+
+```bash
+scp NanoKVM-Server root@your-nanokvm-pro-ip:/kvmapp/server/
+ssh root@your-nanokvm-pro-ip
+systemctl restart nanokvm
+```
