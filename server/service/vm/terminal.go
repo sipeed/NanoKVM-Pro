@@ -119,6 +119,8 @@ func (s *Service) Terminal(c *gin.Context) {
 	defer func() {
 		_ = ptmx.Close()
 		_ = cmd.Process.Kill()
+		// Wait & reap sub-process; needed to prevent zombie processes
+		_ = cmd.Wait()
 	}()
 
 	go wsWrite(ws, ptmx)
