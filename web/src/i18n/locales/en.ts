@@ -191,6 +191,11 @@ const en = {
       input: 'Please enter the MAC',
       ok: 'Ok'
     },
+    recorder: {
+      title: 'Recorder',
+      toggleStart: 'Start Recording',
+      toggleStop: 'Stop Recording'
+    },
     download: {
       title: 'Image Downloader',
       input: 'Please enter a remote image URL',

@@ -21,6 +21,7 @@ import { Script } from './script';
 import { Settings } from './settings';
 import { Terminal } from './terminal';
 import { Wol } from './wol';
+import { Recorder } from './recorder';
 
 export const Menu = () => {
   const { t } = useTranslation();
@@ -99,6 +100,13 @@ export const Menu = () => {
             {!menuDisabledItems.includes('power') && (
               <>
                 <Power />
+                <Divider type="vertical" />
+              </>
+            )}
+
+            {!menuDisabledItems.includes('recorder') && (
+              <>
+                <Recorder />
                 <Divider type="vertical" />
               </>
             )}
