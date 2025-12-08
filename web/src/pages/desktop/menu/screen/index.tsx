@@ -9,6 +9,7 @@ import { videoModeAtom } from '@/jotai/screen.ts';
 import { MenuItem } from '@/components/menu-item.tsx';
 
 import { BitRateMap, QualityMap } from './constants.ts';
+import { Scale } from './scale.tsx';
 import { Edid } from './edid.tsx';
 import { Gop } from './gop.tsx';
 import { Quality } from './quality';
@@ -56,6 +57,7 @@ export const Screen = () => {
   const content = (
     <div className="flex flex-col space-y-1">
       <VideoMode />
+      <Scale />
       <Edid />
       <Quality quality={quality} setQuality={setQuality} />
       {videoMode !== 'mjpeg' && <Gop gop={gop} setGop={setGop} />}

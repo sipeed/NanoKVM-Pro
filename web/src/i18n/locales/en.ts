@@ -77,6 +77,7 @@ const en = {
       btnOk: 'OK'
     },
     screen: {
+      scale: 'Scale',
       title: 'Screen',
       video: 'Video Mode',
       quality: 'Quality',

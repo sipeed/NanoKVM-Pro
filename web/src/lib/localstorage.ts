@@ -1,5 +1,6 @@
 const LANGUAGE_KEY = 'nano-kvm-language';
 const VIDEO_MODE_KEY = 'nano-kvm-vide-mode';
+const VIDEO_SCALE_KEY = 'nano-kvm-video-scale';
 const QUALITY_KEY = 'nano-kvm-quality';
 const GOP_KEY = 'nano-kvm-gop';
 const MOUSE_STYLE_KEY = 'nano-kvm-mouse-style';
@@ -59,6 +60,18 @@ export function getVideoMode() {
 
 export function setVideoMode(mode: string) {
   localStorage.setItem(VIDEO_MODE_KEY, mode);
+}
+
+export function getVideoScale(): number | null {
+  const scale = localStorage.getItem(VIDEO_SCALE_KEY)
+  if (scale && Number(scale)) {
+    return Number(scale)
+  }
+  return null
+}
+
+export function setVideoScale(scale: number): void {
+  localStorage.setItem(VIDEO_SCALE_KEY, String(scale))
 }
 
 export function getQuality() {
