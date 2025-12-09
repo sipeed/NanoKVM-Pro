@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { Divider, Tooltip } from 'antd';
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { MenuIcon, XIcon } from 'lucide-react';
 import Draggable from 'react-draggable';
 import { useTranslation } from 'react-i18next';
 
 import { getMenuDisabledItems } from '@/lib/localstorage.ts';
 import { menuDisabledItemsAtom } from '@/jotai/settings.ts';
+import { videoScaleAtom } from '@/jotai/screen.ts';
 
 import { AIAssistant } from './assistant/index.tsx';
 import { Audio } from './audio';
@@ -21,15 +22,24 @@ import { Script } from './script';
 import { Settings } from './settings';
 import { Terminal } from './terminal';
 import { Wol } from './wol';
+import * as storage from '@/lib/localstorage.ts';
 
 export const Menu = () => {
   const { t } = useTranslation();
   const [menuDisabledItems, setMenuDisabledItems] = useAtom(menuDisabledItemsAtom);
+  const setVideoScale = useSetAtom(videoScaleAtom);
 
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const [bounds, setBounds] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
 
   const nodeRef = useRef<any>(null);
+
+  useEffect(() => {
+    const scale = storage.getVideoScale()
+    if (scale) {
+      setVideoScale(scale)
+    }
+  }, [setVideoScale])
 
   useEffect(() => {
     // disabled menu items
