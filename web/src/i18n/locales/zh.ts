@@ -63,6 +63,7 @@ const zh = {
       btnOk: '确认'
     },
     screen: {
+      scale: '缩放',
       title: '屏幕',
       video: '视频模式',
       quality: '图像质量',

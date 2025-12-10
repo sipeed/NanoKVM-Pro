@@ -5,12 +5,17 @@ import { useAtomValue } from 'jotai';
 import MonitorXIcon from '@/assets/images/monitor-x.svg';
 import { getBaseUrl } from '@/lib/service.ts';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
+import { videoScaleAtom } from '@/jotai/screen.ts';
 
 export const Mjpeg = () => {
   const mouseStyle = useAtomValue(mouseStyleAtom);
+  const videoScale = useAtomValue(videoScaleAtom);
 
   return (
-    <div className="flex h-screen w-screen items-start justify-center xl:items-center">
+    <div className="flex h-screen w-screen items-start justify-center xl:items-center origin-center"
+         style={{
+            transform: `scale(${videoScale})`,
+          }}>
       <Image
         id="screen"
         className={clsx(

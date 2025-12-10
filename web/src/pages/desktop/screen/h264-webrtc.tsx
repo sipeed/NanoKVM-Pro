@@ -6,10 +6,11 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import * as api from '@/api/stream.ts';
 import { VideoStatus } from '@/types';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
-import { videoStatusAtom, videoVolumeAtom } from '@/jotai/screen.ts';
+import { videoStatusAtom, videoVolumeAtom, videoScaleAtom } from '@/jotai/screen.ts';
 
 export const H264Webrtc = () => {
   const mouseStyle = useAtomValue(mouseStyleAtom);
+  const videoScale = useAtomValue(videoScaleAtom);
   const setVideoStatus = useSetAtom(videoStatusAtom);
   const [volume, setVolume] = useAtom(videoVolumeAtom);
 
@@ -307,9 +308,12 @@ export const H264Webrtc = () => {
           id="screen"
           ref={videoRef}
           className={clsx(
-            'block max-h-full min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down',
+            'block max-h-full min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down origin-center',
             mouseStyle
           )}
+          style={{
+            transform: `scale(${videoScale})`,
+          }}
           muted
           autoPlay
           playsInline
