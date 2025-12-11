@@ -1,7 +1,6 @@
 package main
 
 import (
-	"NanoKVM-Server/middleware"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,6 +13,7 @@ import (
 	"NanoKVM-Server/common"
 	"NanoKVM-Server/config"
 	"NanoKVM-Server/logger"
+	"NanoKVM-Server/middleware"
 	"NanoKVM-Server/router"
 
 	"NanoKVM-Server/service/vm/jiggler"
@@ -61,7 +61,9 @@ func run() {
 
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
+	_ = r.SetTrustedProxies(nil)
 	r.Use(gin.Recovery())
+
 	if conf.Authentication == "disable" {
 		r.Use(cors.AllowAll())
 	}
