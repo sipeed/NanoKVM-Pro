@@ -16,7 +16,7 @@ enum MouseButton {
 }
 
 export const Absolute = () => {
-  const isBigScreen = useMediaQuery({ minWidth: 850 });
+  const isBigScreen = useMediaQuery({ minWidth: 650 });
 
   const scrollInterval = useAtomValue(scrollIntervalAtom);
 
