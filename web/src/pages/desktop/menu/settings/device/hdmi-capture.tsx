@@ -61,7 +61,7 @@ export const HdmiCapture = () => {
             title={t('settings.device.capture.tip')}
             className="cursor-pointer text-neutral-500"
             placement="bottom"
-            overlayStyle={{ maxWidth: '300px' }}
+            styles={{ root: { maxWidth: '450px' } }}
           >
             <CircleAlertIcon size={15} />
           </Tooltip>
