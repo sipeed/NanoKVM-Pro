@@ -312,7 +312,7 @@ export const H264Webrtc = () => {
           id="screen"
           ref={videoRef}
           className={clsx(
-            'block max-h-full min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down',
+            'block max-h-full min-h-[50vh] min-w-[50vw] max-w-full select-none object-scale-down',
             isPlaying ? 'opacity-100' : 'opacity-0',
             mouseStyle
           )}

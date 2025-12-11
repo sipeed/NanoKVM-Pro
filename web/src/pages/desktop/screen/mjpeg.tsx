@@ -16,7 +16,7 @@ export const Mjpeg = () => {
       <Image
         id="screen"
         className={clsx(
-          'block max-h-screen min-h-[480px] min-w-[640px] select-none object-scale-down',
+          'block max-h-screen min-h-[50vh] min-w-[50vw] select-none object-scale-down',
           mouseStyle
         )}
         style={{ transform: `scale(${videoParameters.scale})` }}

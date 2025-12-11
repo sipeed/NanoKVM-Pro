@@ -59,7 +59,7 @@ export const H264Direct = () => {
         id="screen"
         ref={canvasRef}
         className={clsx(
-          'block min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down',
+          'block min-h-[50vh] min-w-[50vw] max-w-full select-none object-scale-down',
           mouseStyle
         )}
         style={{ maxHeight: 'calc(100% - 75px)', transform: `scale(${videoParameters.scale})` }}
