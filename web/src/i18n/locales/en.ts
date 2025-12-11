@@ -71,24 +71,26 @@ const en = {
         description:
           "The device's factory-installed firmware is strictly provisioned without H.265/HEVC video encoding or decoding functionality.\n\n" +
           'Any user-initiated modification of the firmware, manual installation of third-party H.265 modules, or independent development of HEVC features constitutes an assumption of all related risks by the end-user. These risks include, but are not limited to, patent licensing fees, legal liabilities, device compatibility issues, and performance degradation.\n\n' +
-          'The manufacturer expressly disclaims all responsibility for the operation, security, or legal compliance of any user-customized H.265 features',
+          'The manufacturer expressly disclaims all responsibility for the operation, security, or legal compliance of any user-customized H.265 features.',
         notSupported: 'The current browser does not support H.265!'
       },
       btnOk: 'OK'
     },
     screen: {
-      scale: 'Scale',
       title: 'Screen',
       video: 'Video Mode',
       quality: 'Quality',
+      qualityAuto: 'Automatic',
       qualityLossless: 'Lossless',
       qualityHigh: 'High',
       qualityMedium: 'Medium',
       qualityLow: 'Low',
+      scale: 'Scale',
       resetHdmi: 'Reset HDMI',
       noSignal: 'HDMI no signal',
       inconsistentVideoMode: 'Play paused. Another video mode is playing.',
-      upload: 'Upload'
+      upload: 'Upload',
+      advanced: 'Advanced'
     },
     audio: {
       title: 'Audio'
@@ -251,6 +253,47 @@ const en = {
         webTitle: 'Title',
         webTitleDesc: 'Customize the web page title'
       },
+      screen: {
+        title: 'Screen',
+        videoMode: {
+          title: 'Video Mode',
+          description: 'Select the encoding and transmission method'
+        },
+        edid: {
+          description: 'Select display parameters',
+          default: 'Default',
+          custom: 'Custom'
+        },
+        rateControlMode: {
+          title: 'Rate Control Mode',
+          description: 'Select the method to control the bitrate',
+          cbr: 'CBR (Constant Bitrate): Prioritizes connection stability. Minimizes stuttering, but image quality may drop during high-motion scenes.',
+          vbr: 'VBR (Variable Bitrate): Prioritizes image clarity. High-motion scenes may cause bandwidth spikes, potentially leading to latency or stutter.'
+        },
+        bitrate: {
+          title: 'Bitrate',
+          description: 'Balance image clarity with bandwidth usage',
+          lower:
+            'Lower values reduce latency on poor networks but compromise image quality, potentially causing blur or artifacts.',
+          higher:
+            'Higher values improve image clarity but consume more bandwidth. May increase latency if the connection is slow.'
+        },
+        gop: {
+          description: 'Set the interval between full keyframes',
+          lower:
+            'Lower values send full frames more frequently. This speeds up recovery from visual artifacts but consumes more bandwidth and reduces image detail.',
+          higher:
+            'Higher values optimize for incremental updates. This improves image detail and saves bandwidth, but recovery from visual artifacts will take longer.'
+        },
+        quality: {
+          title: 'Quality',
+          description: 'Set the display image quality'
+        },
+        scale: {
+          title: 'Scale',
+          description: 'Set the display scaling ratio'
+        }
+      },
       device: {
         title: 'Device',
         oled: {
@@ -334,7 +377,11 @@ const en = {
         hidOnly: 'HID-Only Mode',
         disk: 'Virtual Disk',
         diskDesc: 'Mount virtual U-disk on the remote host',
-        noSdCard: 'Please insert an SD card to enable this feature',
+        emmc: {
+          warning: 'Warning',
+          tip1: "Mounting the eMMC for the first time will wipe all data in the NanoKVM's /data directory. Please ensure you have a backup before proceeding.",
+          tip2: 'Do you want to continue?'
+        },
         network: 'Virtual Network',
         networkDesc: 'Mount virtual network card on the remote host',
         reboot: 'Reboot',

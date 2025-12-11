@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Badge, Modal, Tooltip } from 'antd';
 import clsx from 'clsx';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   BadgeInfoIcon,
   CircleArrowUpIcon,
+  MonitorIcon,
   PaletteIcon,
   SettingsIcon,
   SmartphoneIcon,
@@ -16,28 +17,31 @@ import semver from 'semver';
 import * as api from '@/api/application.ts';
 import * as ls from '@/lib/localstorage.ts';
 import { isKeyboardEnableAtom } from '@/jotai/keyboard.ts';
+import { isSettingsOpenAtom, settingTabAtom } from '@/jotai/settings.ts';
 import { Tailscale as TailscaleIcon } from '@/components/icons/tailscale';
 
 import { About } from './about';
 import { Account } from './account';
 import { Appearance } from './appearance';
 import { Device } from './device';
+import { Screen } from './screen';
 import { Tailscale } from './tailscale';
 import { Update } from './update';
 
 export const Settings = () => {
   const { t } = useTranslation();
+  const setIsKeyboardEnable = useSetAtom(isKeyboardEnableAtom);
+  const [isSettingsOpen, setIsSettingsOpen] = useAtom(isSettingsOpenAtom);
+  const [settingTab, setSettingTab] = useAtom(settingTabAtom);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
-  const [currentTab, setCurrentTab] = useState('about');
 
   const [isUpdateAvailable, setIsUpdateAvailable] = useState(false);
-  const setIsKeyboardEnable = useSetAtom(isKeyboardEnableAtom);
 
   const tabs = [
     { id: 'about', icon: <BadgeInfoIcon size={16} />, component: <About /> },
     { id: 'appearance', icon: <PaletteIcon size={16} />, component: <Appearance /> },
+    { id: 'screen', icon: <MonitorIcon size={16} />, component: <Screen /> },
     { id: 'device', icon: <SmartphoneIcon size={16} />, component: <Device /> },
     {
       id: 'tailscale',
@@ -49,7 +53,7 @@ export const Settings = () => {
       icon: <CircleArrowUpIcon size={16} />,
       component: <Update setIsLocked={setIsLocked} />
     },
-    { id: 'account', icon: <UserRoundIcon size={18} />, component: <Account /> }
+    { id: 'account', icon: <UserRoundIcon size={16} />, component: <Account /> }
   ];
 
   useEffect(() => {
@@ -76,7 +80,7 @@ export const Settings = () => {
       return;
     }
 
-    setCurrentTab(tab);
+    setSettingTab(tab);
 
     if (isUpdateAvailable && tab === 'update') {
       setIsUpdateAvailable(false);
@@ -85,7 +89,7 @@ export const Settings = () => {
   }
 
   function openModal() {
-    setIsModalOpen(true);
+    setIsSettingsOpen(true);
     setIsKeyboardEnable(false);
   }
 
@@ -95,8 +99,8 @@ export const Settings = () => {
     }
 
     setIsKeyboardEnable(true);
-    setIsModalOpen(false);
-    setCurrentTab('about');
+    setIsSettingsOpen(false);
+    setSettingTab('about');
   }
 
   return (
@@ -115,7 +119,7 @@ export const Settings = () => {
       </Tooltip>
 
       <Modal
-        open={isModalOpen}
+        open={isSettingsOpen}
         width={'80%'}
         centered={true}
         footer={null}
@@ -125,7 +129,7 @@ export const Settings = () => {
         styles={{ content: { padding: 0 } }}
       >
         <div className="flex h-[80vh] max-h-[700px] rounded-lg outline outline-1 outline-neutral-700">
-          <div className="flex h-full max-w-[240px] flex-col space-y-0.5 rounded-l-lg bg-neutral-800 px-1 sm:w-1/5 md:px-2">
+          <div className="flex h-full max-w-[260px] flex-col space-y-0.5 rounded-l-lg bg-neutral-800 px-1 sm:w-1/5 md:w-1/4 md:px-2">
             <div className="hidden px-3 pt-10 text-xl sm:block">{t('settings.title')}</div>
             <div className="h-10 sm:h-5" />
             {tabs.map((tab) => (
@@ -133,7 +137,7 @@ export const Settings = () => {
                 key={tab.id}
                 className={clsx(
                   'flex cursor-pointer select-none items-center space-x-2 rounded-lg p-2 sm:px-3',
-                  currentTab === tab.id ? 'bg-neutral-700/70' : 'hover:bg-neutral-700'
+                  tab.id === settingTab ? 'bg-neutral-700/70' : 'hover:bg-neutral-700'
                 )}
                 onClick={() => changeTab(tab.id)}
               >
@@ -156,7 +160,7 @@ export const Settings = () => {
 
           <div className="flex h-full w-full flex-col items-center overflow-y-auto rounded-r-lg bg-neutral-900 px-3">
             <div className="w-full max-w-[600px] pb-10 pt-14">
-              <>{tabs.find((tab) => tab.id === currentTab)?.component}</>
+              <>{tabs.find((tab) => tab.id === settingTab)?.component}</>
             </div>
           </div>
         </div>

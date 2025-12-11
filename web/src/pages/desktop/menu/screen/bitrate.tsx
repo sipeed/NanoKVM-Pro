@@ -8,41 +8,57 @@ import * as api from '@/api/stream.ts';
 import * as storage from '@/lib/localstorage.ts';
 import { videoParametersAtom } from '@/jotai/screen.ts';
 
-export const Quality = () => {
+export const Bitrate = () => {
   const { t } = useTranslation();
-
   const [videoParameters, setVideoParameters] = useAtom(videoParametersAtom);
 
-  const [customQuality, setCustomQuality] = useState(0);
+  const [customBitrate, setCustomBitrate] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const qualityList = [
-    { value: 100, label: t('screen.qualityLossless') },
-    { value: 80, label: t('screen.qualityHigh') },
-    { value: 60, label: t('screen.qualityMedium') },
-    { value: 50, label: t('screen.qualityLow') }
+  const bitrateList = [
+    { value: 0, label: t('screen.qualityAuto') },
+    { value: 10000, label: t('screen.qualityLossless') },
+    { value: 5000, label: t('screen.qualityHigh') },
+    { value: 3000, label: t('screen.qualityMedium') },
+    { value: 1000, label: t('screen.qualityLow') }
   ];
 
   useEffect(() => {
-    const isExist = qualityList.some((quality) => quality.value === videoParameters.quality);
-    const value = isExist ? 0 : Math.floor(videoParameters.quality || 80);
-    setCustomQuality(value);
-  }, [videoParameters]);
-
-  async function update(value: number) {
-    if (isLoading || value === videoParameters.quality) {
+    if (videoParameters.rateControlMode === 'vbr') {
+      setCustomBitrate(0);
       return;
     }
 
+    const isExist = bitrateList.some((bitrate) => bitrate.value === videoParameters.bitrate);
+    if (isExist) {
+      setCustomBitrate(0);
+      return;
+    }
+
+    setCustomBitrate(Math.floor(videoParameters.bitrate / 100));
+  }, [videoParameters]);
+
+  async function update(value: number) {
+    if (isLoading) {
+      return;
+    }
     setIsLoading(true);
 
+    const mode = value === 0 ? 'vbr' : 'cbr';
+    const bitrate = value === 0 ? 8000 : value;
+
     try {
-      const rsp = await api.setQuality(value);
+      let rsp = await api.setRateControlMode(mode);
       if (rsp.code !== 0) {
         return;
       }
 
-      const parameters = { ...videoParameters, quality: value };
+      rsp = await api.setQuality(bitrate);
+      if (rsp.code !== 0) {
+        return;
+      }
+
+      const parameters = { ...videoParameters, rateControlMode: mode, bitrate: bitrate };
       setVideoParameters(parameters);
       storage.setVideoParameters(JSON.stringify(parameters));
     } catch (err) {
@@ -52,29 +68,36 @@ export const Quality = () => {
     }
   }
 
+  function isChecked(value: number) {
+    if (videoParameters.rateControlMode === 'vbr') {
+      return value === 0;
+    }
+    return value === videoParameters.bitrate;
+  }
+
   const content = (
     <>
-      {qualityList.map((quality) => (
+      {bitrateList.map((bitrate) => (
         <div
-          key={quality.value}
+          key={bitrate.value}
           className="flex h-[30px] cursor-pointer select-none items-center rounded pl-1 pr-5 hover:bg-neutral-700/70"
-          onClick={() => update(quality.value)}
+          onClick={() => update(bitrate.value)}
         >
           <div className="flex h-[14px] w-[20px] items-end text-blue-500">
-            {quality.value === videoParameters.quality && <CheckIcon size={14} />}
+            {isChecked(bitrate.value) && <CheckIcon size={14} />}
           </div>
-          <span>{quality.label}</span>
+          <span>{bitrate.label}</span>
         </div>
       ))}
 
-      {customQuality > 0 && (
+      {customBitrate > 0 && (
         <>
           <Divider style={{ margin: '5px 0' }} />
           <div className="flex h-[30px] cursor-pointer select-none items-center rounded pl-1 pr-5 hover:bg-neutral-700/70">
             <div className="flex h-[14px] w-[20px] items-end text-blue-500">
               <CheckIcon size={14} />
             </div>
-            <span>{customQuality}%</span>
+            <span>{customBitrate}%</span>
           </div>
         </>
       )}

@@ -46,6 +46,7 @@ export const MenuItem = ({
       content={content}
       arrow={false}
       trigger="click"
+      zIndex={900}
       placement={isBigScreen ? 'bottomLeft' : 'bottom'}
       open={isPopoverOpen}
       onOpenChange={togglePopover}

@@ -63,18 +63,20 @@ const zh = {
       btnOk: '确认'
     },
     screen: {
-      scale: '缩放',
       title: '屏幕',
       video: '视频模式',
       quality: '图像质量',
+      qualityAuto: '自动',
       qualityLossless: '无损',
       qualityHigh: '高',
       qualityMedium: '中',
       qualityLow: '低',
+      scale: '缩放',
       resetHdmi: '重置 HDMI',
       noSignal: 'HDMI 无信号',
       inconsistentVideoMode: '已暂停，其他视频模式正在播放中',
-      upload: '上传'
+      upload: '上传',
+      advanced: '高级设置'
     },
     keyboard: {
       title: '键盘',
@@ -230,6 +232,45 @@ const zh = {
         webTitle: '标题',
         webTitleDesc: '自定义网站页面标题'
       },
+      screen: {
+        title: '屏幕',
+        videoMode: {
+          title: '视频模式',
+          description: '选择视频编码和传输方式'
+        },
+        edid: {
+          description: '选择显示器参数',
+          default: '默认',
+          custom: '自定义'
+        },
+        rateControlMode: {
+          title: '码率控制模式',
+          description: '选择控制码率的方式',
+          cbr: 'CBR（固定码率）：优先保证连接稳定性。最小化卡顿，但快速变化的画面可能会出现模糊或噪点。',
+          vbr: 'VBR（动态码率）：优先保证图像清晰度。快速变化的画面会导致带宽占用增加，可能引起延迟或卡顿。'
+        },
+        bitrate: {
+          title: '码率',
+          description: '调节画面清晰度与带宽占用的平衡',
+          lower: '较小的码率可以降低网络不佳时的延迟，但会牺牲图像质量，可能会出现花屏的情况。',
+          higher: '较大的码率可以提高图像清晰度，但会消耗更多网络流量，如果网络不佳可能会增加延迟。'
+        },
+        gop: {
+          description: '设置完整关键帧之间的间隔',
+          lower:
+            '数值越小发送关键帧越频繁。这可以加快画面从花屏中恢复的速度，但会损失画面细节，并且消耗更多的网络流量。',
+          higher:
+            '数值越大发送关键帧越少，会更多的发送增量更新。这可以增加画面细节并节省带宽，但画面花屏后恢复所需的时间会更长。'
+        },
+        quality: {
+          title: '画质',
+          description: '设置显示画面的质量'
+        },
+        scale: {
+          title: '缩放',
+          description: '设置显示画面的缩放比例'
+        }
+      },
       device: {
         title: '设备',
         oled: {
@@ -313,7 +354,11 @@ const zh = {
         hidOnly: 'HID-Only 模式',
         disk: '虚拟U盘',
         diskDesc: '在远程主机中挂载虚拟U盘',
-        noSdCard: '请插入SD卡以启用此功能',
+        emmc: {
+          warning: '注意',
+          tip1: '第一次挂载 eMMC 会清除 NanoKVM 设备中 /data 目录下的所有数据，在操作前请备份数据。',
+          tip2: '是否要继续进行挂载？'
+        },
         network: '虚拟网卡',
         networkDesc: '在远程主机中挂载虚拟网卡',
         datetime: {

@@ -15,9 +15,10 @@ func streamRouter(r *gin.Engine) {
 
 	api := r.Group("/api").Use(middleware.CheckToken())
 
-	api.POST("/stream/mode", service.SetMode)       // set stream mode
-	api.POST("/stream/quality", service.SetQuality) // set stream quality / bit-rate
-	api.POST("/stream/gop", service.SetGop)         // set stream gop
+	api.POST("/stream/rate-control", service.SetRateControlMode) // set rate control mode
+	api.POST("/stream/mode", service.SetMode)                    // set stream mode
+	api.POST("/stream/quality", service.SetQuality)              // set stream quality / bit-rate
+	api.POST("/stream/gop", service.SetGop)                      // set stream gop
 
 	api.GET("/stream/mjpeg", mjpeg.Connect)        // mjpeg stream
 	api.GET("/stream/h264/direct", direct.Connect) // h264 stream (direct)

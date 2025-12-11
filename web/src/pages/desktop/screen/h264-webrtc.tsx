@@ -6,14 +6,15 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import * as api from '@/api/stream.ts';
 import { VideoStatus } from '@/types';
 import { mouseStyleAtom } from '@/jotai/mouse.ts';
-import { videoStatusAtom, videoVolumeAtom, videoScaleAtom } from '@/jotai/screen.ts';
+import { videoParametersAtom, videoStatusAtom, videoVolumeAtom } from '@/jotai/screen.ts';
 
 export const H264Webrtc = () => {
+  const videoParameters = useAtomValue(videoParametersAtom);
   const mouseStyle = useAtomValue(mouseStyleAtom);
-  const videoScale = useAtomValue(videoScaleAtom);
   const setVideoStatus = useSetAtom(videoStatusAtom);
   const [volume, setVolume] = useAtom(videoVolumeAtom);
 
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -234,12 +235,15 @@ export const H264Webrtc = () => {
       switch (Number(data)) {
         case 1:
           setVideoStatus(VideoStatus.Normal);
+          setIsPlaying(true);
           break;
         case -1:
           setVideoStatus(VideoStatus.NoImage);
+          setIsPlaying(false);
           break;
         case -4:
           setVideoStatus(VideoStatus.InconsistentVideoMode);
+          setIsPlaying(false);
           break;
         default:
           console.log('Unhandled event:', data);
@@ -308,12 +312,11 @@ export const H264Webrtc = () => {
           id="screen"
           ref={videoRef}
           className={clsx(
-            'block max-h-full min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down origin-center',
+            'block max-h-full min-h-[480px] min-w-[640px] max-w-full select-none object-scale-down',
+            isPlaying ? 'opacity-100' : 'opacity-0',
             mouseStyle
           )}
-          style={{
-            transform: `scale(${videoScale})`,
-          }}
+          style={{ transform: `scale(${videoParameters.scale})` }}
           muted
           autoPlay
           playsInline

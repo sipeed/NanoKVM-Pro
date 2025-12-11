@@ -62,7 +62,7 @@ export const VideoMode = () => {
 
   return (
     <Popover content={content} placement="rightTop" arrow={false} align={{ offset: [14, 0] }}>
-      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700/70">
+      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded pl-3 pr-6 text-neutral-300 hover:bg-neutral-700/70">
         <TvMinimalPlayIcon size={18} />
         <span className="select-none text-sm">{t('screen.video')}</span>
       </div>

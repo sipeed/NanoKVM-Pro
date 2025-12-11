@@ -8,15 +8,17 @@ import (
 )
 
 type Screen struct {
-	Width   uint16
-	Height  uint16
-	FPS     int
-	GOP     uint8
-	Quality uint16
-	BitRate uint16
+	Width  uint16
+	Height uint16
+	FPS    int
 
-	RealFPS    int
-	StreamType int
+	StreamType      int
+	RateControlMode uint8
+	BitRate         uint16
+	GOP             uint8
+	Quality         uint16
+
+	RealFPS int
 }
 
 const (
@@ -40,39 +42,45 @@ var StreamTypeMap = map[string]int{
 func GetScreen() *Screen {
 	screenOnce.Do(func() {
 		screen = &Screen{
-			Width:      0,
-			Height:     0,
-			FPS:        30,
-			GOP:        50,
-			Quality:    80,
-			BitRate:    5000,
-			RealFPS:    0,
-			StreamType: STREAM_TYPE_H264_WEBRTC,
+			Width:  readSize(WidthPath),
+			Height: readSize(HeightPath),
+			FPS:    30,
+
+			StreamType:      STREAM_TYPE_H264_WEBRTC,
+			RateControlMode: RATE_CONTROL_VBR,
+			BitRate:         8000,
+			GOP:             50,
+			Quality:         80,
+
+			RealFPS: 0,
 		}
 	})
 
-	checkScreen()
 	return screen
 }
 
-func checkScreen() {
-	screen.Width = readSize(WidthPath)
-	screen.Height = readSize(HeightPath)
+func (s *Screen) Check() {
+	s.Width = readSize(WidthPath)
+	s.Height = readSize(HeightPath)
 
-	if screen.FPS <= 0 || screen.FPS > 200 {
-		screen.FPS = 30
+	if s.FPS <= 0 || s.FPS > 200 {
+		s.FPS = 30
 	}
 
-	if screen.GOP <= 0 || screen.GOP > 200 {
-		screen.GOP = 50
+	if s.BitRate < 1000 || s.BitRate > 20000 {
+		if s.RateControlMode == RATE_CONTROL_CBR {
+			s.BitRate = 5000
+		} else {
+			s.BitRate = 8000
+		}
 	}
 
-	if screen.Quality <= 0 || screen.Quality > 100 {
-		screen.Quality = 80
+	if s.GOP < 1 || s.GOP > 200 {
+		s.GOP = 50
 	}
 
-	if screen.BitRate < 500 || screen.BitRate > 20000 {
-		screen.BitRate = 5000
+	if s.Quality < 1 || s.Quality > 100 {
+		s.Quality = 80
 	}
 }
 

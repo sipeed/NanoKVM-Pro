@@ -1,5 +1,9 @@
 package proto
 
+type SetRateControlModeReq struct {
+	Mode string `form:"mode" validate:"required"` // cbr / vbr
+}
+
 type SetModeReq struct {
 	Mode string `form:"mode" validate:"required"`
 }

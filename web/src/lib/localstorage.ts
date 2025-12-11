@@ -1,8 +1,6 @@
 const LANGUAGE_KEY = 'nano-kvm-language';
 const VIDEO_MODE_KEY = 'nano-kvm-vide-mode';
-const VIDEO_SCALE_KEY = 'nano-kvm-video-scale';
-const QUALITY_KEY = 'nano-kvm-quality';
-const GOP_KEY = 'nano-kvm-gop';
+const VIDEO_PARAMETERS_KEY = 'nano-kvm-video-parameters';
 const MOUSE_STYLE_KEY = 'nano-kvm-mouse-style';
 const MOUSE_MODE_KEY = 'nano-kvm-mouse-mode';
 const MOUSE_SCROLL_INTERVAL_KEY = 'nanokvm-kvm-mouse-scroll-interval';
@@ -62,34 +60,12 @@ export function setVideoMode(mode: string) {
   localStorage.setItem(VIDEO_MODE_KEY, mode);
 }
 
-export function getVideoScale(): number | null {
-  const scale = localStorage.getItem(VIDEO_SCALE_KEY)
-  if (scale && Number(scale)) {
-    return Number(scale)
-  }
-  return null
+export function getVideoParameters() {
+  return localStorage.getItem(VIDEO_PARAMETERS_KEY);
 }
 
-export function setVideoScale(scale: number): void {
-  localStorage.setItem(VIDEO_SCALE_KEY, String(scale))
-}
-
-export function getQuality() {
-  const quality = localStorage.getItem(QUALITY_KEY);
-  return quality ? Number(quality) : null;
-}
-
-export function setQuality(quality: number) {
-  localStorage.setItem(QUALITY_KEY, String(quality));
-}
-
-export function getGop() {
-  const gop = localStorage.getItem(GOP_KEY);
-  return gop ? Number(gop) : null;
-}
-
-export function setGop(gop: number) {
-  localStorage.setItem(GOP_KEY, String(gop));
+export function setVideoParameters(parameters: string) {
+  localStorage.setItem(VIDEO_PARAMETERS_KEY, parameters);
 }
 
 export function getMouseStyle() {

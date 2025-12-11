@@ -3,6 +3,12 @@ import { w3cwebsocket } from 'websocket';
 import { http } from '@/lib/http.ts';
 import { getBaseUrl } from '@/lib/service.ts';
 
+// set rate control mode
+export function setRateControlMode(mode: string) {
+  const data = { mode };
+  return http.post('/api/stream/rate-control', data);
+}
+
 // set video stream mode
 export function setMode(mode: string) {
   const data = { mode };

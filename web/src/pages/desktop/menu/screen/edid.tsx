@@ -26,8 +26,8 @@ export const Edid = () => {
     { key: 'E48-4K39FPS', width: 3840, height: 2160, rate: '39Hz' },
     { key: 'E56-2K60FPS', width: 2560, height: 1440, rate: '60Hz' },
     { key: 'E54-1080P60FPS', width: 1920, height: 1080, rate: '60Hz' },
-    { key: 'E58-4K16-10', width: 3840, height: 2400, rate: '30FPS' },
-    { key: 'E63-Ultrawide', width: 3440, height: 1440, rate: '60FPS' }
+    { key: 'E58-4K16-10', width: 3840, height: 2400, rate: '30Hz' },
+    { key: 'E63-Ultrawide', width: 3440, height: 1440, rate: '60Hz' }
   ];
 
   useEffect(() => {
@@ -200,7 +200,7 @@ export const Edid = () => {
 
   return (
     <Popover content={content} placement="rightTop" arrow={false} align={{ offset: [14, 0] }}>
-      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded px-3 text-neutral-300 hover:bg-neutral-700/70">
+      <div className="flex h-[30px] cursor-pointer items-center space-x-2 rounded pl-3 pr-6 text-neutral-300 hover:bg-neutral-700/70">
         <RatioIcon size={18} />
         <span className="select-none text-sm">EDID</span>
       </div>
