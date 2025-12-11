@@ -13,10 +13,10 @@ export const Updating = () => {
   const [status, setStatus] = useState<'process' | 'error' | 'finish'>('process');
 
   useEffect(() => {
-    client.register('update', handleMessage);
+    client.on('update', handleMessage);
 
     return () => {
-      client.unregister('update');
+      client.off('update');
     };
   }, []);
 

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useTranslation } from 'react-i18next';
 import { useMediaQuery } from 'react-responsive';
 
@@ -7,35 +7,30 @@ import { VideoMode } from '@/types';
 import * as storage from '@/lib/localstorage.ts';
 import { getSupportedVideoModes } from '@/lib/video.ts';
 import { client } from '@/lib/websocket.ts';
-import { isKeyboardEnableAtom } from '@/jotai/keyboard.ts';
 import { videoModeAtom } from '@/jotai/screen.ts';
 import { Head } from '@/components/head.tsx';
 
 import { Keyboard } from './keyboard';
-import { VirtualKeyboard } from './keyboard/virtual-keyboard';
 import { Menu } from './menu';
 import { Message } from './message.tsx';
 import { Mouse } from './mouse';
 import { Notification } from './notification.tsx';
 import { Screen } from './screen';
+import { VirtualKeyboard } from './virtual-keyboard';
 
 export const Desktop = () => {
   const { t } = useTranslation();
   const isBigScreen = useMediaQuery({ minWidth: 850 });
 
   const [videoMode, setVideoMode] = useAtom(videoModeAtom);
-  const isKeyboardEnable = useAtomValue(isKeyboardEnableAtom);
 
   useEffect(() => {
+    client.connect();
+
     const mode = getVideoMode() as VideoMode;
     setVideoMode(mode);
 
-    const timer = setInterval(() => {
-      client.send([0]);
-    }, 10 * 1000);
-
     return () => {
-      clearInterval(timer);
       client.close();
     };
   }, []);
@@ -67,7 +62,7 @@ export const Desktop = () => {
           <Menu />
           <Screen />
           <Mouse />
-          {isKeyboardEnable && <Keyboard />}
+          <Keyboard />
         </>
       )}
 

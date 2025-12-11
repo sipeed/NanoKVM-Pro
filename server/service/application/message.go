@@ -1,8 +1,9 @@
 package application
 
 import (
-	"NanoKVM-Server/service/ws"
 	"encoding/json"
+
+	"NanoKVM-Server/service/ws"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -23,8 +24,8 @@ func sendMessage(step string, progress int) error {
 		return err
 	}
 
-	clientMap := ws.GetClientMap()
-	for client := range clientMap {
+	clients := ws.GetManager().GetClients()
+	for _, client := range clients {
 		if err := client.Write("update", string(data)); err != nil {
 			log.Errorf("send message to client error: %s", err.Error())
 		}

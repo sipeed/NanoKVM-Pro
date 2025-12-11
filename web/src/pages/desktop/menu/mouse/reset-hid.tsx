@@ -4,7 +4,7 @@ import { RefreshCwIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/hid.ts';
-import { client } from '@/lib/websocket.ts';
+import { client, MessageEvent } from '@/lib/websocket.ts';
 
 export const ResetHid = () => {
   const { t } = useTranslation();
@@ -15,9 +15,11 @@ export const ResetHid = () => {
     if (isResetting) return;
     setIsResetting(true);
 
-    client.send([1, 0, 0, 0, 0, 0]);
-    client.close();
+    // Release keyboard keys
+    const data = new Uint8Array([MessageEvent.Keyboard, 0, 0, 0, 0, 0, 0, 0, 0]);
+    client.send(data);
 
+    client.close();
     api.reset().finally(() => {
       client.connect();
       setIsResetting(false);

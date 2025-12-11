@@ -23,7 +23,7 @@ func NewService() *Service {
 }
 
 func (s *Service) Connect(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Errorf("create websocket failed: %s", err)
 		return
@@ -31,5 +31,11 @@ func (s *Service) Connect(c *gin.Context) {
 
 	log.Debug("websocket connected")
 
-	NewClient(conn)
+	client := NewClient(ws)
+
+	manager := GetManager()
+	manager.AddClient(ws, client)
+	defer manager.RemoveClient(ws)
+
+	client.Start()
 }

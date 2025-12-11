@@ -2,105 +2,106 @@ import { useEffect, useRef } from 'react';
 import { useAtomValue } from 'jotai';
 import { useMediaQuery } from 'react-responsive';
 
-import { client } from '@/lib/websocket.ts';
+import { MouseReportAbsolute } from '@/lib/mouse.ts';
+import { client, MessageEvent } from '@/lib/websocket.ts';
 import { scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { MouseAbsoluteEvent } from '@/pages/desktop/mouse/types.ts';
 
-import { MouseButton, MouseEvent } from './constants';
+enum MouseButton {
+  Left = 0,
+  Middle = 1,
+  Right = 2,
+  Back = 3,
+  Forward = 4
+}
 
 export const Absolute = () => {
   const isBigScreen = useMediaQuery({ minWidth: 850 });
 
   const scrollInterval = useAtomValue(scrollIntervalAtom);
 
+  const mouseRef = useRef(new MouseReportAbsolute());
+  const lastPosRef = useRef({ x: 0.5, y: 0.5 });
   const lastScrollTimeRef = useRef(0);
+
+  // For touch events
   const touchStartTimeRef = useRef(0);
   const lastTouchYRef = useRef(0);
   const longPressTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isLongPressRef = useRef(false);
   const hasMoveRef = useRef(false);
   const isDraggingRef = useRef(false);
-  const hasButtonPressedRef = useRef(false);
+  const pressedButtonRef = useRef<MouseButton | null>(null);
   const touchStartPosRef = useRef({ x: 0, y: 0 });
 
   const TAP_THRESHOLD = 8;
   const DRAG_THRESHOLD = 10;
   const VELOCITY_THRESHOLD = 0.3;
 
-  const mouseButtonMapping = (button: number) => {
-    const mappings = [MouseButton.Left, MouseButton.Wheel, MouseButton.Right];
-    return mappings[button] || MouseButton.None;
-  };
-
-  // listen mouse events
   useEffect(() => {
-    const canvas = document.getElementById('screen') as HTMLVideoElement;
-    if (!canvas) return;
+    const screen = document.getElementById('screen') as HTMLVideoElement;
+    if (!screen) return;
 
-    canvas.addEventListener('mousedown', handleMouseDown);
-    canvas.addEventListener('mouseup', handleMouseUp);
-    canvas.addEventListener('mousemove', handleMouseMove);
-    canvas.addEventListener('wheel', handleWheel);
-    canvas.addEventListener('click', disableEvent);
-    canvas.addEventListener('contextmenu', disableEvent);
+    screen.addEventListener('mousedown', handleMouseDown);
+    screen.addEventListener('mouseup', handleMouseUp);
+    screen.addEventListener('mousemove', handleMouseMove);
+    screen.addEventListener('wheel', handleWheel);
+    screen.addEventListener('click', disableEvent);
+    screen.addEventListener('contextmenu', disableEvent);
 
     if (isBigScreen) {
-      canvas.addEventListener('touchstart', handleTouchStart);
-      canvas.addEventListener('touchmove', handleTouchMove);
-      canvas.addEventListener('touchend', handleTouchEnd);
-      canvas.addEventListener('touchcancel', handleTouchCancel);
+      screen.addEventListener('touchstart', handleTouchStart);
+      screen.addEventListener('touchmove', handleTouchMove);
+      screen.addEventListener('touchend', handleTouchEnd);
+      screen.addEventListener('touchcancel', handleTouchCancel);
     }
 
-    // press button
-    function handleMouseDown(event: any) {
-      disableEvent(event);
-
-      const button: MouseButton = mouseButtonMapping(event.button);
-      if (button === MouseButton.None) return;
-
-      const data = [2, MouseEvent.Down, button, 0, 0];
-      client.send(data);
+    // Mouse down event
+    function handleMouseDown(e: MouseEvent) {
+      disableEvent(e);
+      handleMouseEvent({ type: 'mousedown', button: e.button });
     }
 
-    // release button
-    function handleMouseUp(event: any) {
-      disableEvent(event);
-
-      const data = [2, MouseEvent.Up, MouseButton.None, 0, 0];
-      client.send(data);
+    // Mouse up event
+    function handleMouseUp(e: MouseEvent) {
+      disableEvent(e);
+      handleMouseEvent({ type: 'mouseup', button: e.button });
     }
 
-    // mouse move
-    function handleMouseMove(event: any) {
-      disableEvent(event);
-
-      const { x, y } = getCoordinate(event);
-      const data = [2, MouseEvent.MoveAbsolute, MouseButton.None, x, y];
-      client.send(data);
+    // Mouse move event
+    function handleMouseMove(e: MouseEvent) {
+      disableEvent(e);
+      const { x, y } = getCoordinate(e);
+      handleMouseEvent({ type: 'move', x, y });
     }
 
-    // mouse scroll
-    function handleWheel(event: any) {
-      disableEvent(event);
+    // Mouse wheel event
+    function handleWheel(e: WheelEvent) {
+      disableEvent(e);
 
-      const delta = Math.floor(event.deltaY);
-      if (delta === 0) return;
+      const deltaY = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 127);
+      if (deltaY === 0) {
+        return;
+      }
 
       const currentTime = Date.now();
       if (currentTime - lastScrollTimeRef.current < scrollInterval) {
         return;
       }
-      lastScrollTimeRef.current = currentTime;
 
-      const data = [2, MouseEvent.Scroll, 0, 0, delta];
-      client.send(data);
+      handleMouseEvent({ type: 'wheel', deltaY });
+      lastScrollTimeRef.current = currentTime;
     }
 
-    // touch start
-    function handleTouchStart(event: any) {
-      disableEvent(event);
+    // Mouse touch start event
+    function handleTouchStart(e: TouchEvent) {
+      disableEvent(e);
 
-      const touch = event.touches[0];
-      if (!touch) return;
+      if (e.touches.length === 0) {
+        return;
+      }
+
+      const touch = e.touches[0];
 
       // Reset states
       touchStartTimeRef.current = Date.now();
@@ -108,7 +109,7 @@ export const Absolute = () => {
       isLongPressRef.current = false;
       hasMoveRef.current = false;
       isDraggingRef.current = false;
-      hasButtonPressedRef.current = false;
+      pressedButtonRef.current = null;
       touchStartPosRef.current = { x: touch.clientX, y: touch.clientY };
 
       if (longPressTimerRef.current) {
@@ -116,44 +117,42 @@ export const Absolute = () => {
       }
 
       const { x, y } = getCoordinate(touch);
-      const moveData = [2, MouseEvent.MoveAbsolute, MouseButton.None, x, y];
-      client.send(moveData);
+      handleMouseEvent({ type: 'move', x, y });
 
-      if (event.touches.length > 1) {
+      if (e.touches.length > 1) {
         return;
       }
 
+      // Start long press
       longPressTimerRef.current = setTimeout(() => {
         isLongPressRef.current = true;
-        hasButtonPressedRef.current = true;
-
+        pressedButtonRef.current = MouseButton.Right;
         if (navigator.vibrate) {
           navigator.vibrate(50);
         }
 
-        const pressData = [2, MouseEvent.Down, MouseButton.Right, 0, 0];
-        client.send(pressData);
-      }, 500);
+        handleMouseEvent({ type: 'mousedown', button: MouseButton.Right });
+      }, 800);
     }
 
-    // touch move
-    function handleTouchMove(event: any) {
-      disableEvent(event);
+    // Mouse touch move event
+    function handleTouchMove(e: TouchEvent) {
+      disableEvent(e);
 
-      const touch = event.touches[0];
-      if (!touch) return;
+      if (e.touches.length === 0) {
+        return;
+      }
 
+      const touch = e.touches[0];
       const { x, y } = getCoordinate(touch);
 
       // Handle two-finger scroll first
-      if (event.touches.length > 1) {
+      if (e.touches.length > 1) {
         const deltaY = touch.clientY - lastTouchYRef.current;
         lastTouchYRef.current = touch.clientY;
 
         if (Math.abs(deltaY) > 2) {
-          const delta = Math.floor(deltaY);
-          const scrollData = [2, MouseEvent.Scroll, 0, 0, delta];
-          client.send(scrollData);
+          handleMouseEvent({ type: 'wheel', deltaY: Math.floor(deltaY) });
         }
         return;
       }
@@ -178,11 +177,10 @@ export const Absolute = () => {
           longPressTimerRef.current = null;
         }
 
-        if (!hasButtonPressedRef.current) {
+        if (pressedButtonRef.current === null) {
           isDraggingRef.current = true;
-          hasButtonPressedRef.current = true;
-          const pressData = [2, MouseEvent.Down, MouseButton.Left, 0, 0];
-          client.send(pressData);
+          pressedButtonRef.current = MouseButton.Left;
+          handleMouseEvent({ type: 'mousedown', button: MouseButton.Left });
         }
       }
 
@@ -191,18 +189,13 @@ export const Absolute = () => {
       }
 
       if (isDraggingRef.current || isLongPressRef.current) {
-        const button = isLongPressRef.current ? MouseButton.Right : MouseButton.Left;
-        const data = [2, MouseEvent.MoveAbsolute, button, x, y];
-        client.send(data);
-      } else if (hasMoveRef.current) {
-        const data = [2, MouseEvent.MoveAbsolute, MouseButton.None, x, y];
-        client.send(data);
+        handleMouseEvent({ type: 'move', x, y });
       }
     }
 
-    // touch end
-    function handleTouchEnd(event: any) {
-      disableEvent(event);
+    // Mouse touch end event
+    function handleTouchEnd(e: TouchEvent) {
+      disableEvent(e);
 
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
@@ -210,54 +203,62 @@ export const Absolute = () => {
       }
 
       if (!hasMoveRef.current && !isLongPressRef.current) {
-        const pressData = [2, MouseEvent.Down, MouseButton.Left, 0, 0];
-        client.send(pressData);
-
+        handleMouseEvent({ type: 'mousedown', button: MouseButton.Left });
         setTimeout(() => {
-          const releaseData = [2, MouseEvent.Up, MouseButton.None, 0, 0];
-          client.send(releaseData);
+          handleMouseEvent({ type: 'mouseup', button: MouseButton.Left });
         }, 50);
-      } else if (hasButtonPressedRef.current) {
-        const data = [2, MouseEvent.Up, MouseButton.None, 0, 0];
-        client.send(data);
+      } else if (pressedButtonRef.current !== null) {
+        handleMouseEvent({ type: 'mouseup', button: pressedButtonRef.current! });
       }
 
       isLongPressRef.current = false;
       hasMoveRef.current = false;
       isDraggingRef.current = false;
-      hasButtonPressedRef.current = false;
+      pressedButtonRef.current = null;
     }
 
-    // touch cancel
-    function handleTouchCancel(event: any) {
-      disableEvent(event);
+    // Mouse touch cancel event
+    function handleTouchCancel(e: any) {
+      disableEvent(e);
 
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
       }
 
-      if (hasButtonPressedRef.current) {
-        const data = [2, MouseEvent.Up, MouseButton.None, 0, 0];
-        client.send(data);
+      if (pressedButtonRef.current) {
+        handleMouseEvent({ type: 'mouseup', button: pressedButtonRef.current! });
       }
 
       isLongPressRef.current = false;
       hasMoveRef.current = false;
       isDraggingRef.current = false;
-      hasButtonPressedRef.current = false;
+      pressedButtonRef.current = null;
+    }
+
+    // get mouse coordinate
+    function getCoordinate(event: any) {
+      const { x, y } = getCorrectedCoords(event.clientX, event.clientY);
+
+      const finalX = Math.max(0, Math.min(1, x));
+      const finalY = Math.max(0, Math.min(1, y));
+
+      const hexX = Math.floor(0x7fff * finalX) + 0x0001;
+      const hexY = Math.floor(0x7fff * finalY) + 0x0001;
+
+      return { x: hexX, y: hexY };
     }
 
     function getCorrectedCoords(clientX: number, clientY: number) {
-      const rect = canvas.getBoundingClientRect();
+      const rect = screen.getBoundingClientRect();
 
-      if (!canvas.videoWidth || !canvas.videoHeight) {
+      if (!screen.videoWidth || !screen.videoHeight) {
         const x = (clientX - rect.left) / rect.width;
         const y = (clientY - rect.top) / rect.height;
         return { x, y };
       }
 
-      const videoRatio = canvas.videoWidth / canvas.videoHeight;
+      const videoRatio = screen.videoWidth / screen.videoHeight;
       const elementRatio = rect.width / rect.height;
 
       let renderedWidth = rect.width;
@@ -279,35 +280,57 @@ export const Absolute = () => {
       return { x, y };
     }
 
-    function getCoordinate(event: any): { x: number; y: number } {
-      const { x, y } = getCorrectedCoords(event.clientX, event.clientY);
-
-      const finalX = Math.max(0, Math.min(1, x));
-      const finalY = Math.max(0, Math.min(1, y));
-
-      const hexX = Math.floor(0x7fff * finalX) + 0x0001;
-      const hexY = Math.floor(0x7fff * finalY) + 0x0001;
-
-      return { x: hexX, y: hexY };
-    }
-
     return () => {
-      canvas.removeEventListener('mousemove', handleMouseMove);
-      canvas.removeEventListener('mousedown', handleMouseDown);
-      canvas.removeEventListener('mouseup', handleMouseUp);
-      canvas.removeEventListener('wheel', handleWheel);
-      canvas.removeEventListener('click', disableEvent);
-      canvas.removeEventListener('contextmenu', disableEvent);
-      canvas.removeEventListener('touchstart', handleTouchStart);
-      canvas.removeEventListener('touchmove', handleTouchMove);
-      canvas.removeEventListener('touchend', handleTouchEnd);
-      canvas.removeEventListener('touchcancel', handleTouchCancel);
+      screen.removeEventListener('mousemove', handleMouseMove);
+      screen.removeEventListener('mousedown', handleMouseDown);
+      screen.removeEventListener('mouseup', handleMouseUp);
+      screen.removeEventListener('wheel', handleWheel);
+      screen.removeEventListener('click', disableEvent);
+      screen.removeEventListener('contextmenu', disableEvent);
+      screen.removeEventListener('touchstart', handleTouchStart);
+      screen.removeEventListener('touchmove', handleTouchMove);
+      screen.removeEventListener('touchend', handleTouchEnd);
+      screen.removeEventListener('touchcancel', handleTouchCancel);
 
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
       }
     };
   }, [isBigScreen, scrollInterval]);
+
+  // Mouse event handler
+  function handleMouseEvent(event: MouseAbsoluteEvent) {
+    let report: Uint8Array;
+    const mouse = mouseRef.current;
+
+    switch (event.type) {
+      case 'mousedown':
+        mouse.buttonDown(event.button);
+        report = mouse.buildButtonReport(lastPosRef.current.x, lastPosRef.current.y);
+        break;
+      case 'mouseup':
+        mouse.buttonUp(event.button);
+        report = mouse.buildButtonReport(lastPosRef.current.x, lastPosRef.current.y);
+        break;
+      case 'wheel':
+        report = mouse.buildReport(lastPosRef.current.x, lastPosRef.current.y, event.deltaY);
+        break;
+      case 'move':
+        report = mouse.buildReport(event.x, event.y);
+        lastPosRef.current = { x: event.x, y: event.y };
+        break;
+      default:
+        report = mouse.buildReport(lastPosRef.current.x, lastPosRef.current.y);
+        break;
+    }
+
+    sendReport(report);
+  }
+
+  function sendReport(report: Uint8Array) {
+    const data = new Uint8Array([MessageEvent.Mouse, ...report]);
+    client.send(data);
+  }
 
   // disable default events
   function disableEvent(event: any) {
