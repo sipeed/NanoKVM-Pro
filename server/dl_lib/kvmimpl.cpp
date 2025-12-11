@@ -34,37 +34,56 @@ static int __throw_error() {
 #endif
 }
 
-void kvmv_init([[__maybe_unused__]] uint8_t _debug_info_en) { __throw_error(); }
-int kvmv_read_img([[__maybe_unused__]] uint16_t _width,
-                  [[__maybe_unused__]] uint16_t _height,
-                  [[__maybe_unused__]] uint8_t _type,
-                  [[__maybe_unused__]] uint16_t _qlty,
-                  [[__maybe_unused__]] uint8_t **_pp_kvm_data,
-                  [[__maybe_unused__]] uint32_t *_p_kvmv_data_size) {
-  return __throw_error();
+void kvmv_init(uint8_t _debug_info_en) {
+  __throw_error();
 }
-int kvmv_get_sps_frame([[__maybe_unused__]] uint8_t **_pp_kvm_data,
-                       [[__maybe_unused__]] uint32_t *_p_kvmv_data_size) {
-  return __throw_error();
+
+void kvmv_free_all_data() {
+  __throw_error();
 }
-int kvmv_get_pps_frame([[__maybe_unused__]] uint8_t **_pp_kvm_data,
-                       [[__maybe_unused__]] uint32_t *_p_kvmv_data_size) {
-  return __throw_error();
+
+void kvmv_set_gop(uint8_t _gop) {
+  __throw_error();
 }
-int free_kvmv_data([[__maybe_unused__]] uint8_t **_pp_kvm_data) {
-  return __throw_error();
+
+void kvmv_deinit() {
+  __throw_error();
 }
-void free_all_kvmv_data() { __throw_error(); }
-void set_gop([[__maybe_unused__]] uint8_t _gop) { __throw_error(); }
-int get_fps() {
-  return __throw_error();
-}
-void kvmv_deinit() { __throw_error(); }
-uint8_t kvmv_hdmi_control([[__maybe_unused__]] uint8_t _en) {
+
+int kvmv_read_img(uint16_t _width,
+                  uint16_t _height,
+                  uint8_t _type,
+                  uint16_t _qlty,
+                  uint8_t** _pp_kvm_data,
+                  uint32_t* _p_kvmv_data_size) {
   return __throw_error();
 }
 
-int kvma_read_audio(uint8_t **_pp_kvm_data, uint32_t *_p_kvma_data_size) {
+int kvmv_get_sps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size) {
+  return __throw_error();
+}
+
+int kvmv_get_pps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size) {
+  return __throw_error();
+}
+
+int kvmv_free_data(uint8_t** _pp_kvm_data) {
+  return __throw_error();
+}
+
+int kvmv_get_fps(void) {
+  return __throw_error();
+}
+
+int kvmv_hdmi_control(uint8_t _en) {
+  return __throw_error();
+}
+
+int kvmv_read_audio(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size) {
+  return __throw_error();
+}
+
+int kvmv_set_rate_control(uint8_t mode) {
   return __throw_error();
 }
 

@@ -25,7 +25,13 @@ extern "C" {
 #define IMG_H265_TYPE_IF  7
 #define IMG_H265_TYPE_PF  8
 
+#define VENC_CBR 0
+#define VENC_VBR 1
+
 void kvmv_init(uint8_t _debug_info_en);
+void kvmv_free_all_data();
+void kvmv_set_gop(uint8_t _gop);
+void kvmv_deinit();
 /**********************************************************************************
  * @name    kvmv_read_img
  * @author  Sipeed BuGu
@@ -56,15 +62,11 @@ int kvmv_read_img(uint16_t _width,
                   uint32_t* _p_kvmv_data_size);
 int kvmv_get_sps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
 int kvmv_get_pps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
-int free_kvmv_data(uint8_t** _pp_kvm_data);
-void free_all_kvmv_data();
-void set_gop(uint8_t _gop);
-int get_fps();
-void set_frame_detact(uint8_t _frame_detact);
-void kvmv_deinit();
-uint8_t kvmv_hdmi_control(uint8_t _en);
-int kvma_read_audio(uint8_t** _pp_kvm_data, uint32_t* _p_kvma_data_size);
-
+int kvmv_free_data(uint8_t** _pp_kvm_data);
+int kvmv_get_fps(void);
+int kvmv_hdmi_control(uint8_t _en);
+int kvmv_read_audio(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
+int kvmv_set_rate_control(uint8_t mode);
 #ifdef __cplusplus
 }
 #endif

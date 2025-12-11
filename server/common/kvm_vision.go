@@ -7,10 +7,11 @@ package common
 */
 import "C"
 import (
-	"NanoKVM-Server/config"
 	"strings"
 	"sync"
 	"unsafe"
+
+	"NanoKVM-Server/config"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,6 +19,11 @@ import (
 type KvmVision struct {
 	StreamType uint8
 }
+
+const (
+	RATE_CONTROL_CBR uint8 = iota
+	RATE_CONTROL_VBR
+)
 
 const (
 	IMG_MJPEG_TYPE uint8 = iota
@@ -29,7 +35,9 @@ const (
 	IMG_H265_TYPE_PPS
 	IMG_H265_TYPE_IF
 	IMG_H265_TYPE_PF
+)
 
+const (
 	STREAM_TYPE_MJPEG = iota
 	STREAM_TYPE_H264_WEBRTC
 	STREAM_TYPE_H264_DIRECT
@@ -65,6 +73,23 @@ func GetKvmVision() *KvmVision {
 
 func (k *KvmVision) SetStreamType(streamType uint8) {
 	k.StreamType = streamType
+}
+
+func (k *KvmVision) SetRateControl(mode uint8) int {
+	if mode != RATE_CONTROL_CBR && mode != RATE_CONTROL_VBR {
+		log.Debugf("invalid rate control mode: %d", mode)
+		return -1
+	}
+
+	result := int(C.kvmv_set_rate_control(
+		C.uint8_t(mode),
+	))
+	if result < 0 {
+		log.Debugf("failed to set rate control mode: %d", result)
+		return result
+	}
+
+	return result
 }
 
 func (k *KvmVision) ReadMjpeg(width uint16, height uint16, quality uint16) (data []byte, result int) {
@@ -151,7 +176,7 @@ func (k *KvmVision) ReadAudio() (data []byte, result int) {
 		dataSize C.uint32_t
 	)
 
-	result = int(C.kvma_read_audio(&kvmData, &dataSize))
+	result = int(C.kvmv_read_audio(&kvmData, &dataSize))
 	if result < 0 {
 		log.Errorf("failed to read audio: %d", result)
 		return
@@ -165,7 +190,7 @@ func (k *KvmVision) ReadAudio() (data []byte, result int) {
 }
 
 func (k *KvmVision) GetFps() int {
-	return int(C.get_fps())
+	return int(C.kvmv_get_fps())
 }
 
 func (k *KvmVision) SetHDMI(enable bool) int {
@@ -185,7 +210,7 @@ func (k *KvmVision) SetHDMI(enable bool) int {
 
 func (k *KvmVision) SetGop(gop uint8) {
 	_gop := C.uint8_t(gop)
-	C.set_gop(_gop)
+	C.kvmv_set_gop(_gop)
 }
 
 func (k *KvmVision) Close() {
