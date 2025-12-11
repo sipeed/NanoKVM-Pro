@@ -1,9 +1,10 @@
 package ui
 
 import (
-	"NanoKVM-Server/common"
 	"fmt"
 	"net/http"
+
+	"NanoKVM-Server/common"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,13 +38,7 @@ func GetStreamer(c *gin.Context) {
 				Source: Source{
 					CapturedFps: screen.RealFPS,
 					Resolution:  resolution,
-					Online: func() bool {
-						val, ok := Online.Load().(bool)
-						if ok {
-							return val
-						}
-						return false
-					}(),
+					Online:      false,
 				},
 				Stream: Stream{
 					Clients:   clients,

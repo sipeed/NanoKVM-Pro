@@ -1,7 +1,6 @@
 package vm
 
 import (
-	"NanoKVM-Server/proto"
 	"encoding/base64"
 	"encoding/json"
 	"net"
@@ -10,6 +9,8 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"NanoKVM-Server/proto"
 
 	"github.com/creack/pty"
 	"github.com/gin-gonic/gin"
@@ -23,8 +24,6 @@ const (
 	maxMessageSize  = 1024
 	TeminalAuthLock = "/etc/kvm/terminal_auth"
 )
-
-var login bool = false
 
 type WinSize struct {
 	Rows uint16 `json:"rows"`

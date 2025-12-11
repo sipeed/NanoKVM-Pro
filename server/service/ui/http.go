@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -14,8 +13,6 @@ import (
 const (
 	BaseURL = "http://127.0.0.1:65501/api"
 )
-
-var Online = new(atomic.Value)
 
 func Get(url string) ([]byte, error) {
 	resp, err := http.Get(BaseURL + url)
