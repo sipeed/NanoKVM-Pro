@@ -1,3 +1,37 @@
+## 1.2.6 (2025-12-11)
+
+### Features
+
+- add configuration support for video rate control modes and change the default from CBR (Constant Bit Rate) to VBR (Variable Bit Rate)
+- add support for custom screen scaling ratios
+- simplify the screen operations menu and introduce a new tab for advanced screen settings
+- add support for mounting eMMC as a virtual disk
+
+### Bug Fixes
+
+- resolve an issue where closing the web terminal might spawn a zombie process (thanks to [@li20034](https://github.com/li20034))
+- fix simultaneous key press conflicts and correct recognition errors for specific special characters
+
+### Code Refactoring
+
+- refactor the mouse module to improve response latency
+- refactor the keyboard module to address various key mapping stability issues
+- refactor the WebSocket module to transmit keyboard and mouse data using the standard **HID** format
+
+### Improvements
+
+- optimize animations for the LED screen interface
+- reduce the overall installation package size
+- remove the redundant password encryption step
+- standardize function naming conventions within `kvmvision`
+
+## 1.2.5 (2025-12-02)
+
+### Bug Fixed
+
+- Patched a potential security vulnerability
+- Resolved an issue causing Wi-Fi connection failures
+
 ## 1.2.4 (2025-11-28)
 
 ### Features
@@ -10,9 +44,9 @@
 
 ### Performance Improvements
 
-- Reduce power consumption by disabling the encoder when idle
-- Optimize Wi-Fi connection
-- Implement delay interval after failed login attempts
+- reduce power consumption by disabling the encoder when idle
+- optimize Wi-Fi connection
+- implement delay interval after failed login attempts
 
 ## 1.2.3 (2025-11-20)
 
