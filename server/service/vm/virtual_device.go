@@ -1,104 +1,57 @@
 package vm
 
 import (
-	"NanoKVM-Server/service/hid"
-	"bytes"
-	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
+
+	"NanoKVM-Server/proto"
+	"NanoKVM-Server/service/hid"
+	"NanoKVM-Server/utils"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-
-	"NanoKVM-Server/proto"
 )
 
 const (
-	sdCard          = "/dev/mmcblk1"
-	virtualDisk     = "/boot/usb.disk1"
-	virtualDiskFlag = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk1"
+	pathSdCard    = "/dev/mmcblk1"
+	pathEmmcImage = "/exfat.img"
 
-	virtualNetwork     = "/boot/usb.ncm"
-	virtualNetworkFlag = "/sys/kernel/config/usb_gadget/g0/configs/c.1/ncm.usb0"
+	pathVirtualDiskSD      = "/boot/usb.disk1.sd"
+	pathVirtualDiskEmmc    = "/boot/usb.disk1.emmc"
+	pathVirtualDiskMounted = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk1/lun.0/file"
+
+	pathVirtualNetwork = "/boot/usb.ncm"
+	pathNetworkFlag    = "/sys/kernel/config/usb_gadget/g0/configs/c.1/ncm.usb0"
 )
 
-var (
-	mountNetworkCommands = []string{
-		"/kvmapp/scripts/usbdev.sh stop",
-		"touch /boot/usb.ncm",
-		"/kvmapp/scripts/usbdev.sh start",
-	}
-
-	unmountNetworkCommands = []string{
-		"/kvmapp/scripts/usbdev.sh stop",
-		"rm -rf /boot/usb.ncm",
-		"/kvmapp/scripts/usbdev.sh start",
-	}
-
-	mountDiskCommands = []string{
-		"touch /boot/usb.disk1",
-		"/kvmapp/scripts/usbdev.sh stop",
-		"/kvmapp/scripts/usbdev.sh start",
-	}
-
-	unmountDiskCommands = []string{
-		"/kvmapp/scripts/usbdev.sh stop",
-		"rm /boot/usb.disk1",
-		"/kvmapp/scripts/usbdev.sh start",
-	}
+const (
+	scriptUsbDev    = "/kvmapp/scripts/usbdev.sh"
+	scriptMountEmmc = "/kvmcomm/scripts/mount_emmc.py"
 )
 
-func executeShell(command ...string) (stdout string, stderr string, exitCode int, err error) {
-	if len(command) == 0 {
-		return "", "no command provided", -1, fmt.Errorf("no command provided")
-	}
-	defaultShell := "/bin/sh"
-	var cmd *exec.Cmd
-	if len(command) == 1 {
-		cmd = exec.Command(defaultShell, "-c", command[0])
-	} else {
-		fullCmd := strings.Join(command, " && ")
-		cmd = exec.Command(defaultShell, "-c", fullCmd)
-	}
+const (
+	DiskTypeSDCard = "sdcard"
+	DiskTypeEmmc   = "emmc"
+)
 
-	var stdoutBuf, stderrBuf bytes.Buffer
-	cmd.Stdout = &stdoutBuf
-	cmd.Stderr = &stderrBuf
-
-	dir, err := os.Getwd()
-	if err != nil {
-		dir = "/"
-	}
-	cmd.Dir = dir
-	cmd.Env = os.Environ()
-
-	err = cmd.Run()
-	stdout = strings.TrimSpace(stdoutBuf.String())
-	stderr = strings.TrimSpace(stderrBuf.String())
-
-	exitCode = 0
-	if err != nil {
-		if exitError, ok := err.(*exec.ExitError); ok {
-			exitCode = exitError.ExitCode()
-		} else {
-			exitCode = -1
-		}
-	}
-
-	return stdout, stderr, exitCode, err
+type VirtualDevice interface {
+	IsMounted() bool
+	Mount() error
+	Unmount() error
 }
 
 func (s *Service) GetVirtualDevice(c *gin.Context) {
 	var rsp proto.Response
 
 	rsp.OkRspWithData(c, &proto.GetVirtualDeviceRsp{
-		Disk:    isVirtualDiskExist(),
-		Network: isVirtualNetworkExist(),
-		SdCard:  isSdCardExist(),
+		IsNetworkEnabled: isVirtualNetworkMounted(),
+		MountedDisk:      getMountedDiskType(),
+		IsSdCardExist:    isSdCardPresent(),
+		IsEmmcExist:      isEmmcImagePresent(),
 	})
-	log.Debugf("get virtual device success")
+
+	log.Debug("get virtual device success")
 }
 
 func (s *Service) UpdateVirtualDevice(c *gin.Context) {
@@ -110,38 +63,89 @@ func (s *Service) UpdateVirtualDevice(c *gin.Context) {
 		return
 	}
 
-	if req.Device == "disk" {
-		if !isVirtualDiskExist() && !isSdCardExist() {
-			rsp.ErrRsp(c, -2, "SD card not exist")
-			return
-		}
-	}
-
-	var device string
-	var commands []string
-
-	switch req.Device {
-	case "disk":
-		device = virtualDisk
-
-		if !isVirtualDiskExist() {
-			commands = mountDiskCommands
-		} else {
-			commands = unmountDiskCommands
-		}
-	case "network":
-		device = virtualNetwork
-
-		if !isVirtualNetworkExist() {
-			commands = mountNetworkCommands
-		} else {
-			commands = unmountNetworkCommands
-		}
-	default:
-		rsp.ErrRsp(c, -3, "invalid arguments")
+	commands, err := resolveDeviceCommands(req.Device, req.Type)
+	if err != nil {
+		rsp.ErrRsp(c, -2, err.Error())
 		return
 	}
 
+	if err := executeWithHidLock(commands); err != nil {
+		log.Errorf("failed to execute virtual device commands: %s", err)
+		rsp.ErrRsp(c, -3, "failed to mount device")
+		return
+	}
+
+	rsp.OkRsp(c)
+	log.Debugf("update virtual device %s success", req.Device)
+}
+
+func resolveDeviceCommands(device, diskType string) ([]string, error) {
+	switch device {
+	case "network":
+		return getNetworkCommands(), nil
+	case "disk":
+		return getDiskCommands(diskType)
+	default:
+		return nil, fmt.Errorf("invalid device: %s", device)
+	}
+}
+
+func getNetworkCommands() []string {
+	cmd := []string{
+		scriptUsbDev + " stop",
+	}
+
+	if !isVirtualNetworkMounted() {
+		cmd = append(cmd, "touch "+pathVirtualNetwork)
+	} else {
+		cmd = append(cmd, "rm -rf "+pathVirtualNetwork)
+	}
+
+	cmd = append(cmd, scriptUsbDev+" start")
+	return cmd
+}
+
+func getDiskCommands(diskType string) ([]string, error) {
+	// For emmc, ensure image exists before mounting
+	if diskType == DiskTypeEmmc {
+		if err := ensureEmmcImageExists(); err != nil {
+			return nil, err
+		}
+	}
+
+	cmd := []string{
+		"rm -f " + pathVirtualDiskSD,
+		"rm -f " + pathVirtualDiskEmmc,
+	}
+
+	// add mount command
+	if getMountedDiskType() != diskType {
+		if diskType == DiskTypeSDCard {
+			cmd = append(cmd, "touch "+pathVirtualDiskSD)
+		} else if diskType == DiskTypeEmmc {
+			cmd = append(cmd, "touch "+pathVirtualDiskEmmc)
+		}
+	}
+
+	cmd = append(cmd, scriptUsbDev+" restart")
+	return cmd, nil
+}
+
+func ensureEmmcImageExists() error {
+	if isFileExists(pathEmmcImage) {
+		return nil
+	}
+
+	result, err := utils.RunShell(scriptMountEmmc + " start")
+	if err != nil {
+		return fmt.Errorf("failed to create emmc image: %v (exit code: %d, output: %s)",
+			err, result.ExitCode, result.Stdout)
+	}
+
+	return nil
+}
+
+func executeWithHidLock(commands []string) error {
 	h := hid.GetHid()
 	h.Lock()
 	h.CloseNoLock()
@@ -150,47 +154,50 @@ func (s *Service) UpdateVirtualDevice(c *gin.Context) {
 		h.Unlock()
 	}()
 
-	stdout, _, code, err := executeShell(commands...)
-	if code != 0 || err != nil {
-		log.Errorf("failed to execute virutal device commands: %s, exit code: %d,the out put %s", err, code, stdout)
-		rsp.ErrRsp(c, -4, "failed to mount device")
-		return
+	result, err := utils.RunShell(commands...)
+	if err != nil {
+		return fmt.Errorf("command failed: %v (exit code: %d, stdout: %s, stderr: %s)",
+			err, result.ExitCode, result.Stdout, result.Stderr)
 	}
 
-	on, _ := isDeviceExist(device)
-	rsp.OkRspWithData(c, &proto.UpdateVirtualDeviceRsp{
-		On: on,
-	})
-
-	log.Debugf("update virtual device %s success", req.Device)
+	return nil
 }
 
-func isDeviceExist(device string) (bool, error) {
-	_, err := os.Stat(device)
-
-	if err == nil {
-		return true, nil
+func getMountedDiskType() string {
+	if !isFileExists(pathVirtualDiskMounted) {
+		return ""
 	}
 
-	if errors.Is(err, os.ErrNotExist) {
-		return false, nil
+	content, err := os.ReadFile(pathVirtualDiskMounted)
+	if err != nil {
+		return ""
 	}
 
-	log.Errorf("check file %s err: %s", device, err)
-	return false, err
+	disk := strings.TrimSpace(string(content))
+
+	switch disk {
+	case "/dev/mmcblk1p1":
+		return DiskTypeSDCard
+	case pathEmmcImage:
+		return DiskTypeEmmc
+	default:
+		return ""
+	}
 }
 
-func isVirtualDiskExist() bool {
-	exist, _ := isDeviceExist(virtualDiskFlag)
-	return exist
+func isVirtualNetworkMounted() bool {
+	return isFileExists(pathNetworkFlag)
 }
 
-func isVirtualNetworkExist() bool {
-	exist, _ := isDeviceExist(virtualNetworkFlag)
-	return exist
+func isSdCardPresent() bool {
+	return isFileExists(pathSdCard)
 }
 
-func isSdCardExist() bool {
-	exist, _ := isDeviceExist(sdCard)
-	return exist
+func isEmmcImagePresent() bool {
+	return isFileExists(pathEmmcImage)
+}
+
+func isFileExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
 }

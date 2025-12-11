@@ -53,17 +53,15 @@ type DeleteScriptReq struct {
 }
 
 type GetVirtualDeviceRsp struct {
-	Network bool `json:"network"`
-	Disk    bool `json:"disk"`
-	SdCard  bool `json:"sdCard"`
+	IsNetworkEnabled bool   `json:"isNetworkEnabled"`
+	MountedDisk      string `json:"mountedDisk"`
+	IsEmmcExist      bool   `json:"isEmmcExist"`
+	IsSdCardExist    bool   `json:"isSdCardExist"`
 }
 
 type UpdateVirtualDeviceReq struct {
-	Device string `json:"device" validate:"required"`
-}
-
-type UpdateVirtualDeviceRsp struct {
-	On bool `json:"on"`
+	Device string `json:"device" validate:"required"` // disk | network
+	Type   string `json:"type" validate:"omitempty"`  // sdcard | emmc
 }
 
 type SetMemoryLimitReq struct {

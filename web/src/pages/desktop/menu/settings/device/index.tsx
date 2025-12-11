@@ -11,7 +11,8 @@ import { MouseJiggler } from './mouse-jiggler.tsx';
 import { Oled } from './oled.tsx';
 import { Reboot } from './reboot.tsx';
 import { Ssh } from './ssh.tsx';
-import { VirtualDevices } from './virtual-devices.tsx';
+import { VirtualDisk } from './virtual-disk.tsx';
+import { VirtualNetwork } from './virtual-network.tsx';
 import { Wifi } from './wifi.tsx';
 
 export const Device = () => {
@@ -25,7 +26,8 @@ export const Device = () => {
       <div className="flex flex-col space-y-6">
         <Ssh />
         <Mdns />
-        <VirtualDevices />
+        <VirtualDisk />
+        <VirtualNetwork />
       </div>
 
       <Divider style={{ margin: '40px 0' }} />
