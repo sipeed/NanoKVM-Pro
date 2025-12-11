@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"NanoKVM-Server/utils"
 	"encoding/json"
 	"errors"
 	"os"
@@ -65,7 +64,7 @@ func SetAccount(username string, hashedPassword string) error {
 	return nil
 }
 
-func CompareAccount(username string, plainPassword string) bool {
+func CompareAccount(username string, password string) bool {
 	account, err := GetAccount()
 	if err != nil {
 		return false
@@ -75,12 +74,7 @@ func CompareAccount(username string, plainPassword string) bool {
 		return false
 	}
 
-	hashedPassword, err := utils.DecodeDecrypt(plainPassword)
-	if err != nil || hashedPassword == "" {
-		return false
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(hashedPassword))
+	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(password))
 	return err == nil
 }
 

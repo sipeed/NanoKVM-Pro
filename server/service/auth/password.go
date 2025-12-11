@@ -1,13 +1,13 @@
 package auth
 
 import (
-	"NanoKVM-Server/proto"
-	"NanoKVM-Server/utils"
 	"errors"
 	"io"
 	"os"
 	"os/exec"
 	"time"
+
+	"NanoKVM-Server/proto"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -23,13 +23,7 @@ func (s *Service) ChangePassword(c *gin.Context) {
 		return
 	}
 
-	password, err := utils.DecodeDecrypt(req.Password)
-	if err != nil || password == "" {
-		rsp.ErrRsp(c, -2, "invalid password")
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		rsp.ErrRsp(c, -3, "failed to hash password")
 		return
@@ -41,7 +35,7 @@ func (s *Service) ChangePassword(c *gin.Context) {
 	}
 
 	// change root password
-	err = changeRootPassword(password)
+	err = changeRootPassword(req.Password)
 	if err != nil {
 		_ = DelAccount()
 		rsp.ErrRsp(c, -5, "failed to change password")
