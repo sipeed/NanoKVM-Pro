@@ -2,15 +2,15 @@ import clsx from 'clsx';
 import { OctagonMinus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { getKeycode } from '@/lib/keymap.ts';
+import { getKeycode, getModifierBit } from '@/lib/keymap.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
 
 export const CtrlAltDel = () => {
   const { t } = useTranslation();
 
   function sendCtrlAltDel() {
-    const ctrl = getKeycode('ControlLeft')!;
-    const alt = getKeycode('AltLeft')!;
+    const ctrl = getModifierBit('ControlLeft')!;
+    const alt = getModifierBit('AltLeft')!;
     const modifier = ctrl | alt;
 
     const del = getKeycode('Delete')!;
