@@ -222,7 +222,7 @@ const ru = {
         application: 'Версия ПО',
         applicationTip: 'Версия веб-программы NanoKVM',
         arch: 'Arch',
-        device_number: 'Device Number',
+        device_number: 'Номер устройства',
         image: 'Версия прошивки',
         imageTip: 'Версия системного образа NanoKVM',
         deviceKey: 'Ключ устройства',
@@ -256,7 +256,7 @@ const ru = {
         title: 'Экран',
         videoMode: {
           title: 'Видеорежим',
-          description: 'Select the encoding and transmission method'
+          description: 'Выберите метод кодирования и передачи'
         },
         edid: {
           description: 'Выберите параметры дисплея',
@@ -311,35 +311,36 @@ const ru = {
         wifi: {
           title: 'Wi-Fi',
           description: 'Настройка Wi-Fi',
-          apMode: 'AP mode is enabled, connect to Wi-Fi manually',
-          others: 'Others...',
-          connect: 'Join Wi-Fi',
-          connectDesc1: 'Please enter the network ssid and password',
-          connectDesc2: 'Please enter the password to join this network',
-          disconnect: 'Are you sure to disconnect the network?',
-          ssid: 'Name',
-          password: 'Password',
-          joinBtn: 'Join',
-          confirmBtn: 'Ok',
-          cancelBtn: 'Cancel'
+          apMode: 'Режим точки доступа включён, подключитесь к Wi-Fi вручную',
+          others: 'Другие...',
+          connect: 'Подключиться к Wi-Fi',
+          connectDesc1: 'Пожалуйста, введите SSID и пароль сети',
+          connectDesc2: 'Пожалуйста, введите пароль для подключения к этой сети',
+          disconnect: 'Вы уверены, что хотите отключиться от сети?',
+          ssid: 'Название',
+          password: 'Пароль',
+          joinBtn: 'Подключиться',
+          confirmBtn: 'Ок',
+          cancelBtn: 'Отмена'
         },
         led: {
-          title: 'LED Strip',
-          description: 'Configure LED strip',
-          horizontal: 'Number of horizontal beads',
-          vertical: 'Number of vertical beads',
-          brightness: 'LED brightness',
-          restart: 'Turn the LED strip off and on to apply the new configuration.'
+          title: 'LED-лента',
+          description: 'Настроить LED-летну',
+          horizontal: 'Количество горизхонтальных светодиодов',
+          vertical: 'Количество вертикальных светодиодов',
+          brightness: 'Яркость LED',
+          restart: 'Выключить и включите LED-ленты для применения новой конфигурации.'
         },
         passthrough: {
-          title: 'HDMI Passthrough',
-          tip: 'Enabled by default, the capture rate is limited to standard monitor frame rates like 4K30. Disabling it allows for non-standard frame rates, such as 4K40. This feature may not be applicable to some monitors.',
-          description: 'Enable HDMI Passthrough'
+          title: 'Сквозной проброс HDMI',
+          tip: 'Включено по умолчанию, Частота захвата ограничена стандартной частотой кадров монитора — например, 4K30. 
+            'Отключение этой функции позволит использовать нестандартную частоту кадров — например 4K40. Эта функция может быть неприменима к некоторым мониторам.',
+          description: 'Включить сквозной проброс HDMI'
         },
         capture: {
-          title: 'HDMI Capture',
-          tip: 'Enabled by default, the passthrough is limited to 4K30. You can disable it when local use to enable 4K60 passthrough.',
-          description: 'Enable HDMI Capture'
+          title: 'Захват HDMI',
+          tip: 'Включено по умолчанию, сквозной проброс ограничени 4K30. Вы можете отключить его, чтобы активировать проброс 4K60.',
+          description: 'Включение HDMI-захвата'
         },
         ssh: {
           description: 'Включить удаленный доступ по SSH',
@@ -347,18 +348,18 @@ const ru = {
         },
         advanced: 'Дополнительные настройки',
         staticIp: {
-          title: 'Static IP',
-          config: 'Config',
-          tip: 'To prevent connection loss, it is recommended to configure while you have physical access to the device.',
-          document: 'Check the document.',
-          enable: 'Enable static IP',
-          placeholder: 'Format: IP/CIDR [Gateway]\nExample: 192.168.1.10/24',
-          notEmpty: 'IP address cannot be empty.',
-          notValid: 'IP address format is invalid.',
-          failed: 'Configuration failed.',
-          success: 'Configuration complete. Please check if the IP address is available.',
-          okBtn: 'Ok',
-          cancelBtn: 'Cancel'
+          title: 'Статический IP',
+          config: 'Настроить',
+          tip: 'Для предотвращения потери соединения, рекомендуется выполнить настройку при наличии физического доступа к устройству.',
+          document: 'Посмотреть документацию.',
+          enable: 'Включить статический IP',
+          placeholder: 'ФОрмат: IP/CIDR [шлюз]\nПример: 192.168.1.10/24',
+          notEmpty: 'IP-адрес не может быть пустым.',
+          notValid: 'Формат IP-адреса неверен.',
+          failed: 'Настройка провалена.',
+          success: 'Настройка завершена. Пожалуйста, проверьте доступность по новому IP-адресу.',
+          okBtn: 'Ок',
+          cancelBtn: 'Отмена'
         },
         mouseJiggler: {
           title: 'Дрожалка для мыши',
@@ -371,28 +372,28 @@ const ru = {
           description: 'Включить сервис обнаружения mDNS'
         },
         hdmi: {
-          description: 'Enable HDMI/monitor output'
+          description: 'Включить HDMI/monitor output'
         },
         hidOnly: 'Режим только HID',
         disk: 'Виртуальный диск',
         diskDesc: 'Смонтировать виртуальный USB диск на удаленном хосте',
         emmc: {
-          warning: 'Warning',
-          tip1: "Mounting the eMMC for the first time will wipe all data in the NanoKVM's /data directory. Please ensure you have a backup before proceeding.",
-          tip2: 'Do you want to continue?'
+          warning: 'Внимание',
+          tip1: "Монтирование eMMC в первый раз удалить все данные в папке /data на NanoKVM's. Пожалуйста, перед продолжением убедитесь в наличии резервной копии.",
+          tip2: 'Вы хотите продолжить?'
         },
         network: 'Виртуальная сеть',
         networkDesc: 'Смонтировать виртуальное сетевое устройство на удаленном хосте',
         reboot: 'Перезагрузка',
         rebootDesc: 'Вы уверены, что хотите перезагрузить NanoKVM?',
         datetime: {
-          timezone: 'Time zone',
-          datetime: 'Datetime',
-          format: 'Time format',
-          synchronize: 'Synchronize time',
-          lastSynchronization: 'Last synchronization: ',
-          notSynchronized: 'The system time is not synchronized yet',
-          syncNow: 'Sync now'
+          timezone: 'Часовой пояс',
+          datetime: 'Дата и время',
+          format: 'Формат времени',
+          synchronize: 'Синхронизировать время',
+          lastSynchronization: 'Последняя синхронизация: ',
+          notSynchronized: 'Системное время ещё не было синхронизировано',
+          syncNow: 'Синхронизировать'
         },
         ОКBtn: 'Да',
         cancelBtn: 'Нет'
@@ -414,7 +415,7 @@ const ru = {
         upTailscale: 'Переместите tailscale в каталог /usr/bin/ на NanoKVM',
         upTailscaled: 'Переместите tailscaled в каталог /usr/sbin/ на NanoKVM',
         refresh: 'Обновите текущую страницу',
-        notRunning: 'Tailscale is not running. Please start it to continue.',
+        notRunning: 'Tailscale не запущен. Пожалуйста, чтобы продолжить, запустите его.',
         run: 'Start',
         notLogin: 'Устройство не привязано. Войдите, чтобы привязать его к аккаунту.',
         urlPeriod: 'Этот адрес действителен в течение 10 минут',
@@ -427,7 +428,7 @@ const ru = {
         logout: 'Выход',
         logoutDesc: 'Вы действительно хотите выйти?',
         uninstall: 'Удалить Tailscale',
-        uninstallDesc: 'Are you sure you want to uninstall Tailscale?',
+        uninstallDesc: 'Вы уверены, что хотите удалить Tailscale?',
         ОКBtn: 'Да',
         cancelBtn: 'Нет'
       },
@@ -439,16 +440,16 @@ const ru = {
         available: 'Доступно обновление. Вы уверены, что хотите обновить?',
         updating: 'Начато обновление. Пожалуйста, подождите...',
         confirm: 'Подтвердить',
-        upgrade_tip_nano: 'A new version of nanokvm is available. Are you sure you want to update now?',
-        upgrade_tip_firmware: 'A new firmware version is available. Are you sure you want to update now?',
+        upgrade_tip_nano: 'Доступна новая версия nanokvm. Вы уверены, что хотите обновиться сейчас?',
+        upgrade_tip_firmware: 'Доступна новая версия прошивки.  Вы уверены, что хотите обновиться сейчас?',
         cancel: 'Отмена',
         preview: 'Ранние обновления',
         previewDesc: 'Получайте ранний доступ к новым функциям и улучшениям',
         previewTip: 'Обратите внимание: в ранних версиях могут быть ошибки или незавершённый функционал!',
-        download: 'Download',
-        install: 'Install',
-        changelog: 'Changelog',
-        restart: 'Restart'
+        download: 'Скачать',
+        install: 'Установить',
+        changelog: 'Список изменений',
+        restart: 'Перезапустить'
       },
       account: {
         title: 'Аккаунт',
@@ -462,7 +463,7 @@ const ru = {
       },
       kvmadmin: {
         title: 'NanoKVM Admin',
-        description: 'Batch management of NanoKVM devices',
+        description: 'Пакетное управление устройствами NanoKVM',
         tip: 'Эта функция использует протокол mDNS. Пожалуйста, убедитесть, что mDNS включён на устройстве.',
         install: 'Установить',
         start: 'Запустить',
