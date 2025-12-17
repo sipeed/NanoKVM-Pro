@@ -74,10 +74,16 @@ func run() {
 	httpAddr := fmt.Sprintf(":%d", conf.Port.Http)
 	httpsAddr := fmt.Sprintf(":%d", conf.Port.Https)
 
-	go runRedirect(httpAddr, httpsAddr)
-
-	if err := r.RunTLS(httpsAddr, conf.Cert.Crt, conf.Cert.Key); err != nil {
-		log.Fatalf("start https server failed: %v", err)
+	if conf.Proto == "https" {
+		go runRedirect(httpAddr, httpsAddr)
+		
+		if err := r.RunTLS(httpsAddr, conf.Cert.Crt, conf.Cert.Key); err != nil {
+			log.Fatalf("start https server failed: %v", err)
+		}
+	} else {
+		if err := r.Run(httpAddr); err != nil {
+			panic("start http server failed")
+		}
 	}
 }
 
