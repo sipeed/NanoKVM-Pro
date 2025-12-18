@@ -341,6 +341,14 @@ const zh = {
           okBtn: '确定',
           cancelBtn: '取消'
         },
+        lowPower: {
+          title: '低功耗模式',
+          tips: '提示',
+          tip1: '开启低功耗模式后，设备将在空闲时自动关闭 HDMI 输出，以有效降低功耗与发热。',
+          tip2: '重新唤醒 HDMI 需进行约 10 秒的初始化操作，期间显示器将无信号输出。',
+          okBtn: '确定',
+          cancelBtn: '取消'
+        },
         mouseJiggler: {
           title: '鼠标抖动',
           description: '防止远程主机休眠',

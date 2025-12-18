@@ -126,6 +126,16 @@ export function disableMdns() {
   return http.post('/api/vm/mdns/disable');
 }
 
+// get low power mode
+export function getLowPowerMode() {
+  return http.get('/api/vm/low-power');
+}
+
+// set low power mode
+export function setLowPowerMode(enable: boolean) {
+  return http.post('/api/vm/low-power', { enable });
+}
+
 // switch system to PiKVM
 export function switchPiKVM() {
   return http.post('/api/vm/system/pikvm');

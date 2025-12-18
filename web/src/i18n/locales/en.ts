@@ -364,6 +364,14 @@ const en = {
           okBtn: 'Ok',
           cancelBtn: 'Cancel'
         },
+        lowPower: {
+          title: 'Low Power Mode',
+          tips: 'Tips',
+          tip1: 'When enabled, HDMI output will be automatically turned off during idle periods to reduce power consumption and heat.',
+          tip2: 'However, waking up HDMI requires re-initialization. You may experience a HDMI No Signal state for approximately 10 seconds.',
+          okBtn: 'Ok',
+          cancelBtn: 'Cancel'
+        },
         mouseJiggler: {
           title: 'Mouse Jiggler',
           description: 'Prevent the remote host from sleeping',

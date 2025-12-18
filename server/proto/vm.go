@@ -114,6 +114,14 @@ type GetMdnsStateRsp struct {
 	Enabled bool `json:"enabled"`
 }
 
+type GetLowPowerRsp struct {
+	Enabled bool `json:"enabled"`
+}
+
+type SetLowPowerReq struct {
+	Enable bool `form:"enable" validate:"omitempty"`
+}
+
 type SetHostnameReq struct {
 	Hostname string `validate:"required"`
 }

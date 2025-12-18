@@ -45,7 +45,7 @@ func vmRouter(r *gin.Engine) {
 
 	api.GET("/vm/edid", service.GetEdid)                  // get current EDID
 	api.POST("/vm/edid", service.SwitchEdid)              // switch EDID
-	api.POST("/vm/edid/upload", service.UploadEdid)       // upload edid
+	api.POST("/vm/edid/upload", service.UploadEdid)       // upload EDID
 	api.GET("/vm/edid/custom", service.GetCustomEdidList) // get custom EDID list
 	api.POST("/vm/edid/delete", service.DeleteEdid)       // delete custom EDID
 
@@ -61,6 +61,9 @@ func vmRouter(r *gin.Engine) {
 	api.GET("/vm/mdns", service.GetMdnsState)         // get mDNS state
 	api.POST("/vm/mdns/enable", service.EnableMdns)   // enable mDNS
 	api.POST("/vm/mdns/disable", service.DisableMdns) // disable mDNS
+
+	api.GET("/vm/low-power", service.GetLowPower)  // get low power status
+	api.POST("/vm/low-power", service.SetLowPower) // set low power mode
 
 	api.POST("/vm/ledstrip/set", service.SetLedConfig)
 	api.GET("/vm/ledstrip/get", service.GetLedConfig)
