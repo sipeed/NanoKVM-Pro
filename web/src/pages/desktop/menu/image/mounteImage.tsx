@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Divider, Modal, Segmented, Switch } from 'antd';
 import clsx from 'clsx';
-import { DiscIcon, HardDriveIcon } from 'lucide-react';
+import { DiscIcon, HardDriveIcon, LoaderCircleIcon, RefreshCwIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/storage';
+import { getVirtualDevice, refreshVirtualDevice } from '@/api/virtual-device.ts';
 
 import { Images } from './images';
 
@@ -15,6 +16,9 @@ export function MounteImage() {
   const [isMounted, setIsMounted] = useState(false);
   const [mode, setMode] = useState('mass-storage');
   const [readOnly, setReadOnly] = useState(true);
+
+  const [isEmmcMounted, setIsEmmcMounted] = useState(false);
+  const [isRefresh, setIsRefresh] = useState(false);
 
   const modes = [
     {
@@ -38,20 +42,25 @@ export function MounteImage() {
   ];
 
   useEffect(() => {
-    api.getMountedImage().then((rsp) => {
-      if (rsp.code !== 0) {
-        console.log(rsp.msg);
-        return;
-      }
-      if (!rsp?.data?.file) {
-        return;
-      }
-
-      setIsMounted(true);
-      setMode(rsp.data?.cdrom ? 'cd-rom' : 'mass-storage');
-      setReadOnly(!!rsp.data?.readOnly);
-    });
+    getMountedImage();
+    getVirutalDisk();
   }, []);
+
+  async function getMountedImage() {
+    const rsp = await api.getMountedImage();
+    if (rsp.code !== 0) {
+      console.log(rsp.msg);
+      return;
+    }
+
+    if (!rsp?.data?.file) {
+      return;
+    }
+
+    setIsMounted(true);
+    setMode(rsp.data?.cdrom ? 'cd-rom' : 'mass-storage');
+    setReadOnly(!!rsp.data?.readOnly);
+  }
 
   function updateMode(value: string) {
     setMode(value);
@@ -65,6 +74,28 @@ export function MounteImage() {
       return;
     }
     setReadOnly(value);
+  }
+
+  async function getVirutalDisk() {
+    const rsp = await getVirtualDevice();
+    if (rsp.code !== 0 || !rsp.data?.mountedDisk) {
+      return;
+    }
+
+    setIsEmmcMounted(rsp.data.mountedDisk === 'emmc');
+  }
+
+  async function refresh() {
+    if (isRefresh) return;
+    setIsRefresh(true);
+
+    try {
+      await refreshVirtualDevice('emmc');
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsRefresh(false);
+    }
   }
 
   return (
@@ -87,7 +118,24 @@ export function MounteImage() {
       <Modal
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
-        title={t('image.mount')}
+        title={
+          <div className="flex items-center space-x-2">
+            <span>{t('image.mount')}</span>
+            {isEmmcMounted && (
+              <>
+                {isRefresh ? (
+                  <LoaderCircleIcon className="animate-spin text-blue-500" size={16} />
+                ) : (
+                  <RefreshCwIcon
+                    size={16}
+                    className="cursor-pointer text-neutral-500 hover:text-blue-500"
+                    onClick={refresh}
+                  />
+                )}
+              </>
+            )}
+          </div>
+        }
         footer={false}
       >
         <Divider style={{ margin: '24px 0' }} />
@@ -112,12 +160,14 @@ export function MounteImage() {
           <Divider style={{ margin: '24px 0 0 0' }} />
 
           {/* image list */}
-          <Images
-            isOpen={isModalOpen}
-            cdrom={mode === 'cd-rom'}
-            readOnly={readOnly}
-            setIsMounted={setIsMounted}
-          />
+          {!isRefresh && (
+            <Images
+              isOpen={isModalOpen}
+              cdrom={mode === 'cd-rom'}
+              readOnly={readOnly}
+              setIsMounted={setIsMounted}
+            />
+          )}
         </div>
       </Modal>
     </>

@@ -64,6 +64,10 @@ type UpdateVirtualDeviceReq struct {
 	Type   string `json:"type" validate:"omitempty"`  // sdcard | emmc
 }
 
+type RefreshVirtualDeviceReq struct {
+	Device string `json:"device" validate:"required"`
+}
+
 type SetMemoryLimitReq struct {
 	Enabled bool  `validate:"omitempty"`
 	Limit   int64 `validate:"omitempty"`

@@ -3,6 +3,7 @@ package vm
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 
 	"NanoKVM-Server/proto"
@@ -77,6 +78,26 @@ func (s *Service) UpdateVirtualDevice(c *gin.Context) {
 
 	rsp.OkRsp(c)
 	log.Debugf("update virtual device %s success", req.Device)
+}
+
+func (s *Service) RefreshVirtualDevice(c *gin.Context) {
+	var req proto.RefreshVirtualDeviceReq
+	var rsp proto.Response
+
+	if err := proto.ParseFormRequest(c, &req); err != nil || req.Device != "emmc" {
+		rsp.ErrRsp(c, -1, "invalid argument")
+		return
+	}
+
+	err := exec.Command(scriptMountEmmc, "restart").Run()
+	if err != nil {
+		log.Errorf("failed to restart emmc image: %v", err)
+		rsp.ErrRsp(c, -2, "failed to refresh")
+		return
+	}
+
+	rsp.OkRsp(c)
+	log.Debug("refresh virtual device success")
 }
 
 func resolveDeviceCommands(device, diskType string) ([]string, error) {

@@ -25,8 +25,9 @@ func vmRouter(r *gin.Engine) {
 	api.POST("/vm/script/run", service.RunScript)       // run script
 	api.DELETE("/vm/script", service.DeleteScript)      // delete script
 
-	api.GET("/vm/device/virtual", service.GetVirtualDevice)     // get virtual device
-	api.POST("/vm/device/virtual", service.UpdateVirtualDevice) // update virtual device
+	api.GET("/vm/device/virtual", service.GetVirtualDevice)              // get virtual device
+	api.POST("/vm/device/virtual", service.UpdateVirtualDevice)          // update virtual device
+	api.POST("/vm/device/virtual/refresh", service.RefreshVirtualDevice) // refresh virtual device
 
 	api.GET("/vm/oled", service.GetOLED)                      // get OLED configuration
 	api.POST("/vm/oled", service.SetOLED)                     // set OLED configuration

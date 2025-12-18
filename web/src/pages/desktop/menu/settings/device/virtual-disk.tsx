@@ -10,7 +10,7 @@ export const VirtualDisk = () => {
   const { t } = useTranslation();
 
   const [mountedDisk, setMountedDisk] = useState('');
-  const [isSdCardExist, setIsSdCardExist] = useState(true);
+  const [isSdCardExist, setIsSdCardExist] = useState(false);
   const [isEmmcExist, setIsEmmcExist] = useState(false);
 
   const [isHidOnlyMode, setIsHidOnlyMode] = useState(false);

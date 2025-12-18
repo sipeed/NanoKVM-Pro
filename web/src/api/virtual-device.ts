@@ -14,3 +14,11 @@ export function updateVirtualDevice(device: string, type: string) {
 
   return http.post('/api/vm/device/virtual', data);
 }
+
+// refresh virtual device
+export function refreshVirtualDevice(device: string) {
+  const data = {
+    device
+  };
+  return http.post('/api/vm/device/virtual/refresh', data);
+}
