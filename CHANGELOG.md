@@ -1,3 +1,22 @@
+## 1.2.7 (2025-12-18)
+
+### Features
+
+- added Low Power Mode under `Device > Advanced Settings`
+- added support for configuring the mouse wheel scroll direction
+- added a refresh button to manually update the virtual disk and image list in the `Mount Image` page
+
+### Bug Fixes
+
+- fixed an issue where the mouse wheel scroll direction was inverted
+- resolved a bug where the serial terminal connection did not disconnect properly when closing the page
+
+### Improvements
+
+- optimized video scaling options
+- improved compatibility with HTTP mode (thanks to [@0x656E](https://github.com/0x656E))
+- updated the Russian translation (thanks to [@Tail870](https://github.com/Tail870))
+
 ## 1.2.6 (2025-12-11)
 
 ### Features
