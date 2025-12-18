@@ -62,7 +62,7 @@ export const H264Direct = () => {
           'block min-h-[50vh] min-w-[50vw] max-w-full select-none object-scale-down',
           mouseStyle
         )}
-        style={{ maxHeight: 'calc(100% - 75px)', transform: `scale(${videoParameters.scale})` }}
+        style={{ transform: `scale(${videoParameters.scale})` }}
       ></canvas>
     </div>
   );

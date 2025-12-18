@@ -1,11 +1,19 @@
 import { ReactElement } from 'react';
-import { Popover, Slider } from 'antd';
+import { Popover } from 'antd';
 import { useAtom } from 'jotai';
-import { ScalingIcon } from 'lucide-react';
+import { CheckIcon, PercentIcon, ScalingIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as storage from '@/lib/localstorage.ts';
 import { videoParametersAtom } from '@/jotai/screen.ts';
+
+const ScaleList = [
+  { label: '200', value: 2 },
+  { label: '150', value: 1.5 },
+  { label: '100', value: 1 },
+  { label: '75', value: 0.75 },
+  { label: '50', value: 0.5 }
+];
 
 export const Scale = (): ReactElement => {
   const { t } = useTranslation();
@@ -23,24 +31,23 @@ export const Scale = (): ReactElement => {
   }
 
   const content = (
-    <div className="m-3 h-[180px] w-[70px]">
-      <Slider
-        vertical
-        marks={{
-          0.5: <span>x0.5</span>,
-          1: <span>x1.0</span>,
-          1.5: <span>x1.5</span>,
-          2: <span>x2.0</span>
-        }}
-        range={false}
-        included={false}
-        min={0.5}
-        max={2}
-        step={0.1}
-        defaultValue={videoParameters.scale}
-        onChange={update}
-      />
-    </div>
+    <>
+      {ScaleList.map((scale) => (
+        <div
+          key={scale.value}
+          className="flex h-[30px] cursor-pointer select-none items-center rounded pl-1 pr-5 hover:bg-neutral-700/70"
+          onClick={() => update(scale.value)}
+        >
+          <div className="flex h-[14px] w-[20px] items-end text-blue-500">
+            {scale.value === videoParameters.scale && <CheckIcon size={14} />}
+          </div>
+          <div className="flex items-center space-x-0.5">
+            <span>{scale.label}</span>
+            <PercentIcon size={12} />
+          </div>
+        </div>
+      ))}
+    </>
   );
 
   return (
