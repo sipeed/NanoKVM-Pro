@@ -18,10 +18,12 @@ import { validatePicocomParameters } from './validater.ts';
 export const Terminal = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
   const [authed, setAuthState] = useState(true);
   const [user, setUser] = useState('');
   const [passwd, setPasswd] = useState('');
   const [modal, setModal] = useState(false);
+
   useEffect(() => {
     const terminalEle = document.getElementById('terminal');
     if (!terminalEle) return;
@@ -34,12 +36,16 @@ export const Terminal = () => {
     terminal.loadAddon(fitAddon);
     terminal.open(terminalEle);
     fitAddon.fit();
+
     if (!authed) {
       return;
     }
+
     const url = `${getBaseUrl('ws')}/api/vm/terminal`;
 
     const ws = new WebSocket(url);
+    let isPicocomRunning = false;
+
     ws.onopen = () => {
       const attachAddon = new AttachAddon(ws);
       terminal.loadAddon(attachAddon);
@@ -75,6 +81,7 @@ export const Terminal = () => {
       ws.send(
         `picocom ${port} --baud ${baud} --parity ${parity} --flow ${flowControl} --databits ${dataBits} --stopbits ${stopBits}\r`
       );
+      isPicocomRunning = true;
     };
 
     const runAssistant = () => {
@@ -89,21 +96,41 @@ export const Terminal = () => {
       ws.send(`pip install -r /tmp/requirements.txt\r`);
     };
 
+    const exitPicocom = () => {
+      if (ws.readyState === WebSocket.OPEN && isPicocomRunning) {
+        ws.send('\x01\x18');
+        isPicocomRunning = false;
+      }
+    };
+
+    const cleanupConnection = () => {
+      exitPicocom();
+      setTimeout(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.close();
+        }
+      }, 100);
+    };
+
     const resizeScreen = () => {
       fitAddon.fit();
       sendSize();
     };
 
+    const handleBeforeUnload = () => {
+      cleanupConnection();
+    };
+
     window.addEventListener('resize', resizeScreen, false);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
     return () => {
       terminal.dispose();
 
-      if (ws.readyState === 1) {
-        ws.close();
-      }
+      cleanupConnection();
 
       window.removeEventListener('resize', resizeScreen, false);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [authed]);
 
@@ -113,7 +140,7 @@ export const Terminal = () => {
         Authorization: `Basic ${btoa(`${user}:${passwd}`)}`
       } as any)
       .then((res) => {
-        if (res.code == -1) {
+        if (res.code === -1) {
           navigate('/', { replace: true });
         } else {
           setAuthState(true);
