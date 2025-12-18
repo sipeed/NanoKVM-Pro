@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MouseReportRelative } from '@/lib/mouse.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
-import { scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
 
 import { MouseRelativeEvent } from './types.ts';
 
@@ -13,6 +13,7 @@ export const Relative = () => {
   const { t } = useTranslation();
   const [messageApi, contextHolder] = message.useMessage();
 
+  const scrollDirection = useAtomValue(scrollDirectionAtom);
   const scrollInterval = useAtomValue(scrollIntervalAtom);
 
   const mouseRef = useRef(new MouseReportRelative());
@@ -101,7 +102,12 @@ export const Relative = () => {
     function handleMouseWheel(e: WheelEvent) {
       disableEvent(e);
 
-      const deltaY = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 127);
+      let scaledDelta = e.deltaY * 0.05;
+      if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
+        scaledDelta = Math.sign(scaledDelta);
+      }
+
+      const deltaY = Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
       if (deltaY === 0) {
         return;
       }
@@ -111,7 +117,7 @@ export const Relative = () => {
         return;
       }
 
-      handleMouseEvent({ type: 'wheel', deltaY });
+      handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
       lastScrollTimeRef.current = currentTime;
     }
 
@@ -128,7 +134,7 @@ export const Relative = () => {
       screen.removeEventListener('contextmenu', disableEvent);
       document.removeEventListener('pointerlockchange', handlePointerLockChange);
     };
-  }, []);
+  }, [scrollDirection, scrollInterval]);
 
   // show message
   function showMessage() {

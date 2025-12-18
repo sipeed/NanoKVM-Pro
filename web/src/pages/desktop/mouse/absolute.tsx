@@ -4,7 +4,7 @@ import { useMediaQuery } from 'react-responsive';
 
 import { MouseReportAbsolute } from '@/lib/mouse.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
-import { scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
 import { MouseAbsoluteEvent } from '@/pages/desktop/mouse/types.ts';
 
 enum MouseButton {
@@ -15,9 +15,12 @@ enum MouseButton {
   Forward = 4
 }
 
+const WHEEL_SCALE_FACTOR = 0.05;
+
 export const Absolute = () => {
   const isBigScreen = useMediaQuery({ minWidth: 650 });
 
+  const scrollDirection = useAtomValue(scrollDirectionAtom);
   const scrollInterval = useAtomValue(scrollIntervalAtom);
 
   const mouseRef = useRef(new MouseReportAbsolute());
@@ -79,7 +82,11 @@ export const Absolute = () => {
     function handleWheel(e: WheelEvent) {
       disableEvent(e);
 
-      const deltaY = Math.sign(e.deltaY) * Math.min(Math.abs(e.deltaY), 127);
+      let scaledDelta = e.deltaY * WHEEL_SCALE_FACTOR;
+      if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
+        scaledDelta = Math.sign(scaledDelta);
+      }
+      const deltaY = Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
       if (deltaY === 0) {
         return;
       }
@@ -89,7 +96,7 @@ export const Absolute = () => {
         return;
       }
 
-      handleMouseEvent({ type: 'wheel', deltaY });
+      handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
       lastScrollTimeRef.current = currentTime;
     }
 
@@ -148,11 +155,15 @@ export const Absolute = () => {
 
       // Handle two-finger scroll first
       if (e.touches.length > 1) {
-        const deltaY = touch.clientY - lastTouchYRef.current;
+        let scaledDelta = (touch.clientY - lastTouchYRef.current) * WHEEL_SCALE_FACTOR;
+        if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
+          scaledDelta = Math.sign(scaledDelta);
+        }
+        const deltaY = -Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
         lastTouchYRef.current = touch.clientY;
 
         if (Math.abs(deltaY) > 2) {
-          handleMouseEvent({ type: 'wheel', deltaY: Math.floor(deltaY) });
+          handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
         }
         return;
       }
@@ -296,7 +307,7 @@ export const Absolute = () => {
         clearTimeout(longPressTimerRef.current);
       }
     };
-  }, [isBigScreen, scrollInterval]);
+  }, [isBigScreen, scrollDirection, scrollInterval]);
 
   // Mouse event handler
   function handleMouseEvent(event: MouseAbsoluteEvent) {
