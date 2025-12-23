@@ -434,7 +434,7 @@ const ru = {
         loginSuccess: 'Вход выполнен',
         enable: 'Включить Tailscale',
         deviceName: 'Имя устройства',
-        deviceIP: 'IP адрес устройства',
+        deviceIP: 'IP-адрес устройства',
         account: 'Аккаунт',
         logout: 'Выход',
         logoutDesc: 'Вы действительно хотите выйти?',
@@ -488,8 +488,8 @@ const ru = {
         clearData: 'Эта операция удалить все сохранённые данные!',
         installFailed: 'Установка не удалась. Попробуйте ещё раз.',
         startFailed: 'Запуск сервиса не удался. Попробуйте ещё раз.',
-        okBtn: 'Yes',
-        cancelBtn: 'No'
+        okBtn: 'Да',
+        cancelBtn: 'Нет'
       }
     },
     error: {
