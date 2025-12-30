@@ -18,7 +18,7 @@ export const Scale = () => {
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col space-y-1">
         <span>{t('settings.screen.scale.title')}</span>
         <span className="text-xs text-neutral-500">{t('settings.screen.scale.description')}</span>
       </div>

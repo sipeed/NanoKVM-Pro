@@ -152,10 +152,10 @@ export const UploaderImages = () => {
     <>
       <div
         onClick={() => setIsModalOpen(true)}
-        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded py-0.5 pl-3 pr-6 hover:bg-neutral-700/70"
+        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded pl-3 pr-6 text-neutral-300 hover:bg-neutral-700/70"
       >
-        <HardDriveUploadIcon size={16} className="text-neutral-400" />
-        <span className="text-sm text-neutral-300">{t('image.upload')}</span>
+        <HardDriveUploadIcon size={18} />
+        <span className="text-sm">{t('image.upload')}</span>
       </div>
 
       <Modal

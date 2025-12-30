@@ -54,13 +54,13 @@ export const HdmiCapture = () => {
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-col">
+      <div className="flex flex-col space-y-1">
         <div className="flex items-center space-x-2">
           <span>{t('settings.device.capture.title')}</span>
           <Tooltip
             title={t('settings.device.capture.tip')}
             className="cursor-pointer text-neutral-500"
-            placement="bottom"
+            placement="top"
             styles={{ root: { maxWidth: '450px' } }}
           >
             <CircleAlertIcon size={15} />

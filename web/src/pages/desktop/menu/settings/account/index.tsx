@@ -29,7 +29,7 @@ export const Account = () => {
   return (
     <>
       <div className="text-base font-bold">{t('settings.account.title')}</div>
-      <Divider />
+      <Divider className="opacity-50"/>
 
       <div className="flex flex-col space-y-5">
         <div className="flex items-center justify-between">
@@ -45,11 +45,11 @@ export const Account = () => {
         </div>
       </div>
 
-      <Divider style={{ margin: '40px 0' }} />
+      <Divider className="opacity-50" style={{ margin: '40px 0' }} />
 
       <Kvmadmin />
 
-      <Divider style={{ margin: '40px 0' }} />
+      <Divider className="opacity-50" style={{ margin: '40px 0' }} />
 
       <Logout />
     </>

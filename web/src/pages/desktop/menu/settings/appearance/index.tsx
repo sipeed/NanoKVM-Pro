@@ -11,14 +11,13 @@ export const Appearance = () => {
   return (
     <>
       <div className="text-base font-bold">{t('settings.appearance.title')}</div>
-      <Divider />
+      <Divider className="opacity-50" />
 
-      <div className="flex flex-col space-y-6">
-        <Language />
-        <WebTitle />
-      </div>
+      <div className="text-neutral-400">{t('settings.appearance.display')}</div>
+      <Language />
+      <WebTitle />
 
-      <Divider style={{ margin: '32px 0' }} />
+      <Divider className="opacity-50" style={{ margin: '32px 0' }} />
 
       <MenuBar />
     </>

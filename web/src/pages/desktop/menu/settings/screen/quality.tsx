@@ -32,7 +32,7 @@ export const Quality = () => {
 
   return (
     <div className="flex items-center justify-between space-x-5">
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col space-y-1">
         <span>{t('settings.screen.quality.title')}</span>
         <span className="text-xs text-neutral-500">{t('settings.screen.quality.description')}</span>
       </div>

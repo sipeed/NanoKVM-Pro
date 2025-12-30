@@ -35,9 +35,9 @@ export const Community = () => {
 
   return (
     <>
-      <div className="pb-5 text-neutral-400">{t('settings.about.community')}</div>
+      <div className="text-neutral-400">{t('settings.about.community')}</div>
 
-      <div className="my-1 flex space-x-3">
+      <div className="mt-5 flex flex-wrap gap-3">
         {communities.map((community) => (
           <a
             key={community.name}

@@ -9,12 +9,11 @@ export const About = () => {
   return (
     <>
       <Header />
-      <Divider />
+      <Divider className="opacity-50" />
 
       <Information />
       <Hostname />
-
-      <Divider style={{ margin: '32px 0' }} />
+      <Divider className="opacity-50" />
 
       <Community />
     </>

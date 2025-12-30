@@ -84,7 +84,7 @@ export function AIAssistant() {
           <Divider />
           <div className="content">
             {intro.map((text, index) => (
-              <p className="intro indent-8 text-neutral-200/75" key={index}>
+              <p key={index} className="intro indent-8 text-neutral-200/75">
                 {text}
               </p>
             ))}
@@ -97,8 +97,10 @@ export function AIAssistant() {
           </p>
           {
             <>
-              {content.map((t) => (
-                <p className="indent-8">{t}</p>
+              {content.map((t, index) => (
+                <p key={index} className="indent-8">
+                  {t}
+                </p>
               ))}
             </>
           }

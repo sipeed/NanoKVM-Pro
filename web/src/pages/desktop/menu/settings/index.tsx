@@ -19,6 +19,7 @@ import * as ls from '@/lib/localstorage.ts';
 import { isKeyboardEnableAtom } from '@/jotai/keyboard.ts';
 import { isSettingsOpenAtom, settingTabAtom } from '@/jotai/settings.ts';
 import { Tailscale as TailscaleIcon } from '@/components/icons/tailscale';
+import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
 import { About } from './about';
 import { Account } from './account';
@@ -158,11 +159,13 @@ export const Settings = () => {
             ))}
           </div>
 
-          <div className="flex h-full w-full flex-col items-center overflow-y-auto rounded-r-lg bg-neutral-900 px-3">
-            <div className="w-full max-w-[600px] pb-10 pt-14">
-              <>{tabs.find((tab) => tab.id === settingTab)?.component}</>
+          <ScrollArea className="h-full w-full rounded-r-lg bg-neutral-900/50 px-3 md:px-5">
+            <div className="flex h-full w-full justify-center">
+              <div className="w-full max-w-[600px] pb-10 pt-14">
+                <>{tabs.find((tab) => tab.id === settingTab)?.component}</>
+              </div>
             </div>
-          </div>
+          </ScrollArea>
         </div>
       </Modal>
     </>

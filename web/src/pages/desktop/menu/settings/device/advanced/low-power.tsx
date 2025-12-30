@@ -72,7 +72,7 @@ export const LowPower = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between pt-5">
+      <div className="flex items-center justify-between">
         <span>{t('settings.device.lowPower.title')}</span>
 
         <Switch value={isEnabled} loading={isLoading} onChange={update} />

@@ -16,7 +16,7 @@ export const Advanced = () => {
           key: 'advanced',
           label: t('settings.device.advanced'),
           children: (
-            <div className="flex flex-col space-y-5">
+            <div className="mt-5 flex flex-col space-y-8">
               <StaticIp />
               <LowPower />
             </div>

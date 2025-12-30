@@ -20,9 +20,9 @@ export const Screen = () => {
   return (
     <>
       <div className="text-base font-bold">{t('settings.screen.title')}</div>
-      <Divider />
+      <Divider className="opacity-50" />
 
-      <div className="flex flex-col space-y-6">
+      <div className="flex flex-col space-y-8">
         <VideoMode />
         <Edid />
 

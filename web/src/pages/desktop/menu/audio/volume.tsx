@@ -29,18 +29,18 @@ export const Volume = () => {
         className="mr-0.5 flex h-[16px] w-[16px] cursor-pointer items-center justify-center"
         onClick={() => setVideoVolume(0)}
       >
-        <VolumeIcon size={16} />
+        <VolumeIcon size={18} />
       </div>
 
       <div className="min-w-[230px]">
-        <Slider autoFocus value={videoVolume} range={false} onChange={setVideoVolume} />
+        <Slider value={videoVolume} range={false} onChange={setVideoVolume} />
       </div>
 
       <div
         className="ml-2 flex h-[16px] w-[16px] cursor-pointer items-center justify-center"
         onClick={() => setVideoVolume(100)}
       >
-        <Volume2Icon size={16} />
+        <Volume2Icon size={18} />
       </div>
     </div>
   );

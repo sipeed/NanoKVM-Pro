@@ -21,34 +21,32 @@ export const Device = () => {
   return (
     <>
       <div className="text-base font-bold">{t('settings.device.title')}</div>
-      <Divider />
+      <Divider className="opacity-50" />
 
-      <div className="flex flex-col space-y-6">
+      <div className="flex flex-col space-y-8">
         <Ssh />
         <Mdns />
         <VirtualDisk />
         <VirtualNetwork />
-      </div>
+        <Divider className="opacity-50" />
 
-      <Divider style={{ margin: '40px 0' }} />
-
-      <div className="flex flex-col space-y-6">
         <Oled />
         <Wifi />
         <HdmiCapture />
         <HdmiPassthrough />
         <MouseJiggler />
         <LedStrip />
+
+        <Divider className="opacity-50" />
+
+        <Datetime />
+
+        <Divider className="opacity-50" />
+
+        <Advanced />
       </div>
 
-      <Divider style={{ margin: '40px 0' }} />
-
-      <Datetime />
-
-      <Divider style={{ margin: '40px 0' }} />
-
-      <Advanced />
-      <Divider style={{ margin: '40px 0' }} />
+      <Divider className="opacity-50" />
 
       <Reboot />
     </>

@@ -132,7 +132,7 @@ export const StaticIp = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between pt-5">
+      <div className="flex items-center justify-between">
         <span>{t('settings.device.staticIp.title')}</span>
 
         <Button type={config.isEnabled ? 'primary' : 'default'} onClick={openModal}>

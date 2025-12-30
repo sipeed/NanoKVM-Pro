@@ -60,7 +60,7 @@ export const Preview = ({ checkForUpdates }: PreviewProps) => {
   }
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between py-3">
       <div className="flex flex-col">
         <div className="flex items-center space-x-2">
           <span>{t('settings.update.preview')}</span>

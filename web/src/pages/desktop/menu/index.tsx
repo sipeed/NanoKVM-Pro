@@ -111,7 +111,7 @@ export const Menu = () => {
                 className="mr-1 flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded text-neutral-300 hover:bg-neutral-700/80 hover:text-white"
                 onClick={() => setIsMenuOpen((o) => !o)}
               >
-                <XIcon size={20} />
+                <XIcon size={18} />
               </div>
             </Tooltip>
           </div>

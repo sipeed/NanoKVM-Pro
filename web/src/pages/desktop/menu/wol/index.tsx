@@ -212,7 +212,7 @@ export const Wol = () => {
   return (
     <MenuItem
       title={t('wol.title')}
-      icon={<NetworkIcon size={16} />}
+      icon={<NetworkIcon size={18} />}
       content={content}
       onOpenChange={handleOpenChange}
     />

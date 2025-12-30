@@ -40,7 +40,7 @@ export const Gop = () => {
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col space-y-1">
         <div className="flex items-center space-x-2">
           <span>GOP</span>
 

@@ -66,7 +66,7 @@ export const Hostname = () => {
 
   return (
     <>
-      <div className="flex w-full items-center justify-between pt-4">
+      <div className="mt-5 flex w-full items-center justify-between">
         <span>{t('settings.about.hostname')}</span>
 
         {hostname ? (

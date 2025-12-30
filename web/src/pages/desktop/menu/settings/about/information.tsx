@@ -40,9 +40,9 @@ export const Information = () => {
 
   return (
     <>
-      <div className="pb-5 text-neutral-400">{t('settings.about.information')}</div>
+      <div className="text-neutral-400">{t('settings.about.information')}</div>
 
-      <div className="flex w-full flex-col space-y-4">
+      <div className="mt-5 flex w-full flex-col space-y-5">
         {/* IP list */}
         <div className="flex w-full items-start justify-between">
           <span>{t('settings.about.ip')}</span>
@@ -81,7 +81,7 @@ export const Information = () => {
             <Tooltip
               title={t('settings.about.imageTip')}
               className="cursor-pointer text-neutral-500"
-              placement="bottom"
+              placement="right"
             >
               <CircleHelpIcon size={15} />
             </Tooltip>
@@ -97,7 +97,7 @@ export const Information = () => {
             <Tooltip
               title={t('settings.about.applicationTip')}
               className="cursor-pointer text-neutral-500"
-              placement="bottom"
+              placement="right"
             >
               <CircleHelpIcon size={15} />
             </Tooltip>

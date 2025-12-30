@@ -102,12 +102,12 @@ export function MounteImage() {
     <>
       <div
         onClick={() => setIsModalOpen(true)}
-        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded py-0.5 pl-3 pr-6 hover:bg-neutral-700/70"
+        className="flex h-[30px] cursor-pointer select-none items-center space-x-2 rounded pl-3 pr-6 text-neutral-300 hover:bg-neutral-700/70"
       >
-        <HardDriveIcon size={16} className="text-neutral-400" />
+        <HardDriveIcon size={18} />
         <span
           className={clsx(
-            'text-sm',
+            'select-none text-sm',
             isMounted ? 'text-blue-500' : 'text-neutral-300 hover:text-white'
           )}
         >

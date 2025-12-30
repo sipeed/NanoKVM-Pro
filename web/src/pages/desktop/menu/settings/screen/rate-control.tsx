@@ -62,7 +62,7 @@ export const RateControl = () => {
 
   return (
     <div className="flex items-center justify-between space-x-5">
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col space-y-1">
         <div className="flex items-center space-x-2">
           <span>{t('settings.screen.rateControlMode.title')}</span>
 

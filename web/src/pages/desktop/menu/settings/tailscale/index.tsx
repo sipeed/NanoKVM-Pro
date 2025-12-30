@@ -49,7 +49,7 @@ export const Tailscale = ({ setIsLocked }: TailscaleProps) => {
   return (
     <>
       <Header status={status} onSuccess={getStatus} />
-      <Divider />
+      <Divider className="opacity-50" />
 
       <div className="h-10" />
 

@@ -62,19 +62,19 @@ export const LedStrip = () => {
     return Math.floor((150 - horizontal) / 2);
   }, [horizontal]);
 
-  function openDoc() {
-    window.open('https://wiki.sipeed.com/hardware/en/kvm/NanoKVM_Pro/ws2812.html', '_blank');
-  }
-
   return (
-    <div className="">
+    <>
       <div className="flex items-center justify-between">
-        <div className="flex flex-col">
+        <div className="flex flex-col space-y-1">
           <div className="flex items-center space-x-2">
             <span>{t('settings.device.led.title')}</span>
-            <div className="cursor-pointer text-neutral-500 hover:text-blue-500" onClick={openDoc}>
+            <a
+              className="flex items-center text-neutral-500 hover:text-blue-500"
+              href="https://wiki.sipeed.com/hardware/en/kvm/NanoKVM_Pro/ws2812.html"
+              target="_blank"
+            >
               <SquareArrowOutUpRightIcon size={14} />
-            </div>
+            </a>
           </div>
           <span className="text-xs text-neutral-500">{t('settings.device.led.description')}</span>
         </div>
@@ -90,7 +90,7 @@ export const LedStrip = () => {
       </div>
 
       {enabled && (
-        <div className="ml-5 mt-3 space-y-1 rounded bg-neutral-800/20 p-3">
+        <div className="mx-5 mt-3 space-y-1 rounded bg-neutral-800/20 p-3">
           <div className="flex w-full items-center justify-between gap-2">
             <div className="flex items-center justify-around gap-2">
               <span className="text-neutral-300">{t('settings.device.led.horizontal')}</span>
@@ -144,6 +144,6 @@ export const LedStrip = () => {
           )}
         </div>
       )}
-    </div>
+    </>
   );
 };

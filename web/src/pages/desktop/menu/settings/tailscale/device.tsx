@@ -61,7 +61,7 @@ export const Device = ({ status, onLogout }: DeviceProps) => {
   }
 
   return (
-    <div className="flex flex-col space-y-6 pt-5">
+    <div className="flex flex-col space-y-7">
       <div className="flex justify-between">
         <span>{t('settings.tailscale.enable')}</span>
         <Switch checked={isRunning} loading={isUpdating} onClick={update} />
@@ -81,9 +81,10 @@ export const Device = ({ status, onLogout }: DeviceProps) => {
         <span>{t('settings.tailscale.account')}</span>
         <span>{status.account}</span>
       </div>
-      <Divider />
 
-      <div className="flex justify-center pt-3">
+      <Divider className="opacity-50" style={{margin: "50px 0 0 0"}} />
+
+      <div className="flex justify-center pt-7">
         <Popconfirm
           placement="bottom"
           title={t('settings.tailscale.logoutDesc')}
