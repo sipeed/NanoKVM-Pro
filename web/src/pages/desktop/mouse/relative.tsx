@@ -102,13 +102,7 @@ export const Relative = () => {
     function handleMouseWheel(e: WheelEvent) {
       disableEvent(e);
 
-      let scaledDelta = e.deltaY * 0.05;
-      if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
-        scaledDelta = Math.sign(scaledDelta);
-      }
-
-      const deltaY = Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
-      if (deltaY === 0) {
+      if (Math.floor(e.deltaY) === 0) {
         return;
       }
 
@@ -117,7 +111,8 @@ export const Relative = () => {
         return;
       }
 
-      handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
+      const deltaY = (e.deltaY > 0 ? 1 : -1) * scrollDirection;
+      handleMouseEvent({ type: 'wheel', deltaY });
       lastScrollTimeRef.current = currentTime;
     }
 

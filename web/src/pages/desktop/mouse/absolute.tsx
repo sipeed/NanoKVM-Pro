@@ -15,8 +15,6 @@ enum MouseButton {
   Forward = 4
 }
 
-const WHEEL_SCALE_FACTOR = 0.05;
-
 export const Absolute = () => {
   const isBigScreen = useMediaQuery({ minWidth: 650 });
 
@@ -82,12 +80,7 @@ export const Absolute = () => {
     function handleWheel(e: WheelEvent) {
       disableEvent(e);
 
-      let scaledDelta = e.deltaY * WHEEL_SCALE_FACTOR;
-      if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
-        scaledDelta = Math.sign(scaledDelta);
-      }
-      const deltaY = Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
-      if (deltaY === 0) {
+      if (Math.floor(e.deltaY) === 0) {
         return;
       }
 
@@ -96,7 +89,8 @@ export const Absolute = () => {
         return;
       }
 
-      handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
+      const deltaY = (e.deltaY > 0 ? 1 : -1) * scrollDirection;
+      handleMouseEvent({ type: 'wheel', deltaY });
       lastScrollTimeRef.current = currentTime;
     }
 
@@ -155,15 +149,10 @@ export const Absolute = () => {
 
       // Handle two-finger scroll first
       if (e.touches.length > 1) {
-        let scaledDelta = (touch.clientY - lastTouchYRef.current) * WHEEL_SCALE_FACTOR;
-        if (Math.abs(scaledDelta) > 0 && Math.abs(scaledDelta) < 1) {
-          scaledDelta = Math.sign(scaledDelta);
-        }
-        const deltaY = -Math.sign(scaledDelta) * Math.min(Math.abs(scaledDelta), 127);
+        const deltaY = (touch.clientY - lastTouchYRef.current > 0 ? 1 : -1) * scrollDirection;
         lastTouchYRef.current = touch.clientY;
-
         if (Math.abs(deltaY) > 2) {
-          handleMouseEvent({ type: 'wheel', deltaY: deltaY * scrollDirection });
+          handleMouseEvent({ type: 'wheel', deltaY });
         }
         return;
       }
