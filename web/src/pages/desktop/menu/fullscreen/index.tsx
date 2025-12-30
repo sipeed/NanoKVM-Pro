@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Tooltip } from 'antd';
-import { useSetAtom } from 'jotai';
 import { MaximizeIcon, MinimizeIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-import { fullscreenAtom } from '@/jotai/screen';
-
 export const Fullscreen = () => {
   const { t } = useTranslation();
-  const setFullscreenState = useSetAtom(fullscreenAtom);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     const onFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
-      setFullscreenState(!!document.fullscreenElement);
     };
 
     onFullscreenChange();

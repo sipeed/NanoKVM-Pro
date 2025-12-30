@@ -11,6 +11,3 @@ export const scrollDirectionAtom = atom(-1);
 
 // mouse scroll interval (unit: ms)
 export const scrollIntervalAtom = atom(0);
-
-// hid mode: normal or hid-only
-export const hidModeAtom = atom<'normal' | 'hid-only'>('normal');

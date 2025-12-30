@@ -15,5 +15,3 @@ export const videoParametersAtom = atom<VideoParameters>({
 export const videoStatusAtom = atom<VideoStatus>(VideoStatus.Normal);
 
 export const videoVolumeAtom = atom(0);
-
-export const fullscreenAtom = atom(false);
