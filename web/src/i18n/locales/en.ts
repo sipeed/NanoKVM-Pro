@@ -102,7 +102,16 @@ const en = {
       placeholder: 'Please input',
       submit: 'Submit',
       virtual: 'Keyboard',
-      ctrlaltdel: 'Ctrl+Alt+Del'
+      shortcut: {
+        title: 'Shortcuts',
+        custom: 'Custom',
+        capture: 'Click here to capture shortcut',
+        clear: 'Clear',
+        save: 'Save',
+        captureTips:
+          'Capturing system-level keys (such as the Windows key) requires full-screen permission.',
+        enterFullScreen: 'Toggle full-screen mode.'
+      }
     },
     mouse: {
       title: 'Mouse',
