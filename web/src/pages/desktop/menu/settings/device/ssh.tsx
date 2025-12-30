@@ -51,7 +51,7 @@ export const Ssh = () => {
             title={t('settings.device.ssh.tip')}
             className="cursor-pointer text-neutral-500"
             placement="bottom"
-            overlayStyle={{ maxWidth: '300px' }}
+            styles={{ root: { maxWidth: '300px' } }}
           >
             <CircleAlertIcon size={15} />
           </Tooltip>

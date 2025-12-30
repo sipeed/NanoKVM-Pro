@@ -292,7 +292,7 @@ export const Wifi = () => {
 
           <Popover
             className="p-3"
-            overlayInnerStyle={{ padding: 0 }}
+            styles={{ body: { padding: 0 } }}
             placement="bottomRight"
             trigger="click"
             content={content}

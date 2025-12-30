@@ -123,7 +123,7 @@ export const Settings = () => {
         width={'80%'}
         centered={true}
         footer={null}
-        destroyOnClose={true}
+        destroyOnHidden={true}
         onCancel={closeModal}
         style={{ maxWidth: '1080px' }}
         styles={{ content: { padding: 0 } }}

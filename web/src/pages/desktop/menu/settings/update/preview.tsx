@@ -69,7 +69,7 @@ export const Preview = ({ checkForUpdates }: PreviewProps) => {
             title={t('settings.update.previewTip')}
             className="cursor-pointer text-neutral-500/60"
             placement="bottom"
-            overlayStyle={{ maxWidth: '350px' }}
+            styles={{ root: { maxWidth: '350px' } }}
           >
             <CircleAlertIcon size={15} />
           </Tooltip>
