@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Screen struct {
@@ -19,6 +20,8 @@ type Screen struct {
 	Quality         uint16
 
 	RealFPS int
+
+	lastCheck time.Time
 }
 
 const (
@@ -53,6 +56,8 @@ func GetScreen() *Screen {
 			Quality:         80,
 
 			RealFPS: 0,
+
+			lastCheck: time.Now(),
 		}
 	})
 
@@ -60,8 +65,11 @@ func GetScreen() *Screen {
 }
 
 func (s *Screen) Check() {
-	s.Width = readSize(WidthPath)
-	s.Height = readSize(HeightPath)
+	if time.Since(s.lastCheck) >= 5*time.Second {
+		s.Width = readSize(WidthPath)
+		s.Height = readSize(HeightPath)
+		s.lastCheck = time.Now()
+	}
 
 	if s.FPS < 0 || s.FPS > 120 {
 		s.FPS = 0
