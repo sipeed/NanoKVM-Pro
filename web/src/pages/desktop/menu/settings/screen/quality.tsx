@@ -42,7 +42,7 @@ export const Quality = () => {
           value={videoParameters.quality}
           min={1}
           max={100}
-          marks={{ 100: '100' }}
+          marks={{ 1: '1', 100: '100' }}
           onChange={update}
         />
       </div>

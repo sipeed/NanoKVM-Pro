@@ -110,9 +110,42 @@ func (s *Service) SetGop(c *gin.Context) {
 		return
 	}
 
+	result := common.GetKvmVision().SetGop(gop)
+	if result < 0 {
+		log.Errorf("failed to set GOP: %d", result)
+		rsp.ErrRsp(c, -3, "failed to set GOP")
+		return
+	}
+
 	common.GetScreen().GOP = gop
-	common.GetKvmVision().SetGop(gop)
 
 	rsp.OkRsp(c)
 	log.Debugf("update GOP to %d", req.Gop)
+}
+
+func (s *Service) SetFps(c *gin.Context) {
+	var req proto.SetFpsReq
+	var rsp proto.Response
+
+	if err := proto.ParseFormRequest(c, &req); err != nil {
+		rsp.ErrRsp(c, -1, "invalid arguments")
+		return
+	}
+
+	fps := uint8(req.Fps)
+	if fps < 0 || fps > 120 {
+		rsp.ErrRsp(c, -2, "invalid arguments")
+		return
+	}
+
+	result := common.GetKvmVision().SetFps(fps)
+	if result < 0 {
+		log.Errorf("failed to set FPS: %d", result)
+		rsp.ErrRsp(c, -3, "set FPS failed")
+		return
+	}
+
+	common.GetScreen().FPS = fps
+	rsp.OkRsp(c)
+	log.Debugf("update FPS to %d", req.Fps)
 }

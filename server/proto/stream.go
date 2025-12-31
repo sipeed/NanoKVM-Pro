@@ -15,3 +15,7 @@ type SetQualityReq struct {
 type SetGopReq struct {
 	Gop int `form:"gop" validate:"required"`
 }
+
+type SetFpsReq struct {
+	Fps int `form:"fps" validate:"omitempty"`
+}

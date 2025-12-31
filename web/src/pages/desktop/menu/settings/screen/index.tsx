@@ -6,6 +6,7 @@ import { videoModeAtom } from '@/jotai/screen.ts';
 
 import { Bitrate } from './bitrate.tsx';
 import { Edid } from './edid.tsx';
+import { Fps } from './fps.tsx';
 import { Gop } from './gop.tsx';
 import { Quality } from './quality.tsx';
 import { RateControl } from './rate-control.tsx';
@@ -33,6 +34,8 @@ export const Screen = () => {
             <Gop />
           </>
         )}
+
+        <Fps />
 
         {videoMode === 'mjpeg' && <Quality />}
 

@@ -1,13 +1,14 @@
 package mjpeg
 
 import (
-	"NanoKVM-Server/common"
-	"NanoKVM-Server/service/stream"
 	"fmt"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"NanoKVM-Server/common"
+	"NanoKVM-Server/service/stream"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -71,15 +72,7 @@ func (s *Streamer) run() {
 	vision := common.GetKvmVision()
 	screen := common.GetScreen()
 
-	fps := vision.GetFps()
-	if fps <= 0 {
-		fps = 30
-	}
-
-	screen.FPS = fps
-	duration := time.Second / time.Duration(fps)
-	frameCount := 0
-
+	duration := time.Second / time.Duration(120)
 	ticker := time.NewTicker(duration)
 	defer ticker.Stop()
 
@@ -105,17 +98,6 @@ func (s *Streamer) run() {
 				s.RemoveClient(client)
 			}
 		}
-
-		if frameCount > 120 {
-			fps = vision.GetFps()
-			if fps > 0 && screen.FPS != fps {
-				screen.FPS = fps
-				duration = time.Second / time.Duration(fps)
-				ticker.Reset(duration)
-			}
-			frameCount = 0
-		}
-		frameCount++
 
 		stream.GetFrameRateCounter().Update()
 	}

@@ -42,10 +42,6 @@ void kvmv_free_all_data() {
   __throw_error();
 }
 
-void kvmv_set_gop(uint8_t _gop) {
-  __throw_error();
-}
-
 void kvmv_deinit() {
   __throw_error();
 }
@@ -71,7 +67,15 @@ int kvmv_free_data(uint8_t** _pp_kvm_data) {
   return __throw_error();
 }
 
+int kvmv_set_fps(uint8_t _fps) {
+  return __throw_error();
+}
+
 int kvmv_get_fps(void) {
+  return __throw_error();
+}
+
+int kvmv_set_gop(uint8_t _gop) {
   return __throw_error();
 }
 

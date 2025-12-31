@@ -189,6 +189,12 @@ func (k *KvmVision) ReadAudio() (data []byte, result int) {
 	return
 }
 
+func (k *KvmVision) SetFps(fps uint8) int {
+	_fps := C.uint8_t(fps)
+	result := C.kvmv_set_fps(_fps)
+	return int(result)
+}
+
 func (k *KvmVision) GetFps() int {
 	return int(C.kvmv_get_fps())
 }
@@ -208,9 +214,10 @@ func (k *KvmVision) SetHDMI(enable bool) int {
 	return result
 }
 
-func (k *KvmVision) SetGop(gop uint8) {
+func (k *KvmVision) SetGop(gop uint8) int {
 	_gop := C.uint8_t(gop)
-	C.kvmv_set_gop(_gop)
+	result := C.kvmv_set_gop(_gop)
+	return int(result)
 }
 
 func (k *KvmVision) Close() {

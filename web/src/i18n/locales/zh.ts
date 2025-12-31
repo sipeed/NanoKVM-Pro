@@ -277,6 +277,12 @@ const zh = {
           title: '画质',
           description: '设置显示画面的质量'
         },
+        fps: {
+          auto: '自动',
+          description: '设置画面显示帧率',
+          tip1: '设为 0 即自动模式，将按照远程主机的帧率来显示。',
+          tip2: '降低帧率可显著减少网络带宽占用，建议在网络波动或无需高帧率时手动调低。'
+        },
         scale: {
           title: '缩放',
           description: '设置显示画面的缩放比例'

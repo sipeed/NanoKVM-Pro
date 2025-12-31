@@ -26,10 +26,11 @@ export const Scale = () => {
       <div className="w-[240px]">
         <Slider
           value={videoParameters.scale}
+          included={false}
           min={0.5}
           max={2}
           step={0.1}
-          marks={{ 2: '2' }}
+          marks={{ 0.5: '0.5', 2: '2' }}
           onChange={update}
         />
       </div>

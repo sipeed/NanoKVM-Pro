@@ -31,7 +31,7 @@ export const Screen = () => {
 
   async function initScreen() {
     const parameters = getVideoParameters();
-    let { rateControlMode, bitrate, gop, scale, quality } = parameters;
+    let { rateControlMode, bitrate, gop, fps, scale, quality } = parameters;
 
     try {
       if (videoMode === 'mjpeg') {
@@ -42,12 +42,14 @@ export const Screen = () => {
         gop = await updateGop(parameters.gop);
       }
 
+      fps = await updateFps(parameters.fps);
       scale = getScale(parameters.scale);
 
       setVideoParameters({
         rateControlMode,
         bitrate,
         gop,
+        fps,
         scale,
         quality
       });
@@ -88,6 +90,19 @@ export const Screen = () => {
     }
 
     return bitrate;
+  }
+
+  async function updateFps(fps: number) {
+    if (!fps || fps < 0 || fps > 120) {
+      fps = 0;
+    }
+
+    const rsp = await api.setFps(fps);
+    if (rsp.code !== 0) {
+      return 0;
+    }
+
+    return fps;
   }
 
   async function updateGop(gop: number) {

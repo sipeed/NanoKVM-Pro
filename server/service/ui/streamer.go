@@ -31,7 +31,7 @@ func GetStreamer(c *gin.Context) {
 			Streamer: Streamer{
 				H264: H264{
 					Bitrate:     int(screen.BitRate),
-					Fps:         screen.FPS,
+					Fps:         int(screen.FPS),
 					Gop:         int(screen.GOP),
 					RealBitrate: int(screen.BitRate),
 				},

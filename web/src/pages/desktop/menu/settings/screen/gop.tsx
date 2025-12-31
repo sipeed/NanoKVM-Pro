@@ -57,7 +57,7 @@ export const Gop = () => {
           value={videoParameters.gop}
           min={1}
           max={200}
-          marks={{ 200: '200' }}
+          marks={{ 1: '1', 200: '200' }}
           onChange={update}
         />
       </div>

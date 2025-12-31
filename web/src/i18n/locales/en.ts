@@ -301,6 +301,12 @@ const en = {
           title: 'Quality',
           description: 'Set the display image quality'
         },
+        fps: {
+          auto: 'Auto',
+          description: 'Set the display frame rate',
+          tip1: "Setting the value to 0 enables Auto mode, synchronizing the display with the remote host's frame rate.",
+          tip2: 'Lowering the frame rate significantly reduces bandwidth usage. Manually decrease it during network instability or when high frame rates are not required.'
+        },
         scale: {
           title: 'Scale',
           description: 'Set the display scaling ratio'

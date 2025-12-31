@@ -15,6 +15,12 @@ export function setMode(mode: string) {
   return http.post('/api/stream/mode', data);
 }
 
+// set stream FPS
+export function setFps(fps: number) {
+  const data = { fps };
+  return http.post('api/stream/fps', data);
+}
+
 // set stream quality
 export function setQuality(quality: number) {
   const data = { quality };

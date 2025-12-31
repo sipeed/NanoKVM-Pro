@@ -8,6 +8,7 @@ export const videoParametersAtom = atom<VideoParameters>({
   rateControlMode: 'vbr', // cbr | vbr
   bitrate: 8000, // 1000 - 20000
   gop: 50, // 1 - 200
+  fps: 0, // 0 - 120
   scale: 1,
   quality: 80 // 1-100 (only for mjpeg)
 });

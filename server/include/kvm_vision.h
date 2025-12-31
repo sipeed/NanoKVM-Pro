@@ -30,7 +30,6 @@ extern "C" {
 
 void kvmv_init(uint8_t _debug_info_en);
 void kvmv_free_all_data();
-void kvmv_set_gop(uint8_t _gop);
 void kvmv_deinit();
 /**********************************************************************************
  * @name    kvmv_read_img
@@ -63,7 +62,9 @@ int kvmv_read_img(uint16_t _width,
 int kvmv_get_sps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
 int kvmv_get_pps_frame(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
 int kvmv_free_data(uint8_t** _pp_kvm_data);
+int kvmv_set_fps(uint8_t _fps);
 int kvmv_get_fps(void);
+int kvmv_set_gop(uint8_t _gop);
 int kvmv_hdmi_control(uint8_t _en);
 int kvmv_read_audio(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
 int kvmv_set_rate_control(uint8_t mode);

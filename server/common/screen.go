@@ -10,11 +10,11 @@ import (
 type Screen struct {
 	Width  uint16
 	Height uint16
-	FPS    int
 
 	StreamType      int
 	RateControlMode uint8
 	BitRate         uint16
+	FPS             uint8
 	GOP             uint8
 	Quality         uint16
 
@@ -44,11 +44,11 @@ func GetScreen() *Screen {
 		screen = &Screen{
 			Width:  readSize(WidthPath),
 			Height: readSize(HeightPath),
-			FPS:    30,
 
 			StreamType:      STREAM_TYPE_H264_WEBRTC,
 			RateControlMode: RATE_CONTROL_VBR,
 			BitRate:         8000,
+			FPS:             0,
 			GOP:             50,
 			Quality:         80,
 
@@ -63,8 +63,8 @@ func (s *Screen) Check() {
 	s.Width = readSize(WidthPath)
 	s.Height = readSize(HeightPath)
 
-	if s.FPS <= 0 || s.FPS > 200 {
-		s.FPS = 30
+	if s.FPS < 0 || s.FPS > 120 {
+		s.FPS = 0
 	}
 
 	if s.BitRate < 1000 || s.BitRate > 20000 {

@@ -4,6 +4,7 @@ export interface VideoParameters {
   rateControlMode: string; // cbr | vbr;
   bitrate: number;
   gop: number;
+  fps: number;
   scale: number;
   quality?: number; // MJEPG only
 }
