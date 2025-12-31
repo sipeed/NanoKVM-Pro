@@ -1,3 +1,32 @@
+## 1.2.8 (2025-12-31)
+
+> This release includes a firmware update (v1.0.12). The device will automatically reboot once the update is complete.
+
+### Features
+
+- added support for customizing FPS settings
+- added support for user-defined keyboard shortcuts
+- added support for SDIO Bluetooth
+
+### Bug Fixes
+
+- fixed the issue where a black screen appears when the remote host video frame rate is too low
+- fixed an incorrect path for `axemac.sh` in `rc.local`
+- fixed an issue where the resolution displayed on the LCD screen was not updated
+
+### Improvements
+
+- improved the logic for HDMI status detection
+- optimized resolution detection for HDMI video
+- optimized mouse wheel scrolling speed for better control
+- optimized the menubar and settings UI
+- updated the Russian translation (thanks to [@Tail870](https://github.com/Tail870))
+
+### Chores
+
+- added WireGuard support to the kernel
+- upgraded antd to v5.29.3 and refactored code to replace deprecated APIs
+
 ## 1.2.7 (2025-12-18)
 
 ### Features
