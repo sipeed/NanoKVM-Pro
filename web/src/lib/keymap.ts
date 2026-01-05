@@ -153,25 +153,104 @@ export const KeycodeMap: Record<string, number> = {
   F23: 0x72,
   F24: 0x73,
 
-  // International keys
-  IntlRo: 0x87,
-  KanaMode: 0x88,
-  IntlYen: 0x89,
-  Convert: 0x8a,
-  NonConvert: 0x8b,
-  Lang1: 0x90,
-  Lang2: 0x91,
-  Lang3: 0x92,
-  Lang4: 0x93,
-  Lang5: 0x94,
+  // System / Edit keys
+  Execute: 0x74,
+  Help: 0x75,
+  Props: 0x76,
+  Select: 0x77,
+  Stop: 0x78,
+  Again: 0x79,
+  Undo: 0x7a,
+  Cut: 0x7b,
+  Copy: 0x7c,
+  Paste: 0x7d,
+  Find: 0x7e,
 
-  // ISO keyboard specific
-  IntlHash: 0x32,
+  // Media / Volume keys
+  AudioVolumeMute: 0x7f,
+  AudioVolumeUp: 0x80,
+  AudioVolumeDown: 0x81,
+  VolumeMute: 0x7f, // Alias
+  VolumeUp: 0x80, // Alias
+  VolumeDown: 0x81, // Alias
+
+  // Locking keys (for keyboards with physical lock keys)
+  LockingCapsLock: 0x82,
+  LockingNumLock: 0x83,
+  LockingScrollLock: 0x84,
 
   // Numpad additional
   NumpadComma: 0x85,
+  NumpadEqual2: 0x86, // AS/400 keyboard equal key
+
+  // International keys - Japanese
+  IntlRo: 0x87, // Japanese Ro key (ろ)
+  KanaMode: 0x88, // Katakana/Hiragana toggle
+  IntlYen: 0x89, // Japanese Yen (¥)
+  Convert: 0x8a, // Japanese Henkan (変換)
+  NonConvert: 0x8b, // Japanese Muhenkan (無変換)
+
+  // International keys - Additional Japanese
+  International6: 0x8c,
+  International7: 0x8d,
+  International8: 0x8e,
+  International9: 0x8f,
+
+  // Language keys - Korean/Japanese/Chinese
+  Lang1: 0x90, // Korean Hangul/English toggle
+  Lang2: 0x91, // Korean Hanja
+  Lang3: 0x92, // Japanese Katakana
+  Lang4: 0x93, // Japanese Hiragana
+  Lang5: 0x94, // Japanese Zenkaku/Hankaku
+  Lang6: 0x95,
+  Lang7: 0x96,
+  Lang8: 0x97,
+  Lang9: 0x98,
+
+  // ISO keyboard specific
+  IntlHash: 0x32, // Non-US # and ~ (ISO keyboards)
+
+  // Numpad extended
   NumpadParenLeft: 0xb6,
-  NumpadParenRight: 0xb7
+  NumpadParenRight: 0xb7,
+  NumpadBackspace: 0xbb,
+  NumpadMemoryStore: 0xd0,
+  NumpadMemoryRecall: 0xd1,
+  NumpadMemoryClear: 0xd2,
+  NumpadMemoryAdd: 0xd3,
+  NumpadMemorySubtract: 0xd4,
+  NumpadClear: 0xd8,
+  NumpadClearEntry: 0xd9,
+
+  // Additional browser/system keys
+  BrowserSearch: 0xf0,
+  BrowserHome: 0xf1,
+  BrowserBack: 0xf2,
+  BrowserForward: 0xf3,
+  BrowserStop: 0xf4,
+  BrowserRefresh: 0xf5,
+  BrowserFavorites: 0xf6,
+
+  // Media keys
+  MediaPlayPause: 0xe8,
+  MediaStop: 0xe9,
+  MediaTrackPrevious: 0xea,
+  MediaTrackNext: 0xeb,
+  Eject: 0xec,
+  MediaSelect: 0xed,
+
+  // Application launch keys
+  LaunchMail: 0xee,
+  LaunchApp1: 0xef,
+  LaunchApp2: 0xf0,
+
+  // Sleep/Wake keys
+  Sleep: 0xf8,
+  Wake: 0xf9,
+
+  // Accessibility keys
+  MediaRewind: 0xfa,
+  MediaFastForward: 0xfb
 };
 
 // Check if code is a modifier key
