@@ -1,3 +1,15 @@
+## 1.2.9 (2025-01-05)
+
+### Bug Fixes
+
+- fixed an issue preventing network configuration in WiFi AP mode
+
+### Improvements
+
+- expanded keyboard HID mapping to support more international characters
+- added mouse HID support for "Forward" and "Back" buttons
+- the menu bar now automatically hides when it loses focus
+
 ## 1.2.8 (2025-12-31)
 
 > This release includes a firmware update (v1.0.12). The device will automatically reboot once the update is complete.
