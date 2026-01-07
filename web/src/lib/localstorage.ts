@@ -151,11 +151,6 @@ export function getSkipBrowserNotification() {
   return skip === 'true';
 }
 
-export function setMenuDisabledItems(items: string[]) {
-  const value = JSON.stringify(items);
-  localStorage.setItem(MENU_DISABLED_ITEMS_KEY, value);
-}
-
 export function getMenuDisabledItems(): string[] {
   const value = localStorage.getItem(MENU_DISABLED_ITEMS_KEY);
   return value ? JSON.parse(value) : [];

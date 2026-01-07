@@ -69,7 +69,7 @@ export function AIAssistant() {
 
   return (
     <div className="flex">
-      <Tooltip placement="top" title={t('assistant.title')}>
+      <Tooltip title={t('assistant.title')} mouseEnterDelay={0.6} placement="bottom">
         <div
           className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded text-neutral-300 hover:bg-neutral-700/80 hover:text-white"
           onClick={() => setModalOpen(true)}

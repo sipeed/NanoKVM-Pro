@@ -193,3 +193,15 @@ type GetTimeStatusRsp struct {
 	IsSynchronized bool  `json:"isSynchronized"`
 	LastSyncTime   int64 `json:"lastSyncTime"`
 }
+
+type MenuBarConfig struct {
+	DisabledItems []string `json:"disabledItems"`
+}
+
+type SetMenuBarConfigReq struct {
+	DisabledItems []string `form:"disabledItems" json:"disabledItems" validate:"omitempty"`
+}
+
+type GetMenuBarConfigRsp struct {
+	DisabledItems []string `json:"disabledItems"`
+}

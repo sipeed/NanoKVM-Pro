@@ -76,4 +76,7 @@ func vmRouter(r *gin.Engine) {
 	api.GET("/vm/time", service.GetTime)              // get time in real time
 	api.GET("/vm/time/status", service.GetTimeStatus) // get time status
 	api.POST("/vm/time/sync", service.SyncTime)       // synchronize time
+
+	api.GET("/vm/menubar", service.GetMenuBarConfig)  // get menu bar config
+	api.POST("/vm/menubar", service.SetMenuBarConfig) // set menu bar config
 }

@@ -78,6 +78,9 @@ const zh = {
       upload: '上传',
       advanced: '高级设置'
     },
+    volume: {
+      title: '音量'
+    },
     keyboard: {
       title: '键盘',
       paste: '粘贴',
@@ -240,7 +243,7 @@ const zh = {
         languageDesc: '选择界面语言',
         menuBar: '菜单栏',
         menuBarDesc: '是否在菜单栏中显示图标',
-        webTitle: '标题',
+        webTitle: '网页标题',
         webTitleDesc: '自定义网站页面标题'
       },
       screen: {

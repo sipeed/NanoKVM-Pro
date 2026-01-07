@@ -205,3 +205,14 @@ export function getTimeStatus() {
 export function syncTime() {
   return http.post('/api/vm/time/sync');
 }
+
+// get menu bar config
+export function getMenuBarConfig() {
+  return http.get('/api/vm/menubar');
+}
+
+// set menu bar config
+export function setMenuBarConfig(disabledItems: string[]) {
+  return http.post('/api/vm/menubar', { disabledItems });
+}
+

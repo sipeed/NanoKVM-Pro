@@ -11,3 +11,6 @@ export const webTitleAtom = atom('');
 
 // menu bar disabled items
 export const menuDisabledItemsAtom = atom<string[]>([]);
+
+// track how many submenus are currently open
+export const submenuOpenCountAtom = atom(0);

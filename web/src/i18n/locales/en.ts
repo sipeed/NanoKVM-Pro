@@ -92,8 +92,8 @@ const en = {
       upload: 'Upload',
       advanced: 'Advanced'
     },
-    audio: {
-      title: 'Audio'
+    volume: {
+      title: "Volume",
     },
     keyboard: {
       title: 'Keyboard',
@@ -262,7 +262,7 @@ const en = {
         languageDesc: 'Select the language for the interface',
         menuBar: 'Menu Bar',
         menuBarDesc: 'Display icons in the menu bar',
-        webTitle: 'Title',
+        webTitle: 'Web Title',
         webTitleDesc: 'Customize the web page title'
       },
       screen: {

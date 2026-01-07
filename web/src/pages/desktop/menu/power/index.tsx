@@ -48,7 +48,12 @@ export const Power = () => {
   }
 
   const icon = (
-    <div className={clsx('h-[18px] w-[18px]', isPowerOn && 'text-green-600')}>
+    <div
+      className={clsx(
+        'h-[18px] w-[18px]',
+        isPowerOn ? 'text-green-600' : 'text-neutral-300 hover:text-white'
+      )}
+    >
       {isLoading ? (
         <LoaderCircleIcon className="animate-spin" size={18} />
       ) : (
@@ -63,7 +68,7 @@ export const Power = () => {
         <span className="text-base font-bold text-neutral-300">{t('power.title')}</span>
 
         <div className="flex items-center space-x-2">
-          <Tooltip title={t('power.showConfirmTip')} placement="right">
+          <Tooltip title={t('power.showConfirmTip')} placement="right" styles={{root: {maxWidth: "320px"}}}>
             <div className="flex items-center space-x-2">
               <span className="text-xs text-neutral-400">{t('power.showConfirm')}</span>
 

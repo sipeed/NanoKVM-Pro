@@ -17,7 +17,7 @@ import semver from 'semver';
 import * as api from '@/api/application.ts';
 import * as ls from '@/lib/localstorage.ts';
 import { isKeyboardEnableAtom } from '@/jotai/keyboard.ts';
-import { isSettingsOpenAtom, settingTabAtom } from '@/jotai/settings.ts';
+import { isSettingsOpenAtom, settingTabAtom, submenuOpenCountAtom } from '@/jotai/settings.ts';
 import { Tailscale as TailscaleIcon } from '@/components/icons/tailscale';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
@@ -31,9 +31,11 @@ import { Update } from './update';
 
 export const Settings = () => {
   const { t } = useTranslation();
-  const setIsKeyboardEnable = useSetAtom(isKeyboardEnableAtom);
+
   const [isSettingsOpen, setIsSettingsOpen] = useAtom(isSettingsOpenAtom);
   const [settingTab, setSettingTab] = useAtom(settingTabAtom);
+  const setIsKeyboardEnable = useSetAtom(isKeyboardEnableAtom);
+  const setSubmenuOpenCount = useSetAtom(submenuOpenCountAtom);
 
   const [isLocked, setIsLocked] = useState(false);
 
@@ -92,6 +94,7 @@ export const Settings = () => {
   function openModal() {
     setIsSettingsOpen(true);
     setIsKeyboardEnable(false);
+    setSubmenuOpenCount((count) => count + 1);
   }
 
   function closeModal() {
@@ -102,17 +105,18 @@ export const Settings = () => {
     setIsKeyboardEnable(true);
     setIsSettingsOpen(false);
     setSettingTab('about');
+    setSubmenuOpenCount((count) => Math.max(0, count - 1));
   }
 
   return (
     <>
       <Tooltip title={t('settings.title')} placement="bottom" mouseEnterDelay={0.6}>
         <div
-          className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded text-white hover:bg-neutral-700/80"
+          className="flex h-[30px] w-[30px] cursor-pointer items-center justify-center rounded hover:bg-neutral-700/80"
           onClick={openModal}
         >
           <Badge dot={isUpdateAvailable} color="blue" offset={[0, 2]}>
-            <div className="pt-[3px]">
+            <div className="pt-[3px] text-neutral-300 hover:text-white">
               <SettingsIcon size={18} />
             </div>
           </Badge>
