@@ -25,21 +25,21 @@ export function setHidMode(mode: string) {
 
 // get shortcuts
 export function getShortcuts() {
-  return http.get("/api/hid/shortcuts")
+  return http.get('/api/hid/shortcuts');
 }
 
 // add shortcut
 export function addShortcut(keys: any[]) {
   const data = {
     keys
-  }
-  return http.post("/api/hid/shortcut", data)
+  };
+  return http.post('/api/hid/shortcut', data);
 }
 
 // delete shortcut
 export function deleteShortcut(id: string) {
   const data = {
     id
-  }
-  return http.delete("/api/hid/shortcut", data)
+  };
+  return http.delete('/api/hid/shortcut', data);
 }

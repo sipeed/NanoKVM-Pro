@@ -215,4 +215,3 @@ export function getMenuBarConfig() {
 export function setMenuBarConfig(disabledItems: string[]) {
   return http.post('/api/vm/menubar', { disabledItems });
 }
-

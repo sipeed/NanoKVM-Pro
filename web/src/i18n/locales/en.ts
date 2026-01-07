@@ -93,7 +93,7 @@ const en = {
       advanced: 'Advanced'
     },
     volume: {
-      title: "Volume",
+      title: 'Volume'
     },
     keyboard: {
       title: 'Keyboard',

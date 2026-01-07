@@ -68,7 +68,11 @@ export const Power = () => {
         <span className="text-base font-bold text-neutral-300">{t('power.title')}</span>
 
         <div className="flex items-center space-x-2">
-          <Tooltip title={t('power.showConfirmTip')} placement="right" styles={{root: {maxWidth: "320px"}}}>
+          <Tooltip
+            title={t('power.showConfirmTip')}
+            placement="right"
+            styles={{ root: { maxWidth: '320px' } }}
+          >
             <div className="flex items-center space-x-2">
               <span className="text-xs text-neutral-400">{t('power.showConfirm')}</span>
 

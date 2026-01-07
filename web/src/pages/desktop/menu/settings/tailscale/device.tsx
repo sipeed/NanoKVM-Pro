@@ -82,7 +82,7 @@ export const Device = ({ status, onLogout }: DeviceProps) => {
         <span>{status.account}</span>
       </div>
 
-      <Divider className="opacity-50" style={{margin: "50px 0 0 0"}} />
+      <Divider className="opacity-50" style={{ margin: '50px 0 0 0' }} />
 
       <div className="flex justify-center pt-7">
         <Popconfirm

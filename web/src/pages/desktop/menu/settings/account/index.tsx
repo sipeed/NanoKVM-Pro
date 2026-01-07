@@ -29,7 +29,7 @@ export const Account = () => {
   return (
     <>
       <div className="text-base font-bold">{t('settings.account.title')}</div>
-      <Divider className="opacity-50"/>
+      <Divider className="opacity-50" />
 
       <div className="flex flex-col space-y-5">
         <div className="flex items-center justify-between">
