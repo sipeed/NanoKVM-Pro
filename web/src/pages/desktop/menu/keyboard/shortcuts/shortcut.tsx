@@ -13,19 +13,19 @@ type ShortcutProps = {
 export const Shortcut = ({ shortcut }: ShortcutProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  async function send() {
+  async function sendShortcut() {
     const keyboard = new KeyboardReport();
 
     shortcut.keys.forEach((key) => {
       const report = keyboard.keyDown(key.code);
-      sendReport(report);
+      send(report);
     });
 
     const report = keyboard.reset();
-    sendReport(report);
+    send(report);
   }
 
-  function sendReport(report: Uint8Array) {
+  function send(report: Uint8Array) {
     const data = new Uint8Array([MessageEvent.Keyboard, ...report]);
     client.send(data);
   }
@@ -35,7 +35,7 @@ export const Shortcut = ({ shortcut }: ShortcutProps) => {
     setIsLoading(true);
 
     try {
-      await send();
+      await sendShortcut();
     } catch (err) {
       console.log(err);
     } finally {

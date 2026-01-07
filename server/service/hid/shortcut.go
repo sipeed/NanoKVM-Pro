@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"NanoKVM-Server/proto"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -34,7 +35,7 @@ func (s *Service) GetShortcuts(c *gin.Context) {
 	rsp.OkRspWithData(c, &proto.GetShortcutsRsp{
 		Shortcuts: shortcuts,
 	})
-	log.Debug("get shortcuts success, total: %d", len(shortcuts))
+	log.Debugf("get shortcuts success, total: %d", len(shortcuts))
 }
 
 func (s *Service) AddShortcut(c *gin.Context) {
@@ -100,7 +101,7 @@ func loadShortcuts() (*ShortcutStore, error) {
 }
 
 func saveShortcuts(store *ShortcutStore) error {
-	data, err := json.MarshalIndent(store, "", "  ")
+	data, err := json.Marshal(store)
 	if err != nil {
 		return err
 	}
