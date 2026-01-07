@@ -5,7 +5,8 @@ import { useMediaQuery } from 'react-responsive';
 import { MouseReportAbsolute } from '@/lib/mouse.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
 import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
-import { MouseAbsoluteEvent } from '@/pages/desktop/mouse/types.ts';
+
+import { MouseAbsoluteEvent } from './types.ts';
 
 enum MouseButton {
   Left = 0,
