@@ -1,0 +1,85 @@
+# All configs user can edit easily
+# Format: maix_<item>_<key>=value
+#         all key charactors should be lowercase
+#         and shell environment style file, so no space around '=' !!!
+# Full supported items see documentation of maixpy at:
+#      https://wiki.sipeed.com/maixpy/doc/zh/basic/app.html
+
+### [language]
+maix_language_locale=en
+
+### [wifi]
+# can be "ap" or "sta" or "off"
+maix_wifi_mode=sta
+maix_wifi_ssid=Sipeed_Guest
+maix_wifi_passwd=qwert123
+# ENCRYPT default auto detect, you can also set it manually:
+#   can be "NONE", "WPA-PSK", "WPA-EAP", "SAE"
+# maix_wifi_encrypt="WPA-PSK"
+
+### [backlight]
+maix_backlight_value=50
+
+### [comm] Maix comm protocol
+# can be "uart" or "none"
+maix_comm_method=uart
+# uart port name, like "uart0" or "uart1", etc.
+# "default" means default port, different board may has different default port.
+# e.g. maixcam/maixcam-pro use "uart0", maixcam2 use "uart4".
+maix_comm_uart_port=default
+
+### [npu]
+# for maixcam2, enable AI ISP(1) or not(0),
+# enalbe AI ISP will get better camera quality and occupy half of NPU.
+maix_npu_ai_isp=0
+
+#### [memory]
+# CMM memory is for camera and NPU etc. Now only support for maixcam2, unit is MiB.
+# -1 means use default.
+maix_memory_cmm=200
+
+#### [usb]
+# USB mode, device or host.
+maix_usb_mode=device
+
+# Enable (1) or disable (0) as NCM USB virtual network card.
+# supported by >=win11 and unix like systems. speed faster than rndis.
+# Only valid in device mode.
+maix_usb_ncm=0
+
+# Enable (1) or disable (0) as RNDIS USB virtual network card.
+# supported by all windows and linux(remove in future), but not macos.
+# Only valid in device mode.
+maix_usb_rndis=0
+
+# Enable (1) or disable (0) as USB mass storage device.
+# so you can read board files on PC or Mobile though USB.
+# Only valid in device mode.
+maix_usb_mass_storage=0
+
+# Enable (1) or disable (0) as USB UVC device.
+# so you can use board as USB camera on PC or Mobile though USB.
+# Only valid in device mode.
+maix_usb_uvc=0
+
+# Enable (1) or disable (0) as USB mouse device.
+# so you can simulate a mouse for PC or Mobile though USB.
+# Only valid in device mode.
+maix_usb_hid_mouse=0
+
+# Enable (1) or disable (0) as USB keyboard device.
+# so you can simulate a keyboard for PC or Mobile though USB.
+# Only valid in device mode.
+maix_usb_hid_keyboard=0
+
+
+# Enable (1) or disable (0) as USB touchpad device.
+# so you can simulate a touchpad for PC or Mobile though USB.
+# Only valid in device mode.
+maix_usb_hid_touchpad=0
+
+
+# Enable (1) or disable (0) as USB adbd device.
+# so you can use adb on PC or Mobile to connect device though USB.
+# Only valid in device mode.
+maix_usb_hid_adb=0
