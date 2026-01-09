@@ -1,9 +1,10 @@
 package vm
 
 import (
-	"NanoKVM-Server/proto"
 	"os"
 	"os/exec"
+
+	"NanoKVM-Server/proto"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -45,7 +46,7 @@ func (s *Service) Reboot(c *gin.Context) {
 func reboot() error {
 	log.Println("reboot system...")
 
-	err := exec.Command("reboot").Run()
+	err := exec.Command("reboot").Start()
 	if err != nil {
 		log.Errorf("failed to reboot: %s", err)
 		return err
