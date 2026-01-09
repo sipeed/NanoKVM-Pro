@@ -1,4 +1,25 @@
-## 1.2.9 (2025-01-05)
+## 1.2.10 (2026-01-09)
+
+> This release includes a firmware update (v1.0.13). The device will automatically reboot once the update is complete.
+
+### Features
+
+- added support for mounting a virtual microphone on the remote host
+- enabled bidirectional audio transmission (Speaker and Microphone) via WebRTC
+- supported persistent storage for menu bar item configurations
+
+### Bug Fixes
+
+- fixed functionality issues with the AIC8800D80 Wi-Fi module
+- resolved an issue where USB UAC2 failed to work on Windows systems
+- fixed unresponsiveness when using two-finger scrolling on touchscreen
+
+### Improvements
+
+- optimized CMM memory usage
+- enhanced menu bar interaction and performance
+
+## 1.2.9 (2026-01-05)
 
 ### Bug Fixes
 
