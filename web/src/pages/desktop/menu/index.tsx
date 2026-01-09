@@ -13,6 +13,7 @@ import { AIAssistant } from './assistant/index.tsx';
 import { Fullscreen } from './fullscreen';
 import { Image } from './image';
 import { Keyboard } from './keyboard';
+import { Microphone } from './microphone';
 import { Mouse } from './mouse';
 import { Collapse, Expand } from './operations';
 import { Power } from './power';
@@ -23,22 +24,20 @@ import { Terminal } from './terminal';
 import { Volume } from './volume';
 import { Wol } from './wol';
 
+const HIDE_TIMEOUT = 8000;
+
 export const Menu = () => {
   const [menuDisabledItems, setMenuDisabledItems] = useAtom(menuDisabledItemsAtom);
   const submenuOpenCount = useAtomValue(submenuOpenCountAtom);
 
-  const [menuStatus, setMenuStatus] = useState({
-    expanded: true,
-    moved: false,
-    hovered: false,
-    hidden: false
-  });
+  const [isMenuExpanded, setIsMenuExpanded] = useState(true);
+  const [isMenuMoved, setIsMenuMoved] = useState(false);
+  const [isMenuHovered, setIsMenuHovered] = useState(false);
+  const [isMenuHidden, setIsMenuHidden] = useState(false);
   const [menuBounds, setMenuBounds] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
 
   const nodeRef = useRef<HTMLDivElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const HIDE_TIMEOUT = 8000;
 
   // init menu
   useEffect(() => {
@@ -57,17 +56,17 @@ export const Menu = () => {
   // handle menu bounds
   useEffect(() => {
     handleResize();
-  }, [menuDisabledItems, menuStatus.expanded]);
+  }, [menuDisabledItems, isMenuExpanded]);
 
   // handle hide timer
   useEffect(() => {
-    if (submenuOpenCount === 0 && !menuStatus.hovered) {
+    if (submenuOpenCount === 0 && !isMenuHovered) {
       startCountdown();
       return;
     }
 
     stopCountdown();
-  }, [submenuOpenCount, menuStatus.hovered]);
+  }, [submenuOpenCount, isMenuHovered]);
 
   async function getMenuBarConfig() {
     try {
@@ -100,17 +99,16 @@ export const Menu = () => {
   }
 
   function startCountdown() {
-    if (submenuOpenCount > 0 || !menuStatus.expanded || menuStatus.moved) {
+    if (submenuOpenCount > 0 || !isMenuExpanded || isMenuMoved) {
       return;
     }
 
-    stopCountdown();
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
 
     timerRef.current = setTimeout(() => {
-      setMenuStatus((status) => ({
-        ...status,
-        hidden: true
-      }));
+      setIsMenuHidden(true);
     }, HIDE_TIMEOUT);
   }
 
@@ -121,35 +119,22 @@ export const Menu = () => {
     }
   }
 
-  function handleExpanded(expanded: boolean) {
-    setMenuStatus((status) => ({
-      ...status,
-      expanded
-    }));
-  }
-
   function handleMoved(_e: DraggableEvent, data: DraggableData) {
-    if (data.x !== 0 || data.y !== 0) {
-      setMenuStatus((status) => ({
-        ...status,
-        moved: true
-      }));
-    }
+    if (data.x === 0 && data.y === 0) return;
+    if (isMenuMoved) return;
+
+    setIsMenuMoved(true);
   }
 
   function handleHovered(hovered: boolean) {
-    setMenuStatus((status) => ({
-      ...status,
-      hovered,
-      hidden: hovered ? false : status.hidden
-    }));
+    setIsMenuHovered(hovered);
+    if (hovered) {
+      setIsMenuHidden(false);
+    }
   }
 
-  function isEnabled(items: string | string[]) {
-    if (typeof items === 'string') {
-      return !menuDisabledItems.includes(items);
-    }
-    return items.some((item) => !menuDisabledItems.includes(item));
+  function isEnabled(item: string) {
+    return !menuDisabledItems.includes(item);
   }
 
   return (
@@ -168,7 +153,7 @@ export const Menu = () => {
         onBlur={() => handleHovered(false)}
       >
         {/* Trigger area for auto-show when hidden */}
-        {menuStatus.expanded && (
+        {isMenuExpanded && (
           <div className="absolute -top-[10px] left-0 right-0 h-[46px] w-full bg-transparent" />
         )}
 
@@ -177,8 +162,8 @@ export const Menu = () => {
           <div
             className={clsx(
               'h-[36px] items-center rounded bg-neutral-800/80 pl-1 pr-2 transition-all duration-300',
-              menuStatus.expanded ? 'flex' : 'hidden',
-              menuStatus.hidden ? '-translate-y-[110%] opacity-80' : 'translate-y-0 opacity-100'
+              isMenuExpanded ? 'flex' : 'hidden',
+              isMenuHidden ? '-translate-y-[110%] opacity-80' : 'translate-y-0 opacity-100'
             )}
           >
             <strong>
@@ -190,6 +175,8 @@ export const Menu = () => {
 
             <Screen />
             {isEnabled('volume') && <Volume />}
+            {isEnabled('microphone') && <Microphone />}
+            {['volume', 'microphone'].some(isEnabled) && <Divider type="vertical" />}
 
             <Keyboard />
             <Mouse />
@@ -201,7 +188,7 @@ export const Menu = () => {
             {isEnabled('terminal') && <Terminal />}
             {isEnabled('wol') && <Wol />}
 
-            {isEnabled(['image', 'script', 'assistant', 'terminal', 'wol']) && (
+            {['image', 'script', 'assistant', 'terminal', 'wol'].some(isEnabled) && (
               <Divider type="vertical" />
             )}
 
@@ -214,12 +201,12 @@ export const Menu = () => {
 
             <Settings />
             {isEnabled('fullscreen') && <Fullscreen />}
-            {isEnabled('collapse') && <Collapse toggleMenu={handleExpanded} />}
+            {isEnabled('collapse') && <Collapse toggleMenu={setIsMenuExpanded} />}
           </div>
         </div>
 
         {/* Menubar expand button */}
-        {!menuStatus.expanded && <Expand toggleMenu={handleExpanded} />}
+        {!isMenuExpanded && <Expand toggleMenu={setIsMenuExpanded} />}
       </div>
     </Draggable>
   );
