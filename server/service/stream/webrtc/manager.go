@@ -1,13 +1,19 @@
 package webrtc
 
 import (
-	"NanoKVM-Server/common"
-	"NanoKVM-Server/service/stream"
 	"runtime"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"NanoKVM-Server/common"
+	"NanoKVM-Server/service/stream"
+	"NanoKVM-Server/service/stream/opus"
+
+	"github.com/pion/rtp"
+	"github.com/pion/webrtc/v4"
+	"github.com/pion/webrtc/v4/pkg/media/samplebuilder"
 
 	"github.com/gorilla/websocket"
 	"github.com/pion/webrtc/v4/pkg/media"
@@ -62,6 +68,10 @@ func (m *WebRTCManager) StartAudioStream() {
 	if atomic.CompareAndSwapInt32(&m.audioSending, 0, 1) {
 		go m.sendAudioStream()
 	}
+}
+
+func (m *WebRTCManager) StartMicStream(track *webrtc.TrackRemote) {
+	go m.receiveAudio(track)
 }
 
 func (m *WebRTCManager) sendVideoStream() {
@@ -155,6 +165,47 @@ func (m *WebRTCManager) sendAudioStream() {
 			client.track.writeAudio(sample)
 		}
 	}
+}
+
+func (m *WebRTCManager) receiveAudio(track *webrtc.TrackRemote) {
+	player := opus.GetAudioInputPlayer()
+	if err := player.Start(); err != nil {
+		log.Errorf("failed to start audio player: %s", err)
+		return
+	}
+	defer player.Stop()
+
+	sampleBuilder := samplebuilder.New(20, &opus.Packet{}, 48000)
+
+	buf := make([]byte, 1500)
+	for {
+		n, _, err := track.Read(buf)
+		if err != nil {
+			log.Debugf("audio track read error: %s", err)
+			break
+		}
+
+		packet := &rtp.Packet{}
+		if err := packet.Unmarshal(buf[:n]); err != nil {
+			log.Debugf("failed to unmarshal RTP packet: %s", err)
+			continue
+		}
+
+		sampleBuilder.Push(packet)
+
+		for {
+			sample := sampleBuilder.Pop()
+			if sample == nil {
+				break
+			}
+
+			if err := player.DecodeAndWrite(sample.Data); err != nil {
+				log.Debugf("failed to decode and write: %s", err)
+			}
+		}
+	}
+
+	log.Debugf("audio microphone track ended")
 }
 
 func (m *WebRTCManager) updateStatus(videoStatus int) {

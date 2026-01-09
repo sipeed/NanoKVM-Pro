@@ -121,6 +121,11 @@ build_project() {
     log_info "Using ARCH: $arch"
     log_info "Using CC: $cc"
 
+    # Calculate sysroot path from compiler path
+    local toolchain_dir=$(dirname $(dirname "$cc"))
+    local sysroot="${toolchain_dir}/aarch64-none-linux-gnu/libc"
+    log_info "Using sysroot: $sysroot"
+
     # Build shared library
     log_info "Building shared library..."
     if ! "$cc" -fPIC -shared -o dl_lib/libkvm.so dl_lib/kvmimpl.cpp; then
@@ -133,9 +138,9 @@ build_project() {
         return 1
     fi
 
-    # Get version info for build
-    VERSION=${VERSION:-$(git describe --tags --always --dirty 2>/dev/null || echo "dev")}
-    BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+    # Get version information
+    VERSION=$(cat version.txt 2>/dev/null || echo "dev")
+    BUILD_TIME=$(date +"%Y-%m-%d %H:%M:%S")
     COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
     GO_VERSION=$(go version | awk '{print $3}')
     BUILD_USER=$(whoami)@$(hostname)
@@ -145,10 +150,18 @@ build_project() {
     log_info "Commit: $COMMIT"
     log_info "Build time: $BUILD_TIME"
 
+    # CGO flags for cross-compilation with opus
+    local cgo_cflags="-I${sysroot}/usr/include"
+    local cgo_ldflags="-L${sysroot}/usr/lib"
+    
+    log_info "CGO_CFLAGS: $cgo_cflags"
+    log_info "CGO_LDFLAGS: $cgo_ldflags"
+
     # Build Go application
     log_info "Building Go application..."
-    if ! CGO_ENABLED=1 GOOS=linux GOARCH=${arch} CC=${cc} CGO_CFLAGS="" \
-    GOEXPERIMENT=boringcrypto go build -ldflags "\
+    if ! CGO_ENABLED=1 GOOS=linux GOARCH=${arch} CC=${cc} \
+        CGO_CFLAGS="$cgo_cflags" CGO_LDFLAGS="$cgo_ldflags" \
+        GOEXPERIMENT=boringcrypto go build -ldflags "\
         -X 'main.Version=$VERSION' \
         -X 'main.BuildTime=$BUILD_TIME' \
         -X 'main.Commit=$COMMIT' \

@@ -70,6 +70,14 @@ func (s *SignalingHandler) RegisterCallbacks() {
 
 		log.Debugf("audio connection state changed to %s", state.String())
 	})
+
+	// handle incoming microphone audio track
+	s.client.audio.OnTrack(func(track *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+		if track.Kind() == webrtc.RTPCodecTypeAudio {
+			log.Debugf("received audio track: %s", track.Codec().MimeType)
+			manager.StartMicStream(track)
+		}
+	})
 }
 
 // HandleMessage handle the received message

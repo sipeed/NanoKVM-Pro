@@ -15,15 +15,15 @@ import (
 )
 
 const (
-	pathSdCard    = "/dev/mmcblk1"
-	pathEmmcImage = "/exfat.img"
+	virtualNetwork     = "/boot/usb.ncm"
+	virtualNetworkFlag = "/sys/kernel/config/usb_gadget/g0/configs/c.1/ncm.usb0"
 
-	pathVirtualDiskSD      = "/boot/usb.disk1.sd"
-	pathVirtualDiskEmmc    = "/boot/usb.disk1.emmc"
-	pathVirtualDiskMounted = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk1/lun.0/file"
+	virtualMic     = "/boot/usb.uac2"
+	virtualMicFlag = "/sys/kernel/config/usb_gadget/g0/configs/c.1/uac2.usb0"
 
-	pathVirtualNetwork = "/boot/usb.ncm"
-	pathNetworkFlag    = "/sys/kernel/config/usb_gadget/g0/configs/c.1/ncm.usb0"
+	virtualDiskSDCard = "/boot/usb.disk1.sd"
+	virtualDiskEmmc   = "/boot/usb.disk1.emmc"
+	virtualDiskFlag   = "/sys/kernel/config/usb_gadget/g0/functions/mass_storage.disk1/lun.0/file"
 )
 
 const (
@@ -32,8 +32,11 @@ const (
 )
 
 const (
-	DiskTypeSDCard = "sdcard"
-	DiskTypeEmmc   = "emmc"
+	sdCardFlag = "/dev/mmcblk1"
+	emmcFlag   = "/exfat.img"
+
+	diskTypeSDCard = "sdcard"
+	diskTypeEmmc   = "emmc"
 )
 
 type VirtualDevice interface {
@@ -47,6 +50,7 @@ func (s *Service) GetVirtualDevice(c *gin.Context) {
 
 	rsp.OkRspWithData(c, &proto.GetVirtualDeviceRsp{
 		IsNetworkEnabled: isVirtualNetworkMounted(),
+		IsMicEnabled:     isVirtualMicMounted(),
 		MountedDisk:      getMountedDiskType(),
 		IsSdCardExist:    isSdCardPresent(),
 		IsEmmcExist:      isEmmcImagePresent(),
@@ -104,6 +108,8 @@ func resolveDeviceCommands(device, diskType string) ([]string, error) {
 	switch device {
 	case "network":
 		return getNetworkCommands(), nil
+	case "mic":
+		return getMicCommands(), nil
 	case "disk":
 		return getDiskCommands(diskType)
 	default:
@@ -117,9 +123,24 @@ func getNetworkCommands() []string {
 	}
 
 	if !isVirtualNetworkMounted() {
-		cmd = append(cmd, "touch "+pathVirtualNetwork)
+		cmd = append(cmd, "touch "+virtualNetwork)
 	} else {
-		cmd = append(cmd, "rm -rf "+pathVirtualNetwork)
+		cmd = append(cmd, "rm -rf "+virtualNetwork)
+	}
+
+	cmd = append(cmd, scriptUsbDev+" start")
+	return cmd
+}
+
+func getMicCommands() []string {
+	cmd := []string{
+		scriptUsbDev + " stop",
+	}
+
+	if !isVirtualMicMounted() {
+		cmd = append(cmd, "touch "+virtualMic)
+	} else {
+		cmd = append(cmd, "rm -rf "+virtualMic)
 	}
 
 	cmd = append(cmd, scriptUsbDev+" start")
@@ -128,23 +149,23 @@ func getNetworkCommands() []string {
 
 func getDiskCommands(diskType string) ([]string, error) {
 	// For emmc, ensure image exists before mounting
-	if diskType == DiskTypeEmmc {
+	if diskType == diskTypeEmmc {
 		if err := ensureEmmcImageExists(); err != nil {
 			return nil, err
 		}
 	}
 
 	cmd := []string{
-		"rm -f " + pathVirtualDiskSD,
-		"rm -f " + pathVirtualDiskEmmc,
+		"rm -f " + virtualDiskSDCard,
+		"rm -f " + virtualDiskEmmc,
 	}
 
 	// add mount command
 	if getMountedDiskType() != diskType {
-		if diskType == DiskTypeSDCard {
-			cmd = append(cmd, "touch "+pathVirtualDiskSD)
-		} else if diskType == DiskTypeEmmc {
-			cmd = append(cmd, "touch "+pathVirtualDiskEmmc)
+		if diskType == diskTypeSDCard {
+			cmd = append(cmd, "touch "+virtualDiskSDCard)
+		} else if diskType == diskTypeEmmc {
+			cmd = append(cmd, "touch "+virtualDiskEmmc)
 		}
 	}
 
@@ -153,7 +174,7 @@ func getDiskCommands(diskType string) ([]string, error) {
 }
 
 func ensureEmmcImageExists() error {
-	if isFileExists(pathEmmcImage) {
+	if isFileExists(emmcFlag) {
 		return nil
 	}
 
@@ -185,11 +206,11 @@ func executeWithHidLock(commands []string) error {
 }
 
 func getMountedDiskType() string {
-	if !isFileExists(pathVirtualDiskMounted) {
+	if !isFileExists(virtualDiskFlag) {
 		return ""
 	}
 
-	content, err := os.ReadFile(pathVirtualDiskMounted)
+	content, err := os.ReadFile(virtualDiskFlag)
 	if err != nil {
 		return ""
 	}
@@ -197,25 +218,29 @@ func getMountedDiskType() string {
 	disk := strings.TrimSpace(string(content))
 
 	switch disk {
-	case "/dev/mmcblk1p1":
-		return DiskTypeSDCard
-	case pathEmmcImage:
-		return DiskTypeEmmc
+	case sdCardFlag, "/dev/mmcblk1p1":
+		return diskTypeSDCard
+	case emmcFlag:
+		return diskTypeEmmc
 	default:
 		return ""
 	}
 }
 
 func isVirtualNetworkMounted() bool {
-	return isFileExists(pathNetworkFlag)
+	return isFileExists(virtualNetworkFlag)
+}
+
+func isVirtualMicMounted() bool {
+	return isFileExists(virtualMicFlag)
 }
 
 func isSdCardPresent() bool {
-	return isFileExists(pathSdCard)
+	return isFileExists(sdCardFlag)
 }
 
 func isEmmcImagePresent() bool {
-	return isFileExists(pathEmmcImage)
+	return isFileExists(emmcFlag)
 }
 
 func isFileExists(path string) bool {

@@ -95,6 +95,14 @@ const en = {
     volume: {
       title: 'Volume'
     },
+    microphone: {
+      title: 'Microphone',
+      notMounted: 'Microphone Not Mounted',
+      tip1: 'The virtual microphone is not mounted on the remote host. Would you like to mount and enable it now?',
+      tip2: 'You can also manage this later in "Settings > Device > Virtual Mic".',
+      confirm: 'Enable',
+      cancel: 'Cancel'
+    },
     keyboard: {
       title: 'Keyboard',
       paste: 'Paste',
@@ -352,13 +360,13 @@ const en = {
         },
         passthrough: {
           title: 'HDMI Passthrough',
-          tip: 'Enabled by default, the capture rate is limited to standard monitor frame rates like 4K30. Disabling it allows for non-standard frame rates, such as 4K40. This feature may not be applicable to some monitors.',
-          description: 'Enable HDMI Passthrough'
+          description: 'Enable HDMI passthrough',
+          tip: 'Enabling HDMI capture limits passthrough to 4K30. Disable HDMI capture to achieve 4K60 passthrough.'
         },
         capture: {
-          title: 'HDMI Capture',
-          tip: 'Enabled by default, the passthrough is limited to 4K30. You can disable it when local use to enable 4K60 passthrough.',
-          description: 'Enable HDMI Capture'
+          title: 'HDMI',
+          description: 'Enable HDMI output/capture',
+          tip: 'Enabling HDMI passthrough limits the output frame rate to standard 4K30. Disable passthrough to support non-standard rates like 4K40. (Monitor compatibility may vary).'
         },
         ssh: {
           description: 'Enable SSH remote access',
@@ -397,10 +405,10 @@ const en = {
         mdns: {
           description: 'Enable mDNS discovery service'
         },
-        hdmi: {
-          description: 'Enable HDMI/monitor output'
-        },
         hidOnly: 'HID-Only Mode',
+        hidOnlyDesc: 'HID-Only Mode is enabled and virtual devices are currently unavailable',
+        imageMounted: 'Image Mounted',
+        imageMountedDesc: 'Operating the virtual devices will unmount the current image',
         disk: 'Virtual Disk',
         diskDesc: 'Mount virtual U-disk on the remote host',
         emmc: {
@@ -410,6 +418,11 @@ const en = {
         },
         network: 'Virtual Network',
         networkDesc: 'Mount virtual network card on the remote host',
+        mic: 'Virtual Mic',
+        micDesc: 'Mount virtual microphone on the remote host',
+        micTip:
+          'Due to USB endpoint limitations, enabling the Virtual Mic will disable the USB Secondary Screen.\n' +
+          'And it is recommended to disable this feature during BIOS operations to ensure optimal compatibility.',
         reboot: 'Reboot',
         rebootDesc: 'Are you sure you want to reboot NanoKVM?',
         datetime: {

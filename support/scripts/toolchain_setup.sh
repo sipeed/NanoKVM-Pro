@@ -65,6 +65,99 @@ EOF
     return 0
 }
 
+# Function to install libopus for ARM64 cross-compilation
+install_libopus() {
+    local target_dir=$1
+    local sysroot="${target_dir}/aarch64-none-linux-gnu/libc"
+    local temp_dir=$(mktemp -d)
+    
+    echo "Installing libopus for ARM64..."
+    
+    # Read libopus URLs from config, with defaults for backward compatibility
+    local config_file="./config.ini"
+    local libopus_url libopus_dev_url
+    libopus_url=$(./getconfig.py "$config_file" "libopus" "url")
+    libopus_dev_url=$(./getconfig.py "$config_file" "libopus" "dev_url")
+    
+    # Use default values if not configured
+    if [[ -z "$libopus_url" ]]; then
+        libopus_url="https://ports.ubuntu.com/ubuntu-ports/pool/main/o/opus/libopus0_1.3.1-0.1build2_arm64.deb"
+    fi
+    if [[ -z "$libopus_dev_url" ]]; then
+        libopus_dev_url="https://ports.ubuntu.com/ubuntu-ports/pool/main/o/opus/libopus-dev_1.3.1-0.1build2_arm64.deb"
+    fi
+    
+    cd "$temp_dir"
+    
+    # Download libopus0
+    echo "Downloading libopus0..."
+    if ! curl -sL -o libopus0.deb "$libopus_url"; then
+        echo "Warning: Failed to download libopus0, audio input feature may not work"
+        cd - > /dev/null
+        rm -rf "$temp_dir"
+        return 1
+    fi
+    
+    # Download libopus-dev
+    echo "Downloading libopus-dev..."
+    if ! curl -sL -o libopus-dev.deb "$libopus_dev_url"; then
+        echo "Warning: Failed to download libopus-dev, audio input feature may not work"
+        cd - > /dev/null
+        rm -rf "$temp_dir"
+        return 1
+    fi
+    
+    # Extract libopus0
+    mkdir -p libopus0
+    cd libopus0
+    ar x ../libopus0.deb
+    if [[ -f data.tar.xz ]]; then
+        tar xf data.tar.xz
+    elif [[ -f data.tar.zst ]]; then
+        zstd -d data.tar.zst -o data.tar && tar xf data.tar
+    elif [[ -f data.tar.gz ]]; then
+        tar xzf data.tar.gz
+    fi
+    cd ..
+    
+    # Extract libopus-dev
+    mkdir -p libopus-dev
+    cd libopus-dev
+    ar x ../libopus-dev.deb
+    if [[ -f data.tar.xz ]]; then
+        tar xf data.tar.xz
+    elif [[ -f data.tar.zst ]]; then
+        zstd -d data.tar.zst -o data.tar && tar xf data.tar
+    elif [[ -f data.tar.gz ]]; then
+        tar xzf data.tar.gz
+    fi
+    cd ..
+    
+    # Install to sysroot - libraries
+    if [[ -d libopus0/usr/lib/aarch64-linux-gnu ]]; then
+        mkdir -p "${sysroot}/usr/lib"
+        cp -a libopus0/usr/lib/aarch64-linux-gnu/libopus.so* "${sysroot}/usr/lib/" 2>/dev/null || true
+    fi
+    
+    # Install to sysroot - headers and static library
+    if [[ -d libopus-dev/usr/include/opus ]]; then
+        mkdir -p "${sysroot}/usr/include"
+        cp -a libopus-dev/usr/include/* "${sysroot}/usr/include/" 2>/dev/null || true
+        
+        if [[ -d libopus-dev/usr/lib/aarch64-linux-gnu ]]; then
+            cp -a libopus-dev/usr/lib/aarch64-linux-gnu/libopus.a "${sysroot}/usr/lib/" 2>/dev/null || true
+            cp -a libopus-dev/usr/lib/aarch64-linux-gnu/pkgconfig "${sysroot}/usr/lib/" 2>/dev/null || true
+        fi
+    fi
+    
+    # Cleanup
+    cd - > /dev/null
+    rm -rf "$temp_dir"
+    
+    echo "libopus installation completed"
+    return 0
+}
+
 # Function to generate the Conan profile file
 gen_conan_profile() {
     local target_dir=$1
@@ -219,6 +312,9 @@ main() {
     if ! gen_conan_profile "$target_dir"; then
         return
     fi
+
+    # Install additional libraries for cross-compilation
+    install_libopus "$target_dir"
 }
 
 main

@@ -6,10 +6,10 @@ export function getVirtualDevice() {
 }
 
 // mount/unmount virtual device
-export function updateVirtualDevice(device: string, type: string) {
+export function updateVirtualDevice(device: string, type?: string) {
   const data = {
     device,
-    type
+    type: type ? type : ''
   };
 
   return http.post('/api/vm/device/virtual', data);

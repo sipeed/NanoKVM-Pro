@@ -81,6 +81,14 @@ const zh = {
     volume: {
       title: '音量'
     },
+    microphone: {
+      title: '麦克风',
+      notMounted: '麦克风未挂载',
+      tip1: '远程主机尚未挂载虚拟麦克风，是否立即挂载并启用？',
+      tip2: '您也可以前往 [设置 > 设备 > 虚拟麦克风] 进行管理。',
+      confirm: '启用',
+      cancel: '取消'
+    },
     keyboard: {
       title: '键盘',
       paste: '粘贴',
@@ -331,13 +339,13 @@ const zh = {
         },
         passthrough: {
           title: 'HDMI 环出',
-          tip: '默认开启，但是采集速率会被限制到4K30等常规显示器帧率，关闭以实现4K40等非标准帧率。该功能可能对部分显示器不适用。',
-          description: '启用 HDMI 环出功能'
+          description: '启用 HDMI 环出',
+          tip: '启用 HDMI 采集功能时，环出最高支持 4K30。如需使用 4K60 环出，请先关闭 HDMI 采集功能。'
         },
         capture: {
-          title: 'HDMI 采集',
-          tip: '默认开启，但是环出会被限制到4K30，本地工作时可以关闭以实现4K60环出。',
-          description: '启用 HDMI 采集功能'
+          title: 'HDMI',
+          description: '启用 HDMI 显示/采集',
+          tip: '开启 HDMI 环出将强制使用标准帧率（4K30）。如需使用 4K40 等非标准帧率，请关闭环出功能。（部分显示器可能不兼容）'
         },
         ssh: {
           description: '启用 SSH 远程访问',
@@ -347,7 +355,7 @@ const zh = {
         staticIp: {
           title: '静态 IP',
           config: '设置',
-          tip: '建议在可物理接触设备的情况下进行设置，以防止配置错误导致设备失联，无法远程访问',
+          tip: '建议在可物理接触设备的情况下进行设置，以防止配置错误导致设备无法远程访问',
           document: '查看文档',
           enable: '启用静态 IP',
           placeholder: '格式：IP/CIDR [Gateway]\n示例：192.168.1.10/24',
@@ -376,10 +384,10 @@ const zh = {
         mdns: {
           description: '启用 mDNS 发现服务'
         },
-        hdmi: {
-          description: '启用 HDMI/显示器 输出功能'
-        },
         hidOnly: 'HID-Only 模式',
+        hidOnlyDesc: '当前处于 HID-Only 模式，虚拟设备功能不可用',
+        imageMounted: '镜像已挂载',
+        imageMountedDesc: '操作虚拟设备会导致当前挂载的镜像自动卸载',
         disk: '虚拟U盘',
         diskDesc: '在远程主机中挂载虚拟U盘',
         emmc: {
@@ -389,6 +397,11 @@ const zh = {
         },
         network: '虚拟网卡',
         networkDesc: '在远程主机中挂载虚拟网卡',
+        mic: '虚拟麦克风',
+        micDesc: '在远程主机中挂载虚拟麦克风',
+        micTip:
+          '受 USB 端点资源限制，启用虚拟麦克风将自动禁用 USB 副屏功能。\n' +
+          '在进行 BIOS 操作时建议关闭虚拟麦克风，以确保最佳兼容性。',
         datetime: {
           timezone: '时区',
           datetime: '时间',
