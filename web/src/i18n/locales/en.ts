@@ -268,10 +268,18 @@ const en = {
         display: 'Display',
         language: 'Language',
         languageDesc: 'Select the language for the interface',
-        menuBar: 'Menu Bar',
-        menuBarDesc: 'Display icons in the menu bar',
         webTitle: 'Web Title',
-        webTitleDesc: 'Customize the web page title'
+        webTitleDesc: 'Customize the web page title',
+        menuBar: {
+          title: 'Menu Bar',
+          mode: 'Display Mode',
+          modeDesc: 'Display menu bar on the screen',
+          modeOff: 'Off',
+          modeAuto: 'Auto hide',
+          modeAlways: 'Always visible',
+          icons: 'Submenu Icons',
+          iconsDesc: 'Display submenu icons in the menu bar'
+        }
       },
       screen: {
         title: 'Screen',
@@ -282,7 +290,8 @@ const en = {
         edid: {
           description: 'Select display parameters',
           default: 'Default',
-          custom: 'Custom'
+          custom: 'Custom',
+          document: 'Document'
         },
         rateControlMode: {
           title: 'Rate Control Mode',

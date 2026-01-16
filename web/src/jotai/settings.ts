@@ -14,3 +14,6 @@ export const menuDisabledItemsAtom = atom<string[]>([]);
 
 // track how many submenus are currently open
 export const submenuOpenCountAtom = atom(0);
+
+// menu display mode: 'off' | 'auto' | 'always'
+export const menuDisplayModeAtom = atom<string>('auto');

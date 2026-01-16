@@ -34,7 +34,9 @@ export const Shortcuts = () => {
   ];
 
   useEffect(() => {
+    if (isOpen) {
     getShortcuts();
+    }
   }, [isOpen]);
 
   async function getShortcuts() {

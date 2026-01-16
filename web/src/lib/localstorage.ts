@@ -11,6 +11,7 @@ const KEYBOARD_LANGUAGE_KEY = 'nano-kvm-keyboard-language';
 const SKIP_MODIFY_PASSWORD_KEY = 'nano-kvm-skip-modify-password';
 const SKIP_BROWSER_NOTIFICATION_KEY = 'nano-kvm-skip-browser-notification';
 const MENU_DISABLED_ITEMS_KEY = 'nano-kvm-menu-disabled-items';
+const MENU_AUTO_HIDE_KEY = 'nano-kvm-menu-auto-hide';
 const POWER_CONFIRM_KEY = 'nano-kvm-power-confirm';
 
 type ItemWithExpiry = {
@@ -154,6 +155,15 @@ export function getSkipBrowserNotification() {
 export function getMenuDisabledItems(): string[] {
   const value = localStorage.getItem(MENU_DISABLED_ITEMS_KEY);
   return value ? JSON.parse(value) : [];
+}
+
+export function getMenuDisplayMode(): string {
+  const value = localStorage.getItem(MENU_AUTO_HIDE_KEY);
+  return value || 'auto';
+}
+
+export function setMenuDisplayMode(mode: string) {
+  localStorage.setItem(MENU_AUTO_HIDE_KEY, mode);
 }
 
 export function getPowerConfirm() {

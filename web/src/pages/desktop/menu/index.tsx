@@ -1,15 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Divider } from 'antd';
 import clsx from 'clsx';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { GripVerticalIcon } from 'lucide-react';
 import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
 import * as api from '@/api/vm.ts';
-import * as ls from '@/lib/localstorage.ts';
-import { menuDisabledItemsAtom, submenuOpenCountAtom } from '@/jotai/settings.ts';
+import * as storage from '@/lib/localstorage.ts';
+import { menuDisabledItemsAtom, menuDisplayModeAtom } from '@/jotai/settings.ts';
+import { useMenuBounds } from '@/hooks/useMenuBounds.ts';
+import { useMenuVisibility } from '@/hooks/useMenuVisibility.ts';
 
-import { AIAssistant } from './assistant/index.tsx';
+import { AIAssistant } from './assistant';
 import { Fullscreen } from './fullscreen';
 import { Image } from './image';
 import { Keyboard } from './keyboard';
@@ -24,130 +26,67 @@ import { Terminal } from './terminal';
 import { Volume } from './volume';
 import { Wol } from './wol';
 
-const HIDE_TIMEOUT = 8000;
-
 export const Menu = () => {
-  const [menuDisabledItems, setMenuDisabledItems] = useAtom(menuDisabledItemsAtom);
-  const submenuOpenCount = useAtomValue(submenuOpenCountAtom);
-
-  const [isMenuExpanded, setIsMenuExpanded] = useState(true);
-  const [isMenuMoved, setIsMenuMoved] = useState(false);
-  const [isMenuHovered, setIsMenuHovered] = useState(false);
-  const [isMenuHidden, setIsMenuHidden] = useState(false);
-  const [menuBounds, setMenuBounds] = useState({ left: 0, right: 0, top: 0, bottom: 0 });
-
   const nodeRef = useRef<HTMLDivElement | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // init menu
+  const menuDisplayMode = useAtomValue(menuDisplayModeAtom);
+  const menuDisabledItems = useAtomValue(menuDisabledItemsAtom);
+  const setMenuDisabledItems = useSetAtom(menuDisabledItemsAtom);
+
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const {
+    isMenuExpanded,
+    isMenuHidden,
+    isInvisible,
+    handleHovered,
+    handleMoved,
+    setIsMenuExpanded
+  } = useMenuVisibility();
+
+  const menuBounds = useMenuBounds(nodeRef, isMenuExpanded);
+
   useEffect(() => {
-    getMenuBarConfig();
-    startCountdown();
-    handleResize();
+    api
+      .getMenuBarConfig()
+      .then((rsp) => {
+        if (rsp.code === 0 && rsp.data?.disabledItems?.length) {
+          setMenuDisabledItems(rsp.data.disabledItems);
+          return;
+        }
 
-    window.addEventListener('resize', handleResize);
+        // compatible with old versions
+        const items = storage.getMenuDisabledItems();
+        setMenuDisabledItems(items);
+      })
+      .finally(() => {
+        setIsInitialized(true);
+      });
+  }, [setMenuDisabledItems]);
 
-    return () => {
-      stopCountdown();
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  // handle menu bounds
-  useEffect(() => {
-    handleResize();
-  }, [menuDisabledItems, isMenuExpanded]);
-
-  // handle hide timer
-  useEffect(() => {
-    if (submenuOpenCount === 0 && !isMenuHovered) {
-      startCountdown();
-      return;
-    }
-
-    stopCountdown();
-  }, [submenuOpenCount, isMenuHovered]);
-
-  async function getMenuBarConfig() {
-    try {
-      const rsp = await api.getMenuBarConfig();
-      if (rsp.code === 0 && rsp.data?.disabledItems?.length) {
-        setMenuDisabledItems(rsp.data.disabledItems);
-        return;
-      }
-
-      // compatible with old versions
-      const items = ls.getMenuDisabledItems();
-      setMenuDisabledItems(items);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  function handleResize() {
-    if (!nodeRef.current) return;
-
-    const elementRect = nodeRef.current.getBoundingClientRect();
-    const width = (window.innerWidth - elementRect.width) / 2;
-
-    setMenuBounds({
-      left: -width,
-      top: -10,
-      right: width,
-      bottom: window.innerHeight - elementRect.height - 10
-    });
-  }
-
-  function startCountdown() {
-    if (submenuOpenCount > 0 || !isMenuExpanded || isMenuMoved) {
-      return;
-    }
-
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    timerRef.current = setTimeout(() => {
-      setIsMenuHidden(true);
-    }, HIDE_TIMEOUT);
-  }
-
-  function stopCountdown() {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-  }
-
-  function handleMoved(_e: DraggableEvent, data: DraggableData) {
+  function onDragStop(_e: DraggableEvent, data: DraggableData) {
     if (data.x === 0 && data.y === 0) return;
-    if (isMenuMoved) return;
-
-    setIsMenuMoved(true);
-  }
-
-  function handleHovered(hovered: boolean) {
-    setIsMenuHovered(hovered);
-    if (hovered) {
-      setIsMenuHidden(false);
-    }
+    handleMoved();
   }
 
   function isEnabled(item: string) {
     return !menuDisabledItems.includes(item);
   }
-
   return (
     <Draggable
       nodeRef={nodeRef}
       bounds={menuBounds}
       handle="strong"
       positionOffset={{ x: '-50%', y: '0%' }}
-      onStop={handleMoved}
+      onStop={onDragStop}
     >
       <div
         ref={nodeRef}
-        className="fixed left-1/2 top-[10px] z-[1000] -translate-x-1/2"
+        className={clsx(
+          'fixed left-1/2 top-[10px] z-[1000] -translate-x-1/2 transition-opacity duration-300',
+          isInitialized ? 'opacity-100' : 'opacity-0',
+          isInvisible && 'invisible'
+        )}
         onMouseEnter={() => handleHovered(true)}
         onMouseLeave={() => handleHovered(false)}
         onBlur={() => handleHovered(false)}
@@ -206,7 +145,7 @@ export const Menu = () => {
         </div>
 
         {/* Menubar expand button */}
-        {!isMenuExpanded && <Expand toggleMenu={setIsMenuExpanded} />}
+        {!isMenuExpanded && menuDisplayMode !== 'off' && <Expand toggleMenu={setIsMenuExpanded} />}
       </div>
     </Draggable>
   );

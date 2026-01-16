@@ -249,10 +249,18 @@ const zh = {
         display: '显示',
         language: '语言',
         languageDesc: '选择界面语言',
-        menuBar: '菜单栏',
-        menuBarDesc: '是否在菜单栏中显示图标',
         webTitle: '网页标题',
-        webTitleDesc: '自定义网站页面标题'
+        webTitleDesc: '自定义网站页面标题',
+        menuBar: {
+          title: '菜单栏',
+          mode: '显示方式',
+          modeDesc: '菜单栏在屏幕上的显示方式',
+          modeOff: '关闭',
+          modeAuto: '自动隐藏',
+          modeAlways: '始终显示',
+          icons: '菜单图标',
+          iconsDesc: '是否在菜单栏中显示子菜单图标'
+        }
       },
       screen: {
         title: '屏幕',
@@ -263,7 +271,8 @@ const zh = {
         edid: {
           description: '选择显示器参数',
           default: '默认',
-          custom: '自定义'
+          custom: '自定义',
+          document: "文档"
         },
         rateControlMode: {
           title: '码率控制模式',

@@ -90,7 +90,7 @@ export const Header = ({ status, onSuccess }: HeaderProps) => {
         {status?.state && status.state !== 'notInstall' && (
           <Popover
             content={
-              <div className="flex min-w-[250px] flex-col">
+              <div className="flex min-w-[150px] flex-col">
                 <Uninstall onSuccess={onSuccess} />
               </div>
             }
