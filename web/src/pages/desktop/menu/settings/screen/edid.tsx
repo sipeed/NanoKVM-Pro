@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Select } from 'antd';
+import { ExternalLinkIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/vm.ts';
@@ -86,8 +87,19 @@ export const Edid = () => {
 
   return (
     <div className="flex items-center justify-between space-x-5">
-      <div className="flex flex-1 flex-col space-y-1">
-        <span>EDID</span>
+      <div className="flex flex-col space-y-1">
+        <div className="flex items-center space-x-2">
+          <span>EDID</span>
+
+          <a
+            className="flex items-center text-neutral-500 hover:text-blue-500"
+            href="https://wiki.sipeed.com/hardware/en/kvm/NanoKVM_Pro/extended.html#How-to-Modify-EDID"
+            target="_blank"
+          >
+            <ExternalLinkIcon size={15} />
+          </a>
+        </div>
+
         <span className="text-xs text-neutral-500">{t('settings.screen.edid.description')}</span>
       </div>
 

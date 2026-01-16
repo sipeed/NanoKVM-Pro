@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Divider, Popover } from 'antd';
 import {
   ArrowUpFromLineIcon,
+  BookIcon,
   CheckIcon,
   LoaderCircleIcon,
   RatioIcon,
@@ -148,11 +149,11 @@ export const Edid = () => {
         </div>
       ))}
 
-      {/* custom EDID list */}
-      {customEdidList.length > 0 && (
-        <>
-          <Divider style={{ margin: '5px 0' }} />
+      <Divider style={{ margin: '5px 0' }} />
 
+      {customEdidList.length > 0 ? (
+        // custom EDID list
+        <>
           {customEdidList.map((edid) => (
             <div
               key={edid}
@@ -175,6 +176,18 @@ export const Edid = () => {
             </div>
           ))}
         </>
+      ) : (
+        <a
+          className="flex cursor-pointer select-none items-center rounded px-1 py-1.5 text-neutral-300 hover:bg-neutral-700/70 hover:text-neutral-300"
+          href="https://wiki.sipeed.com/hardware/en/kvm/NanoKVM_Pro/extended.html#How-to-Modify-EDID"
+          target="_blank"
+        >
+          <div className="h-[14px] w-[20px]" />
+          <div className="flex items-center space-x-1">
+            <BookIcon size={14} />
+            <span>{t('settings.screen.edid.document')}</span>
+          </div>
+        </a>
       )}
 
       <Divider style={{ margin: '5px 0' }} />
