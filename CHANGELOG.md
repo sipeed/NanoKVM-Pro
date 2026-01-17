@@ -1,3 +1,20 @@
+## 1.2.11 (2026-01-17)
+
+### Features
+
+- Added USB network adapter support for sharing KVM network to the remote host
+- Added menu bar display mode options (auto-hide/always visible)
+
+### Bug Fixes
+
+- Fixed a keyboard issue where IME composition events were not handled correctly
+- Resolved an issue where the `AltGr` key was not recognized on the Windows system
+- Fixed a bug where `Command` key combinations were not fully released on the macOS system
+
+### Chores
+
+- Bump react-router-dom from 6.30.1 to 6.30.3
+
 ## 1.2.10 (2026-01-09)
 
 > This release includes a firmware update (v1.0.13). The device will automatically reboot once the update is complete.
