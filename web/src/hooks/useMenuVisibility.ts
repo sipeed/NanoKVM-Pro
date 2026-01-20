@@ -10,7 +10,6 @@ export interface MenuVisibilityState {
   isMenuExpanded: boolean;
   isMenuHidden: boolean;
   isMenuMoved: boolean;
-  isInvisible: boolean;
   handleHovered: (hovered: boolean) => void;
   handleMoved: () => void;
   setIsMenuExpanded: (expanded: boolean) => void;
@@ -64,18 +63,13 @@ export function useMenuVisibility(): MenuVisibilityState {
 
   // Handle display mode changes
   useEffect(() => {
-    if (menuDisplayMode === 'off') {
-      setIsMenuExpanded(false);
-      setIsMenuHidden(false);
-      stopCountdown();
-    } else if (menuDisplayMode === 'always') {
-      setIsMenuExpanded(true);
-      setIsMenuHidden(false);
-      stopCountdown();
-    } else if (menuDisplayMode === 'auto') {
-      setIsMenuExpanded(true);
-      setIsMenuHidden(false);
+    setIsMenuHidden(false);
+
+    if (menuDisplayMode === 'auto') {
       startCountdown();
+    } else {
+      setIsMenuHidden(false);
+      stopCountdown();
     }
   }, [menuDisplayMode, startCountdown, stopCountdown]);
 
@@ -102,13 +96,10 @@ export function useMenuVisibility(): MenuVisibilityState {
     }
   }, [isMenuMoved]);
 
-  const isInvisible = menuDisplayMode === 'off' && !isMenuExpanded;
-
   return {
     isMenuExpanded,
     isMenuHidden,
     isMenuMoved,
-    isInvisible,
     handleHovered,
     handleMoved,
     setIsMenuExpanded

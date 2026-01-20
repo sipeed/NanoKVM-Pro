@@ -7,7 +7,7 @@ import Draggable, { DraggableData, DraggableEvent } from 'react-draggable';
 
 import * as api from '@/api/vm.ts';
 import * as storage from '@/lib/localstorage.ts';
-import { menuDisabledItemsAtom, menuDisplayModeAtom } from '@/jotai/settings.ts';
+import { menuDisabledItemsAtom } from '@/jotai/settings.ts';
 import { useMenuBounds } from '@/hooks/useMenuBounds.ts';
 import { useMenuVisibility } from '@/hooks/useMenuVisibility.ts';
 
@@ -29,20 +29,13 @@ import { Wol } from './wol';
 export const Menu = () => {
   const nodeRef = useRef<HTMLDivElement | null>(null);
 
-  const menuDisplayMode = useAtomValue(menuDisplayModeAtom);
   const menuDisabledItems = useAtomValue(menuDisabledItemsAtom);
   const setMenuDisabledItems = useSetAtom(menuDisabledItemsAtom);
 
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const {
-    isMenuExpanded,
-    isMenuHidden,
-    isInvisible,
-    handleHovered,
-    handleMoved,
-    setIsMenuExpanded
-  } = useMenuVisibility();
+  const { isMenuExpanded, isMenuHidden, handleHovered, handleMoved, setIsMenuExpanded } =
+    useMenuVisibility();
 
   const menuBounds = useMenuBounds(nodeRef, isMenuExpanded);
 
@@ -84,8 +77,7 @@ export const Menu = () => {
         ref={nodeRef}
         className={clsx(
           'fixed left-1/2 top-[10px] z-[1000] -translate-x-1/2 transition-opacity duration-300',
-          isInitialized ? 'opacity-100' : 'opacity-0',
-          isInvisible && 'invisible'
+          isInitialized ? 'opacity-100' : 'opacity-0'
         )}
         onMouseEnter={() => handleHovered(true)}
         onMouseLeave={() => handleHovered(false)}
@@ -145,7 +137,7 @@ export const Menu = () => {
         </div>
 
         {/* Menubar expand button */}
-        {!isMenuExpanded && menuDisplayMode !== 'off' && <Expand toggleMenu={setIsMenuExpanded} />}
+        {!isMenuExpanded && <Expand toggleMenu={setIsMenuExpanded} />}
       </div>
     </Draggable>
   );
