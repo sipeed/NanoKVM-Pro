@@ -1,9 +1,11 @@
+export type System = 'Windows' | 'macOS' | 'Linux' | 'Unknown';
+
 export type BrowserInfo = {
-  os: string;
+  os: System;
   isChrome: boolean;
 };
 
-export function getOperatingSystem(): string {
+export function getOperatingSystem(): System {
   if (typeof window === 'undefined') {
     return 'Unknown';
   }
@@ -22,7 +24,7 @@ export function getOperatingSystem(): string {
   if (platform.startsWith('mac')) return 'macOS';
   if (platform.startsWith('linux')) return 'Linux';
 
-  return platformSource;
+  return 'Unknown';
 }
 
 export function isChromeBrowser(): boolean {
