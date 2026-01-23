@@ -12,8 +12,8 @@ build/
 release/
 latest/
 NanoKVM-Server
-+support/scripts/NanoKVM-Pro
-+support/toolchains/
+support/scripts/NanoKVM-Pro
+support/toolchains/
 
 # IDE/Editor
 .idea
