@@ -79,12 +79,11 @@ export const LeaderKey = () => {
   function submit() {
     if (isLoading) return;
 
-    if (tempLeaderKey === leaderKey || (!isLeaderKeyEnable && !leaderKey)) {
+    const key = isLeaderKeyEnable ? tempLeaderKey : '';
+    if (key === leaderKey) {
       closeModal();
       return;
     }
-
-    const key = isLeaderKeyEnable ? tempLeaderKey : '';
 
     setIsLoading(true);
 
@@ -111,7 +110,7 @@ export const LeaderKey = () => {
         <span>{t('keyboard.leaderKey.title')}</span>
       </div>
 
-      <Modal width={500} keyboard={false} footer={null} open={isModalOpen} onCancel={closeModal}>
+      <Modal width={510} keyboard={false} footer={null} open={isModalOpen} onCancel={closeModal}>
         <div className="my-3 flex flex-col space-y-3">
           {/* title */}
           <div className="flex flex-col space-y-1">
@@ -163,7 +162,8 @@ export const LeaderKey = () => {
 
           {/* Keyboard recorder */}
           {isLeaderKeyEnable && (
-            <div className="mt-5 flex flex-col space-y-5 rounded-lg bg-neutral-800 px-5 py-10">
+            <div className="flex flex-col space-y-5 rounded-lg bg-neutral-800 px-5 py-5">
+              <span className="text-sm text-neutral-400">{t('keyboard.leaderKey.tip')}</span>
               <Input
                 value={tempLeaderKey}
                 className="flex-1"
@@ -178,8 +178,10 @@ export const LeaderKey = () => {
                   <div
                     key={key.value}
                     className={clsx(
-                      'flex w-28 cursor-pointer items-center justify-center space-x-1 rounded py-1 shadow-lg shadow-neutral-800 outline hover:shadow-xl',
-                      key.value === tempLeaderKey ? 'outline-blue-500' : 'outline-neutral-700'
+                      'flex w-28 cursor-pointer items-center justify-center space-x-1 rounded py-1 shadow-lg shadow-neutral-800 outline',
+                      key.value === tempLeaderKey
+                        ? 'text-neutral-300 outline-blue-500'
+                        : 'text-neutral-500 outline-neutral-700 hover:shadow-xl hover:outline-neutral-600'
                     )}
                     onClick={() => setTempLeaderKey((k) => (k === key.value ? '' : key.value))}
                   >
@@ -193,9 +195,8 @@ export const LeaderKey = () => {
 
           <div className="flex w-full justify-center pt-5">
             <Button
-              className="w-28"
+              className="w-24"
               type="primary"
-              size="large"
               loading={isLoading}
               onClick={submit}
             >

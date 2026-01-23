@@ -136,6 +136,7 @@ const en = {
           desc2: 'Requires more steps, but completely avoids system conflicts.'
         },
         enable: 'Enable Leader Key',
+        tip: 'When assigned as a Leader Key, this key functions exclusively as a shortcut trigger and loses its default behavior.',
         placeholder: 'Please press the Leader Key',
         shiftRight: 'Right Shift',
         ctrlRight: 'Right Ctrl',

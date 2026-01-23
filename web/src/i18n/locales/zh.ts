@@ -120,6 +120,7 @@ const zh = {
           desc2: '步骤较多，但能完美避开系统键位冲突。'
         },
         enable: '启用引导键',
+        tip: '设为引导键后，该按键将仅用于触发快捷键，不再作为普通按键使用。',
         placeholder: '请按下引导键',
         shiftRight: '右 Shift',
         ctrlRight: '右 Ctrl',
