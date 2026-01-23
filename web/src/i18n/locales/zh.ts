@@ -104,6 +104,32 @@ const zh = {
         save: '保存',
         captureTips: '捕获系统级按键（如 Windows 键）需要全屏权限。',
         enterFullScreen: '切换全屏模式。'
+      },
+      leaderKey: {
+        title: '引导键',
+        desc: '绕过浏览器限制，向远程主机发送被系统拦截的快捷键。',
+        howToUse: '使用方法',
+        simultaneous: {
+          title: '组合按键模式',
+          desc1: '按住引导键不放，同时按下目标快捷键。',
+          desc2: '操作直观，但少数快捷键可能因系统占用而无法生效。'
+        },
+        sequential: {
+          title: '序列输入模式',
+          desc1: '点击【引导键】开始 → 依次点击【快捷键】→ 点击【引导键】结束。',
+          desc2: '步骤较多，但能完美避开系统键位冲突。'
+        },
+        enable: '启用引导键',
+        placeholder: '请按下引导键',
+        shiftRight: '右 Shift',
+        ctrlRight: '右 Ctrl',
+        metaRight: '右 Win',
+        submit: '确定',
+        recorder: {
+          rec: '录制中',
+          activate: '激活按键',
+          input: '请按下快捷键...'
+        }
       }
     },
     assistant: {
@@ -272,7 +298,7 @@ const zh = {
           description: '选择显示器参数',
           default: '默认',
           custom: '自定义',
-          document: "文档"
+          document: '文档'
         },
         rateControlMode: {
           title: '码率控制模式',
