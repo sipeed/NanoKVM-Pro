@@ -1,3 +1,20 @@
+## 1.2.12 (2026-01-23)
+
+### Features
+
+- Introduced `Leader Key` functionality for triggering keyboard shortcuts
+- Enabled automatic driver loading for the USB Virtual Network Card on Windows 7 and Windows 10
+
+### Bug Fixes
+
+- Fixed Right Shift key not being recognized on Windows systems
+- Fixed menu bar failing to close correctly
+
+### Chores
+
+- Upgraded PiKVM `kvmd` to version 4.140
+- Upgraded PiKVM `ustreamer` to version 6.45
+
 ## 1.2.11 (2026-01-17)
 
 ### Features
