@@ -1,3 +1,10 @@
+## 1.2.13 (2026-01-29)
+
+### Bug Fixes
+
+- Fixed detection for new Wi‑Fi modules.
+- Fixed persistent MAC for the NCM network adapter.
+
 ## 1.2.12 (2026-01-23)
 
 ### Features
