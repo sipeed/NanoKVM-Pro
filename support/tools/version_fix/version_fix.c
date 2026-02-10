@@ -316,7 +316,7 @@ void generate_kvm_string(int type, char* buffer) {
     const char* device_type = (type == 1) ? "ATX" : "Desk";
     
     // Format the string
-    snprintf(buffer, 32, "NanoKVM_Pro (%s-X) NxaL0%04X", device_type, random_value);
+    snprintf(buffer, 32, "NanoKVM_Pro (%s-X) NxaL0%04X\n", device_type, random_value);
 }
 
 void fix_data_with_kvm_string(uint8_t *version_data, const char* kvm_string) {

@@ -11,7 +11,6 @@ TARGET = version_fix
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	# $(CC) -march=rv64gc -o $@ $^
 	$(CC) -o $@ $^
 
 clean:
