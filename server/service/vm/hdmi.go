@@ -15,6 +15,9 @@ const (
 	LT6911Power        = "/proc/lt6911_info/power"
 	LT6911HdmiPower    = "/proc/lt6911_info/hdmi_power"
 	LT6911LoopoutPower = "/proc/lt6911_info/loopout_power"
+
+	HdmiCaptureFlag     = "/etc/kvm/hdmi_capture"
+	HdmiPassthroughFlag = "/etc/kvm/hdmi_passthrough"
 )
 
 func (s *Service) GetHdmiCapture(c *gin.Context) {
@@ -50,6 +53,9 @@ func (s *Service) SetHdmiCapture(c *gin.Context) {
 		rsp.ErrRsp(c, -2, "failed to set HDMI capture status")
 		return
 	}
+
+	// Persist state to survive reboot
+	_ = os.WriteFile(HdmiCaptureFlag, []byte(status), 0644)
 
 	rsp.OkRsp(c)
 	log.Debugf("set HDMI capture status: %s", status)
@@ -93,6 +99,13 @@ func (s *Service) SetHdmiPassthrough(c *gin.Context) {
 
 	time.Sleep(10 * time.Millisecond)
 
+	// Persist state to survive reboot
+	state := "off"
+	if req.Enabled {
+		state = "on"
+	}
+	_ = os.WriteFile(HdmiPassthroughFlag, []byte(state), 0644)
+
 	rsp.OkRsp(c)
 	log.Debugf("set HDMI passthrough status: %t", req.Enabled)
 }
@@ -133,4 +146,27 @@ func disableHdmiPassthrough() error {
 		return err
 	}
 	return nil
+}
+
+func RestoreHdmiState() {
+	// Restore HDMI capture state
+	if content, err := os.ReadFile(HdmiCaptureFlag); err == nil {
+		status := strings.TrimSpace(string(content))
+		if status == "off" || status == "on" {
+			_ = os.WriteFile(LT6911Power, []byte(status), 0644)
+			log.Debugf("restored HDMI capture state: %s", status)
+		}
+	}
+
+	// Restore HDMI passthrough state
+	if content, err := os.ReadFile(HdmiPassthroughFlag); err == nil {
+		status := strings.TrimSpace(string(content))
+		if status == "on" {
+			_ = enableHdmiPassthrough()
+			log.Debugf("restored HDMI passthrough state: on")
+		} else if status == "off" {
+			_ = disableHdmiPassthrough()
+			log.Debugf("restored HDMI passthrough state: off")
+		}
+	}
 }
