@@ -35,7 +35,9 @@ func initialize() {
 	_ = common.GetScreen()
 
 	// restore HDMI capture/passthrough settings
-	vm.RestoreHdmiState()
+	if err := vm.RestoreHdmiState(); err != nil {
+		log.Printf("Failed to restore HDMI capture/passthrough settings: %v", err)
+	}
 
 	// run mouse jiggler
 	jiggler.GetJiggler().Run()

@@ -54,8 +54,13 @@ func (s *Service) SetHdmiCapture(c *gin.Context) {
 		return
 	}
 
+
 	// Persist state to survive reboot
-	_ = os.WriteFile(HdmiCaptureFlag, []byte(status), 0644)
+	if err := os.MkdirAll("/etc/kvm", 0755); err != nil {
+		log.Warnf("failed to create persistence directory: %v", err)
+	} else if err := os.WriteFile(HdmiCaptureFlag, []byte(status), 0644); err != nil {
+		log.Warnf("failed to persist HDMI capture status: %v", err)
+	}
 
 	rsp.OkRsp(c)
 	log.Debugf("set HDMI capture status: %s", status)
@@ -104,7 +109,11 @@ func (s *Service) SetHdmiPassthrough(c *gin.Context) {
 	if req.Enabled {
 		state = "on"
 	}
-	_ = os.WriteFile(HdmiPassthroughFlag, []byte(state), 0644)
+	if err := os.MkdirAll("/etc/kvm", 0755); err != nil {
+		log.Warnf("failed to create persistence directory: %v", err)
+	} else if err := os.WriteFile(HdmiPassthroughFlag, []byte(state), 0644); err != nil {
+		log.Warnf("failed to persist HDMI passthrough status: %v", err)
+	}
 
 	rsp.OkRsp(c)
 	log.Debugf("set HDMI passthrough status: %t", req.Enabled)
@@ -148,13 +157,16 @@ func disableHdmiPassthrough() error {
 	return nil
 }
 
-func RestoreHdmiState() {
+func RestoreHdmiState() error {
 	// Restore HDMI capture state
 	if content, err := os.ReadFile(HdmiCaptureFlag); err == nil {
 		status := strings.TrimSpace(string(content))
 		if status == "off" || status == "on" {
-			_ = os.WriteFile(LT6911Power, []byte(status), 0644)
-			log.Debugf("restored HDMI capture state: %s", status)
+			if err := os.WriteFile(LT6911Power, []byte(status), 0644); err != nil {
+				log.Warnf("failed to restore HDMI capture state: %v", err)
+			} else {
+				log.Debugf("restored HDMI capture state: %s", status)
+			}
 		}
 	}
 
@@ -162,11 +174,18 @@ func RestoreHdmiState() {
 	if content, err := os.ReadFile(HdmiPassthroughFlag); err == nil {
 		status := strings.TrimSpace(string(content))
 		if status == "on" {
-			_ = enableHdmiPassthrough()
-			log.Debugf("restored HDMI passthrough state: on")
+			if err := enableHdmiPassthrough(); err != nil {
+				log.Warnf("failed to restore HDMI passthrough state (on): %v", err)
+			} else {
+				log.Debugf("restored HDMI passthrough state: on")
+			}
 		} else if status == "off" {
-			_ = disableHdmiPassthrough()
-			log.Debugf("restored HDMI passthrough state: off")
+			if err := disableHdmiPassthrough(); err != nil {
+				log.Warnf("failed to restore HDMI passthrough state (off): %v", err)
+			} else {
+				log.Debugf("restored HDMI passthrough state: off")
+			}
 		}
 	}
+	return nil
 }
