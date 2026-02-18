@@ -1,13 +1,12 @@
 package vm
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"time"
 
 	"NanoKVM-Server/proto"
-
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -18,9 +17,9 @@ const (
 	LT6911HdmiPower    = "/proc/lt6911_info/hdmi_power"
 	LT6911LoopoutPower = "/proc/lt6911_info/loopout_power"
 
-	HdmiCaptureFlag     = "/etc/kvm/hdmi_capture"
-	HdmiPassthroughFlag = "/etc/kvm/hdmi_passthrough"
 	PersistenceDir      = "/etc/kvm"
+	HdmiCaptureFlag     = PersistenceDir + "/hdmi_capture"
+	HdmiPassthroughFlag = PersistenceDir + "/hdmi_passthrough"
 )
 
 func (s *Service) GetHdmiCapture(c *gin.Context) {
