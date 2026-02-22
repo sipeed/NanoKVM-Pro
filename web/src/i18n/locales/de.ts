@@ -54,7 +54,9 @@ const de = {
       placeholder: 'Bitte eingeben',
       submit: 'Senden',
       virtual: 'Tastatur',
-      ctrlaltdel: 'Ctrl+Alt+Del'
+      ctrlaltdel: 'Ctrl+Alt+Del',
+      dropdownEnglish: 'Englisch',
+      dropdownRussian: 'Russisch'
     },
     mouse: {
       title: 'Maus',

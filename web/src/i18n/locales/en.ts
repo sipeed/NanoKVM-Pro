@@ -110,6 +110,9 @@ const en = {
       placeholder: 'Please input',
       submit: 'Submit',
       virtual: 'Keyboard',
+      ctrlaltdel: 'Ctrl+Alt+Del',
+      dropdownEnglish: 'English',
+      dropdownRussian: 'Russian',
       shortcut: {
         title: 'Shortcuts',
         custom: 'Custom',
