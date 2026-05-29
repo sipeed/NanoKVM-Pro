@@ -13,10 +13,11 @@ self.onmessage = (event: MessageEvent) => {
 
   switch (type) {
     case 'init_h264':
+    case 'init_h265':
       canvas = offscreenCanvas;
       ctx = canvas!.getContext('2d') as OffscreenCanvasRenderingContext2D;
       config = {
-        codec: 'avc1.42E01F',
+        codec: type === 'init_h265' ? 'hev1.1.6.L93.B0' : 'avc1.42E01F',
         optimizeForLatency: true
       };
       break;

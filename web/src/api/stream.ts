@@ -18,7 +18,7 @@ export function setMode(mode: string) {
 // set stream FPS
 export function setFps(fps: number) {
   const data = { fps };
-  return http.post('api/stream/fps', data);
+  return http.post('/api/stream/fps', data);
 }
 
 // set stream quality
@@ -41,6 +41,16 @@ export function webrtcH264() {
 // direct H.264 connection
 export function directH264() {
   return getWebSocket('/api/stream/h264/direct');
+}
+
+// WebRTC H.265 connection
+export function webrtcH265() {
+  return getWebSocket('/api/stream/h265/webrtc');
+}
+
+// direct H.265 connection
+export function directH265() {
+  return getWebSocket('/api/stream/h265/direct');
 }
 
 function getWebSocket(url: string) {

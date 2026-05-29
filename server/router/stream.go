@@ -4,6 +4,8 @@ import (
 	"NanoKVM-Server/middleware"
 	"NanoKVM-Server/service/stream"
 	"NanoKVM-Server/service/stream/direct"
+	h265_direct "NanoKVM-Server/service/stream/h265/direct"
+	h265_webrtc "NanoKVM-Server/service/stream/h265/webrtc"
 	"NanoKVM-Server/service/stream/mjpeg"
 	"NanoKVM-Server/service/stream/webrtc"
 
@@ -21,7 +23,9 @@ func streamRouter(r *gin.Engine) {
 	api.POST("/stream/gop", service.SetGop)                      // set stream gop
 	api.POST("/stream/fps", service.SetFps)                      // set stream fps
 
-	api.GET("/stream/mjpeg", mjpeg.Connect)        // mjpeg stream
-	api.GET("/stream/h264/direct", direct.Connect) // h264 stream (direct)
-	api.GET("/stream/h264/webrtc", webrtc.Connect) // h264 stream (webrtc)
+	api.GET("/stream/mjpeg", mjpeg.Connect)             // mjpeg stream
+	api.GET("/stream/h264/direct", direct.Connect)      // h264 stream (direct)
+	api.GET("/stream/h264/webrtc", webrtc.Connect)      // h264 stream (webrtc)
+	api.GET("/stream/h265/direct", h265_direct.Connect) // h265 stream (direct)
+	api.GET("/stream/h265/webrtc", h265_webrtc.Connect) // h265 stream (webrtc)
 }

@@ -1,12 +1,12 @@
 import { Divider, Popover } from 'antd';
-import clsx from 'clsx';
 import { useAtomValue } from 'jotai';
 import { CheckIcon, TvMinimalPlayIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import { setVideoMode as setCookie } from '@/lib/localstorage.ts';
-import { getSupportedVideoModes } from '@/lib/video.ts';
 import { videoModeAtom } from '@/jotai/screen.ts';
+
+import { VideoModeH265 } from './video-mode-h265.tsx';
 
 const videoGroups = [
   {
@@ -28,10 +28,8 @@ export const VideoMode = () => {
   const { t } = useTranslation();
   const videoMode = useAtomValue(videoModeAtom);
 
-  const supportedVideoModes = getSupportedVideoModes();
-
   function update(mode: string) {
-    if (mode === videoMode || !supportedVideoModes.includes(mode)) return;
+    if (mode === videoMode) return;
 
     setCookie(mode);
 
@@ -43,17 +41,16 @@ export const VideoMode = () => {
 
   const content = (
     <>
+      <VideoModeH265 videoMode={videoMode} update={update} />
+
+      <Divider style={{ margin: '5px 0' }} />
+
       {videoGroups.map((group) => (
         <div key={group.key}>
           {group.modes.map((mode) => (
             <div
               key={mode.key}
-              className={clsx(
-                'flex select-none items-center rounded py-1.5 pl-1 pr-5 hover:bg-neutral-700/70',
-                supportedVideoModes.includes(mode.key)
-                  ? 'cursor-pointer'
-                  : 'cursor-not-allowed text-neutral-500'
-              )}
+              className="flex cursor-pointer select-none items-center rounded py-1.5 pl-1 pr-5 hover:bg-neutral-700/70 disabled:text-neutral-500"
               onClick={() => update(mode.key)}
             >
               <div className="flex h-[14px] w-[20px] items-end text-blue-500">
