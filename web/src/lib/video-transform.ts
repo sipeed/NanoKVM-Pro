@@ -11,16 +11,28 @@ export function getScreenElement() {
   return screen?.querySelector('img') ?? screen;
 }
 
-export function getVideoTransformStyle(scale: number, rotation: VideoRotation): CSSProperties {
+export function getVideoRotationStyle(scale: number, rotation: VideoRotation): CSSProperties {
+  return {
+    transform: `scale(${scale}) rotate(${rotation}deg)`,
+    transformOrigin: 'center'
+  };
+}
+
+export function getVideoSizeStyle(rotation: VideoRotation): CSSProperties {
   const quarterTurn = isQuarterTurn(rotation);
 
   return {
-    transform: `scale(${scale}) rotate(${rotation}deg)`,
-    transformOrigin: 'center',
     minWidth: quarterTurn ? 'min(50vw, 100vh)' : undefined,
     minHeight: quarterTurn ? 'min(50vh, 100vw)' : undefined,
     maxWidth: quarterTurn ? '100vh' : '100vw',
     maxHeight: quarterTurn ? '100vw' : '100vh'
+  };
+}
+
+export function getVideoTransformStyle(scale: number, rotation: VideoRotation): CSSProperties {
+  return {
+    ...getVideoRotationStyle(scale, rotation),
+    ...getVideoSizeStyle(rotation)
   };
 }
 
