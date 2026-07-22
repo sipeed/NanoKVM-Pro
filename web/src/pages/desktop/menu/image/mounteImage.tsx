@@ -9,11 +9,15 @@ import { getVirtualDevice, refreshVirtualDevice } from '@/api/virtual-device.ts'
 
 import { Images } from './images';
 
-export function MounteImage() {
+type MounteImageProps = {
+  isMounted: boolean;
+  setIsMounted: (isMounted: boolean) => void;
+};
+
+export function MounteImage({ isMounted, setIsMounted }: MounteImageProps) {
   const { t } = useTranslation();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const [mode, setMode] = useState('mass-storage');
   const [readOnly, setReadOnly] = useState(true);
 
@@ -53,11 +57,13 @@ export function MounteImage() {
       return;
     }
 
-    if (!rsp?.data?.file) {
+    const file = rsp.data?.file;
+    setIsMounted(!!file);
+
+    if (!file) {
       return;
     }
 
-    setIsMounted(true);
     setMode(rsp.data?.cdrom ? 'cd-rom' : 'mass-storage');
     setReadOnly(!!rsp.data?.readOnly);
   }
