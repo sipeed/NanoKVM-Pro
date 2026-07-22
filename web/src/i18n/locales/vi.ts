@@ -43,6 +43,7 @@ const vi = {
       qualityHigh: 'Cao',
       qualityMedium: 'Trung bình',
       qualityLow: 'Thấp',
+      rotation: 'Xoay',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

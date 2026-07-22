@@ -3,8 +3,10 @@ import { useAtomValue } from 'jotai';
 import { useMediaQuery } from 'react-responsive';
 
 import { MouseReportAbsolute } from '@/lib/mouse.ts';
+import { getScreenElement, inverseRotatePoint, isQuarterTurn } from '@/lib/video-transform.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
 import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { videoModeAtom, videoParametersAtom } from '@/jotai/screen.ts';
 
 import { MouseAbsoluteEvent } from './types.ts';
 
@@ -21,6 +23,8 @@ export const Absolute = () => {
 
   const scrollDirection = useAtomValue(scrollDirectionAtom);
   const scrollInterval = useAtomValue(scrollIntervalAtom);
+  const videoMode = useAtomValue(videoModeAtom);
+  const videoParameters = useAtomValue(videoParametersAtom);
 
   const mouseRef = useRef(new MouseReportAbsolute());
   const lastPosRef = useRef({ x: 0.5, y: 0.5 });
@@ -41,8 +45,9 @@ export const Absolute = () => {
   const VELOCITY_THRESHOLD = 0.3;
 
   useEffect(() => {
-    const screen = document.getElementById('screen') as HTMLVideoElement;
-    if (!screen) return;
+    const screenElement = getScreenElement();
+    if (!screenElement) return;
+    const screen = screenElement;
 
     screen.addEventListener('mousedown', handleMouseDown);
     screen.addEventListener('mouseup', handleMouseUp);
@@ -256,14 +261,18 @@ export const Absolute = () => {
 
     function getCorrectedCoords(clientX: number, clientY: number) {
       const rect = screen.getBoundingClientRect();
+      const mediaSize = getMediaSize(screen);
 
-      if (!screen.videoWidth || !screen.videoHeight) {
+      if (!mediaSize) {
         const x = (clientX - rect.left) / rect.width;
         const y = (clientY - rect.top) / rect.height;
-        return { x, y };
+        return inverseRotatePoint(x, y, videoParameters.rotation);
       }
 
-      const videoRatio = screen.videoWidth / screen.videoHeight;
+      const rotatedMediaSize = isQuarterTurn(videoParameters.rotation)
+        ? { width: mediaSize.height, height: mediaSize.width }
+        : mediaSize;
+      const videoRatio = rotatedMediaSize.width / rotatedMediaSize.height;
       const elementRatio = rect.width / rect.height;
 
       let renderedWidth = rect.width;
@@ -282,7 +291,7 @@ export const Absolute = () => {
       const x = (clientX - rect.left - offsetX) / renderedWidth;
       const y = (clientY - rect.top - offsetY) / renderedHeight;
 
-      return { x, y };
+      return inverseRotatePoint(x, y, videoParameters.rotation);
     }
 
     return () => {
@@ -301,7 +310,7 @@ export const Absolute = () => {
         clearTimeout(longPressTimerRef.current);
       }
     };
-  }, [isBigScreen, scrollDirection, scrollInterval]);
+  }, [isBigScreen, scrollDirection, scrollInterval, videoMode, videoParameters.rotation]);
 
   // Mouse event handler
   function handleMouseEvent(event: MouseAbsoluteEvent) {
@@ -345,3 +354,19 @@ export const Absolute = () => {
 
   return <></>;
 };
+
+function getMediaSize(screen: Element) {
+  if (screen instanceof HTMLVideoElement && screen.videoWidth > 0 && screen.videoHeight > 0) {
+    return { width: screen.videoWidth, height: screen.videoHeight };
+  }
+
+  if (screen instanceof HTMLImageElement && screen.naturalWidth > 0 && screen.naturalHeight > 0) {
+    return { width: screen.naturalWidth, height: screen.naturalHeight };
+  }
+
+  if (screen instanceof HTMLCanvasElement && screen.width > 0 && screen.height > 0) {
+    return { width: screen.width, height: screen.height };
+  }
+
+  return null;
+}

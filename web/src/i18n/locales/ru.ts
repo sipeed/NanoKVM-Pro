@@ -87,6 +87,7 @@ const ru = {
       qualityMedium: 'Средний',
       qualityLow: 'Низкий',
       scale: 'Масштаб',
+      rotation: 'Поворот',
       resetHdmi: 'Перезагрузить HDMI подсистему',
       noSignal: 'Нет сигнала HDMI',
       inconsistentVideoMode:

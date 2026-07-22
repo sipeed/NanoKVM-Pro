@@ -44,6 +44,7 @@ const nb = {
       qualityHigh: 'Høy',
       qualityMedium: 'Medium',
       qualityLow: 'Lav',
+      rotation: 'Rotasjon',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

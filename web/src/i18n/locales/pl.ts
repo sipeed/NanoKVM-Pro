@@ -36,6 +36,7 @@ const pl = {
       qualityHigh: 'Wysoki',
       qualityMedium: 'Średni',
       qualityLow: 'Niski',
+      rotation: 'Obrót',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

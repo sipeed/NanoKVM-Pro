@@ -42,6 +42,7 @@ const zh_tw = {
       qualityHigh: '高',
       qualityMedium: '中',
       qualityLow: '低',
+      rotation: '旋轉',
       resetHdmi: '重置 HDMI'
     },
     keyboard: {

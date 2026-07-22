@@ -43,6 +43,7 @@ const da = {
       qualityHigh: 'Høj',
       qualityMedium: 'Mellem',
       qualityLow: 'Lav',
+      rotation: 'Rotation',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

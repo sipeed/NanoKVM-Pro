@@ -1,11 +1,14 @@
 export type VideoMode = 'h265-webrtc' | 'h265-direct' | 'h264-webrtc' | 'h264-direct' | 'mjpeg';
 
+export type VideoRotation = 0 | 90 | 180 | 270;
+
 export interface VideoParameters {
   rateControlMode: string; // cbr | vbr;
   bitrate: number;
   gop: number;
   fps: number;
   scale: number;
+  rotation: VideoRotation;
   quality?: number; // MJEPG only
 }
 

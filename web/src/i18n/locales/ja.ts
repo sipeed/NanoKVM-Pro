@@ -44,6 +44,7 @@ const ja = {
       qualityHigh: '高い',
       qualityMedium: '中くらい',
       qualityLow: '低い',
+      rotation: '回転',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

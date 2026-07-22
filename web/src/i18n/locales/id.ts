@@ -53,6 +53,7 @@ const id = {
       qualityHigh: 'Tinggi',
       qualityMedium: 'Sedang',
       qualityLow: 'Rendah',
+      rotation: 'Rotasi',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

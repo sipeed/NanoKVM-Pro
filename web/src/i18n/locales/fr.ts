@@ -45,6 +45,7 @@ const fr = {
       qualityHigh: 'Élevé',
       qualityMedium: 'Moyen',
       qualityLow: 'Bas',
+      rotation: 'Rotation',
       resetHdmi: 'Réinitialiser le HDMI'
     },
     keyboard: {

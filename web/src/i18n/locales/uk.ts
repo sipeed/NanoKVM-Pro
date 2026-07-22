@@ -45,6 +45,7 @@ const uk = {
       qualityHigh: 'Високий',
       qualityMedium: 'Середній',
       qualityLow: 'Низький',
+      rotation: 'Обертання',
       resetHdmi: 'Перезавантажити HDMI підсистему'
     },
     keyboard: {

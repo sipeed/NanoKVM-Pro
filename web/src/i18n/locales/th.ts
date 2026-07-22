@@ -42,6 +42,7 @@ const th = {
       qualityHigh: 'สูง',
       qualityMedium: 'กลาง',
       qualityLow: 'ต่ำ',
+      rotation: 'การหมุน',
       resetHdmi: 'รีเช็ท HDMI'
     },
     keyboard: {

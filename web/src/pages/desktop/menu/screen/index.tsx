@@ -13,6 +13,7 @@ import { Advanced } from './advanced.tsx';
 import { Bitrate } from './bitrate.tsx';
 import { Edid } from './edid.tsx';
 import { Quality } from './quality';
+import { Rotation } from './rotation.tsx';
 import { Scale } from './scale.tsx';
 import { VideoMode } from './video-mode.tsx';
 
@@ -31,7 +32,11 @@ export const Screen = () => {
 
   async function initScreen() {
     const parameters = getVideoParameters();
-    let { rateControlMode, bitrate, gop, fps, scale, quality } = parameters;
+    let { rateControlMode, bitrate, gop, fps, quality } = parameters;
+
+    const scale = getScale(parameters.scale);
+    const rotation = getRotation(parameters.rotation);
+    setVideoParameters({ ...parameters, scale, rotation });
 
     try {
       if (videoMode === 'mjpeg') {
@@ -43,16 +48,15 @@ export const Screen = () => {
       }
 
       fps = await updateFps(parameters.fps);
-      scale = getScale(parameters.scale);
 
-      setVideoParameters({
+      setVideoParameters((current) => ({
+        ...current,
         rateControlMode,
         bitrate,
         gop,
         fps,
-        scale,
         quality
-      });
+      }));
     } catch (err) {
       console.log(err);
     }
@@ -138,12 +142,20 @@ export const Screen = () => {
     return scale;
   }
 
+  function getRotation(rotation: VideoParameters['rotation']) {
+    if (![0, 90, 180, 270].includes(rotation)) {
+      return 0;
+    }
+    return rotation;
+  }
+
   const content = (
     <div className="flex flex-col space-y-1">
       <VideoMode />
       <Edid />
       {videoMode === 'mjpeg' ? <Quality /> : <Bitrate />}
       <Scale />
+      <Rotation />
       <Advanced />
     </div>
   );

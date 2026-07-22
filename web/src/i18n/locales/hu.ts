@@ -44,6 +44,7 @@ const hu = {
       qualityHigh: 'Magas',
       qualityMedium: 'Közepes',
       qualityLow: 'Alacsony',
+      rotation: 'Forgatás',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

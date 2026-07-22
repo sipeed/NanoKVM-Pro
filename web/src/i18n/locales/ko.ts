@@ -43,6 +43,7 @@ const ko = {
       qualityHigh: '높음',
       qualityMedium: '중간',
       qualityLow: '낮음',
+      rotation: '회전',
       resetHdmi: 'HDMI 초기화'
     },
     keyboard: {

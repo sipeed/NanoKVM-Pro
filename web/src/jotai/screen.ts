@@ -10,6 +10,7 @@ export const videoParametersAtom = atom<VideoParameters>({
   gop: 50, // 1 - 200
   fps: 0, // 0 - 120
   scale: 1,
+  rotation: 0,
   quality: 80 // 1-100 (only for mjpeg)
 });
 
