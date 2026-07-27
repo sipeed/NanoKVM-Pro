@@ -44,6 +44,7 @@ const cz = {
       qualityHigh: 'Vysoký',
       qualityMedium: 'Střední',
       qualityLow: 'Nízký',
+      rotation: 'Otočení',
       resetHdmi: 'Reset HDMI'
     },
     keyboard: {

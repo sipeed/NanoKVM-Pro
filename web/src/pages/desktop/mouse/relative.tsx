@@ -4,8 +4,10 @@ import { useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { MouseReportRelative } from '@/lib/mouse.ts';
+import { getScreenElement, inverseRotateDelta } from '@/lib/video-transform.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
 import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { videoModeAtom, videoParametersAtom } from '@/jotai/screen.ts';
 
 import { MouseRelativeEvent } from './types.ts';
 
@@ -15,6 +17,8 @@ export const Relative = () => {
 
   const scrollDirection = useAtomValue(scrollDirectionAtom);
   const scrollInterval = useAtomValue(scrollIntervalAtom);
+  const videoMode = useAtomValue(videoModeAtom);
+  const videoParameters = useAtomValue(videoParametersAtom);
 
   const mouseRef = useRef(new MouseReportRelative());
   const isLockedRef = useRef(false);
@@ -50,7 +54,7 @@ export const Relative = () => {
   }
 
   useEffect(() => {
-    const screen = document.getElementById('screen');
+    const screen = getScreenElement();
     if (!screen) return;
 
     showMessage();
@@ -60,8 +64,12 @@ export const Relative = () => {
     screen.addEventListener('mouseup', handleMouseUp);
     screen.addEventListener('mousemove', handleMouseMove);
     screen.addEventListener('wheel', handleMouseWheel, { passive: false });
-    screen.addEventListener('contextmenu', (e) => e.preventDefault());
+    screen.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('pointerlockchange', handlePointerLockChange);
+
+    function handleContextMenu(event: Event) {
+      event.preventDefault();
+    }
 
     // Mouse click event
     function handleMouseClick(event: MouseEvent) {
@@ -94,8 +102,9 @@ export const Relative = () => {
 
       const deltaX = Math.abs(x * window.devicePixelRatio) < 10 ? x * 2 : x;
       const deltaY = Math.abs(y * window.devicePixelRatio) < 10 ? y * 2 : y;
+      const delta = inverseRotateDelta(deltaX, deltaY, videoParameters.rotation);
 
-      handleMouseEvent({ type: 'move', deltaX, deltaY });
+      handleMouseEvent({ type: 'move', deltaX: delta.x, deltaY: delta.y });
     }
 
     // Mouse wheel event
@@ -126,10 +135,10 @@ export const Relative = () => {
       screen.removeEventListener('mousedown', handleMouseDown);
       screen.removeEventListener('mouseup', handleMouseUp);
       screen.removeEventListener('wheel', handleMouseWheel);
-      screen.removeEventListener('contextmenu', disableEvent);
+      screen.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('pointerlockchange', handlePointerLockChange);
     };
-  }, [scrollDirection, scrollInterval]);
+  }, [scrollDirection, scrollInterval, videoMode, videoParameters.rotation]);
 
   // show message
   function showMessage() {

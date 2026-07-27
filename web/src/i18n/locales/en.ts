@@ -93,6 +93,7 @@ const en = {
       qualityMedium: 'Medium',
       qualityLow: 'Low',
       scale: 'Scale',
+      rotation: 'Rotation',
       resetHdmi: 'Reset HDMI',
       noSignal: 'HDMI no signal',
       inconsistentVideoMode: 'Play paused. Another video mode is playing.',

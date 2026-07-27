@@ -79,6 +79,7 @@ const zh = {
       qualityMedium: '中',
       qualityLow: '低',
       scale: '缩放',
+      rotation: '旋转',
       resetHdmi: '重置 HDMI',
       noSignal: 'HDMI 无信号',
       inconsistentVideoMode: '已暂停，其他视频模式正在播放中',
