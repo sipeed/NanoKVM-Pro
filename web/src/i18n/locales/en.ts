@@ -203,6 +203,8 @@ const en = {
       unmountFailed: 'Unmount failed',
       unmountDesc:
         'On some systems, you need to manually eject from the remote host before unmounting the image.',
+      checksum: 'Checksum',
+      checksumFailed: 'Checksum calculation failed, please try again',
       refresh: 'Refresh the image list',
       download: 'Download Image',
       attention: 'Attention',

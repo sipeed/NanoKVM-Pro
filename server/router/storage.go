@@ -16,6 +16,7 @@ func storageRouter(r *gin.Engine) {
 	api.POST("/storage/image/upload", service.UploadImage)     // upload image
 	api.POST("/storage/image/mount", service.MountImage)       // mount image
 	api.POST("/storage/image/delete", service.DeleteImage)     // delete image
+	api.POST("/storage/image/checksum", service.ChecksumImage) // checksum image
 
 	api.POST("/storage/download/image", service.DownloadImage)       // download image
 	api.GET("/storage/download/image/status", service.StatusImage)   // download image

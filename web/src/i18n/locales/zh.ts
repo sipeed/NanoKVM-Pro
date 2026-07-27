@@ -198,6 +198,8 @@ const zh = {
       mountDesc: '在某些系统中，需要在远程主机中弹出虚拟硬盘后再挂载镜像。',
       unmountFailed: '卸载失败',
       unmountDesc: '在某些系统中，需要在远程主机中手动弹出后再卸载镜像。',
+      checksum: '校验和',
+      checksumFailed: '计算校验和失败，请重试。',
       refresh: '刷新镜像列表',
       download: '下载镜像',
       attention: '注意',

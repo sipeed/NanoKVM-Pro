@@ -77,7 +77,9 @@ const cz = {
         'V některých systémech je nutné před připojením obrazu vysunout virtuální disk na vzdáleném hostiteli.',
       unmountFailed: 'Odpojení selhalo',
       unmountDesc:
-        'V některých systémech je nutné před odpojením ručně vysunout obraz na vzdáleném hostiteli.'
+        'V některých systémech je nutné před odpojením ručně vysunout obraz na vzdáleném hostiteli.',
+      checksum: 'Kontrolní součet',
+      checksumFailed: 'Nepodařilo se vypočítat kontrolní součet. Zkuste to znovu.'
     },
     script: {
       title: 'Skript',

@@ -68,7 +68,9 @@ const pl = {
         'W niektórych systemach wymagane jest wyjęcie dysku wirtualnego na zdalnym hoście przed zamontowaniem obrazu.',
       unmountFailed: 'Odmontowanie nie powiodło się',
       unmountDesc:
-        'W niektórych systemach należy ręcznie wysunąć obraz na hoście zdalnym przed odmontowaniem.'
+        'W niektórych systemach należy ręcznie wysunąć obraz na hoście zdalnym przed odmontowaniem.',
+      checksum: 'Suma kontrolna',
+      checksumFailed: 'Obliczanie sumy kontrolnej nie powiodło się. Spróbuj ponownie.'
     },
     script: {
       title: 'Skrypty',

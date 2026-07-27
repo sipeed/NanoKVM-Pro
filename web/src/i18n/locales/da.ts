@@ -75,7 +75,9 @@ const da = {
         'På nogle systemer kan det være nødvendigt at skubbe den virtuelle disk ud på fjerncomputeren før du kan montere diskbilledet.',
       unmountFailed: 'Afmontering mislykkedes',
       unmountDesc:
-        'I nogle systemer skal du manuelt eje afbryde på fjernværten, før du afmonterer billedet.'
+        'I nogle systemer skal du manuelt eje afbryde på fjernværten, før du afmonterer billedet.',
+      checksum: 'Kontrolsum',
+      checksumFailed: 'Beregning af kontrolsum mislykkedes. Prøv igen.'
     },
     script: {
       title: 'Script',

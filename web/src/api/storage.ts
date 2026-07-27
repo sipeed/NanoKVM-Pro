@@ -1,5 +1,7 @@
 import { http } from '@/lib/http.ts';
 
+export type ChecksumAlgorithm = 'md5' | 'sha1' | 'sha256';
+
 // get image list
 export function getImages() {
   return http.get('/api/storage/image');
@@ -38,6 +40,19 @@ export function deleteImage(file: string) {
     file
   };
   return http.post('/api/storage/image/delete', data);
+}
+
+// calculate image checksum
+export function checksumImage(file: string, algorithm: ChecksumAlgorithm) {
+  return http.request({
+    url: '/api/storage/image/checksum',
+    method: 'post',
+    data: {
+      file,
+      algorithm
+    },
+    timeout: 60 * 60 * 1000
+  });
 }
 
 // download image

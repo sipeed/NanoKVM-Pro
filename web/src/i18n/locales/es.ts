@@ -77,7 +77,9 @@ const en = {
         'En algunos sistemas, es necesario expulsar el disco virtual en el host remoto antes de montar una imagen.',
       unmountFailed: 'Desmontaje fallido',
       unmountDesc:
-        'En algunos sistemas, es necesario expulsar manualmente en el host remoto antes de desmontar la imagen.'
+        'En algunos sistemas, es necesario expulsar manualmente en el host remoto antes de desmontar la imagen.',
+      checksum: 'Suma de comprobación',
+      checksumFailed: 'Error al calcular la suma de comprobación. Inténtalo de nuevo.'
     },
     script: {
       title: 'Script',

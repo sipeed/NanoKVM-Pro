@@ -72,7 +72,9 @@ const zh_tw = {
       mountFailed: '掛載失敗',
       mountDesc: '在某些系統中，在掛載映像之前需要中斷遠端主機上的虛擬磁碟。',
       unmountFailed: '卸載失敗',
-      unmountDesc: '在某些系統中，需要在遠端主機中手動彈出後再卸載映像。'
+      unmountDesc: '在某些系統中，需要在遠端主機中手動彈出後再卸載映像。',
+      checksum: '校驗碼',
+      checksumFailed: '計算校驗碼失敗，請重試。'
     },
     script: {
       title: '腳本',

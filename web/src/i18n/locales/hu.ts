@@ -77,7 +77,9 @@ const hu = {
         'Egyes rendszerekben szükséges lehet a virtuális lemez eltávolítása a távoli gépen, mielőtt a képet csatlakoztatja.',
       unmountFailed: 'Leválasztás sikertelen',
       unmountDesc:
-        'Egyes rendszerekben kézzel ki kell dobni a képet a távoli gazdagépen, mielőtt leválasztanád.'
+        'Egyes rendszerekben kézzel ki kell dobni a képet a távoli gazdagépen, mielőtt leválasztanád.',
+      checksum: 'Ellenőrzőösszeg',
+      checksumFailed: 'Az ellenőrzőösszeg kiszámítása sikertelen. Próbálja újra.'
     },
     script: {
       title: 'Szkriptek',
