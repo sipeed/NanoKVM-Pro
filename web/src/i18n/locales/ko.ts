@@ -77,6 +77,8 @@ const ko = {
       unmountFailed: '마운트 해제 실패',
       unmountDesc:
         '일부 시스템에서는 이미지를 마운트 해제하기 전에 원격 호스트에서 수동으로 꺼내야 합니다.',
+      checksum: '체크섬',
+      checksumFailed: '체크섬 계산에 실패했습니다. 다시 시도해 주세요.',
       refresh: '이미지 목록 새로고침'
     },
     script: {

@@ -79,7 +79,9 @@ const fr = {
         "Dans certains systèmes, il est nécessaire de déséjecter le disque virtuel sur l'hôte distant avant de monter l'image.",
       unmountFailed: 'Démontage échoué',
       unmountDesc:
-        "Dans certains systèmes, vous devez éjecter manuellement sur l'hôte distant avant de démonter l'image."
+        "Dans certains systèmes, vous devez éjecter manuellement sur l'hôte distant avant de démonter l'image.",
+      checksum: 'Somme de contrôle',
+      checksumFailed: 'Échec du calcul de la somme de contrôle. Veuillez réessayer.'
     },
     script: {
       title: 'Script',

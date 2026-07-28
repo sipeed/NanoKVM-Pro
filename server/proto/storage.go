@@ -20,6 +20,17 @@ type DeleteImageReq struct {
 	File string `json:"file" validate:"required"`
 }
 
+type ChecksumImageReq struct {
+	File      string `json:"file" validate:"required"`
+	Algorithm string `json:"algorithm" validate:"required,oneof=md5 sha1 sha256"`
+}
+
+type ChecksumImageRsp struct {
+	File      string `json:"file"`
+	Algorithm string `json:"algorithm"`
+	Checksum  string `json:"checksum"`
+}
+
 type ImageEnabledRsp struct {
 	Enabled bool `json:"enabled"`
 }

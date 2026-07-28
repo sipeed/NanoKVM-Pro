@@ -87,7 +87,9 @@ const id = {
         'Di beberapa sistem, perlu mengeluarkan disk virtual pada host jarak jauh sebelum memasang gambar.',
       unmountFailed: 'Pelepasan gagal',
       unmountDesc:
-        'Di beberapa sistem, Anda perlu mengeluarkan secara manual di host jarak jauh sebelum melepaskan gambar.'
+        'Di beberapa sistem, Anda perlu mengeluarkan secara manual di host jarak jauh sebelum melepaskan gambar.',
+      checksum: 'Checksum',
+      checksumFailed: 'Penghitungan checksum gagal. Silakan coba lagi.'
     },
     script: {
       title: 'Script',

@@ -77,7 +77,9 @@ const nb = {
         'På noen systemer er det nødvendig å koble fra den virtuelle disken på den eksterne verten før man kan montere arkivfilen.',
       unmountFailed: 'Avmontering feilet',
       unmountDesc:
-        'I noen systemer må du manuelt kaste ut på den eksterne verten før du avmonterer bildet.'
+        'I noen systemer må du manuelt kaste ut på den eksterne verten før du avmonterer bildet.',
+      checksum: 'Kontrollsum',
+      checksumFailed: 'Beregning av kontrollsum mislyktes. Prøv igjen.'
     },
     script: {
       title: 'Skript',

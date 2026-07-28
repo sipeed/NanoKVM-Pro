@@ -78,7 +78,9 @@ const nl = {
         'In sommige systemen is het noodzakelijk om de virtuele schijf op de externe host uit te werpen voordat het image wordt gekoppeld.',
       unmountFailed: 'Ontkoppelen mislukt',
       unmountDesc:
-        'In sommige systemen moet u handmatig uitwerpen op de externe host voordat u de image ontkoppelt.'
+        'In sommige systemen moet u handmatig uitwerpen op de externe host voordat u de image ontkoppelt.',
+      checksum: 'Controlesom',
+      checksumFailed: 'Berekenen van controlesom mislukt. Probeer opnieuw.'
     },
     script: {
       title: 'Script',

@@ -14,6 +14,8 @@ import { useTranslation } from 'react-i18next';
 import * as api from '@/api/storage.ts';
 import { client } from '@/lib/websocket.ts';
 
+import { Checksum } from './checksum';
+
 type ImagesProps = {
   isOpen: boolean;
   cdrom: boolean;
@@ -32,6 +34,7 @@ export const Images = ({ isOpen, cdrom, readOnly, setIsMounted }: ImagesProps) =
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [deletingImage, setDeletingImage] = useState('');
+  const [imageListVersion, setImageListVersion] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
@@ -59,6 +62,7 @@ export const Images = ({ isOpen, cdrom, readOnly, setIsMounted }: ImagesProps) =
         } else {
           setImages([]);
         }
+        setImageListVersion((version) => version + 1);
       })
       .finally(() => {
         setIsLoading(false);
@@ -201,6 +205,17 @@ export const Images = ({ isOpen, cdrom, readOnly, setIsMounted }: ImagesProps) =
             </div>
 
             <div className="flex-1 truncate">{image.replace(/^.*[\\/]/, '')}</div>
+
+            <Checksum
+              image={image}
+              refreshKey={imageListVersion}
+              onError={() =>
+                notify.error({
+                  message: t('image.checksumFailed'),
+                  duration: 3
+                })
+              }
+            />
 
             <div className="flex h-[24px] w-[24px] items-center justify-center rounded">
               {mountedImage === image ? (

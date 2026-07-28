@@ -78,7 +78,9 @@ const it = {
         "In alcuni sistemi, è necessario espellere il disco virtuale sull'host remoto prima di montare l'immagine.",
       unmountFailed: 'Smontaggio fallito',
       unmountDesc:
-        "In alcuni sistemi, è necessario espellere manualmente sull'host remoto prima di smontare l'immagine."
+        "In alcuni sistemi, è necessario espellere manualmente sull'host remoto prima di smontare l'immagine.",
+      checksum: 'Checksum',
+      checksumFailed: 'Calcolo del checksum non riuscito. Riprova.'
     },
     script: {
       title: 'Script',

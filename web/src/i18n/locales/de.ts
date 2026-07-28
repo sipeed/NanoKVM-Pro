@@ -91,6 +91,8 @@ const de = {
       unmountFailed: 'Aushängen fehlgeschlagen',
       unmountDesc:
         'In einigen Systemen muss das Abbild auf dem Remote-Host manuell ausgeworfen werden, bevor es ausgehängt wird.',
+      checksum: 'Prüfsumme',
+      checksumFailed: 'Prüfsummenberechnung fehlgeschlagen. Bitte erneut versuchen.',
       refresh: 'Bilder aktualisieren'
     },
     script: {

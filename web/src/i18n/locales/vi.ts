@@ -76,7 +76,9 @@ const vi = {
       mountDesc: 'Trong một số hệ thống, cần phải eject đĩa ảo trên máy remote trước khi mount.',
       unmountFailed: 'Gỡ bỏ thất bại',
       unmountDesc:
-        'Trong một số hệ thống, bạn cần phải tháo gỡ thủ công trên máy chủ từ xa trước khi gỡ bỏ ảnh.'
+        'Trong một số hệ thống, bạn cần phải tháo gỡ thủ công trên máy chủ từ xa trước khi gỡ bỏ ảnh.',
+      checksum: 'Tổng kiểm tra',
+      checksumFailed: 'Không thể tính tổng kiểm tra. Vui lòng thử lại.'
     },
     script: {
       title: 'Script',
