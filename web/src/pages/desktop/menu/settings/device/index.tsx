@@ -10,6 +10,7 @@ import { Mdns } from './mdns.tsx';
 import { MouseJiggler } from './mouse-jiggler.tsx';
 import { Oled } from './oled.tsx';
 import { Reboot } from './reboot.tsx';
+import { ScheduledScreenOff } from './scheduled-screen-off.tsx';
 import { Ssh } from './ssh.tsx';
 import { VirtualDevices } from './virtual-devices';
 import { Wifi } from './wifi.tsx';
@@ -33,6 +34,7 @@ export const Device = () => {
         <Divider className="opacity-50" />
 
         <Oled />
+        <ScheduledScreenOff />
         <Wifi />
         <MouseJiggler />
         <LedStrip />

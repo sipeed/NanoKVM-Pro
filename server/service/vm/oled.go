@@ -3,8 +3,6 @@ package vm
 import (
 	"NanoKVM-Server/proto"
 	"NanoKVM-Server/service/ui"
-	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -35,21 +33,13 @@ func (s *Service) GetOLED(c *gin.Context) {
 		Exist: true,
 	}
 
-	content, err := os.ReadFile("/proc/lt6911_info/version")
+	screenType, err := getScreenType()
 	if err != nil {
-		rsp.ErrRsp(c, -1, "read file failed")
+		rsp.ErrRsp(c, -1, "read screen type failed")
 		return
 	}
 
-	fileContent := string(content)
-	if strings.Contains(fileContent, "ATX") {
-		data.Type = "ATX"
-	} else if strings.Contains(fileContent, "Desk") {
-		data.Type = "DESK"
-	} else {
-		rsp.ErrRsp(c, -2, "invalid file content")
-		return
-	}
+	data.Type = string(screenType)
 
 	uiArgs, err := ui.GetUI()
 	if err != nil {

@@ -156,6 +156,14 @@ const zh_tw = {
           3600: '1小時'
         },
 
+        scheduledScreenOff: {
+          title: '定時熄屏',
+          description: '在指定時段熄滅 Desk 螢幕',
+          start: '開始時間',
+          end: '結束時間',
+          invalidRange: '開始和結束時間不能相同。',
+          saveFailed: '無法儲存定時熄屏設定。'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: '設定 Wi-Fi'

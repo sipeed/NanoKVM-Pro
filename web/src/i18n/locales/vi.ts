@@ -152,6 +152,14 @@ const vi = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Scheduled Screen Off',
+          description: 'Turn the Desk screen off during a time range',
+          start: 'Start',
+          end: 'End',
+          invalidRange: 'Start and end times must be different.',
+          saveFailed: 'Unable to save the scheduled screen-off settings.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

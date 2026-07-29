@@ -166,6 +166,14 @@ const ko = {
           1800: '30분',
           3600: '1시간'
         },
+        scheduledScreenOff: {
+          title: 'Scheduled Screen Off',
+          description: 'Turn the Desk screen off during a time range',
+          start: 'Start',
+          end: 'End',
+          invalidRange: 'Start and end times must be different.',
+          saveFailed: 'Unable to save the scheduled screen-off settings.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Wi-Fi 설정'

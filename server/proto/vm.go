@@ -97,6 +97,19 @@ type SetLcdTimeFormatReq struct {
 	Format string `json:"format" validate:"required"`
 }
 
+type GetLcdScreenOffRsp struct {
+	Supported   bool `json:"supported"`
+	Enabled     bool `json:"enabled"`
+	StartMinute int  `json:"startMinute"`
+	EndMinute   int  `json:"endMinute"`
+}
+
+type SetLcdScreenOffReq struct {
+	Enabled     *bool `json:"enabled"`
+	StartMinute *int  `json:"startMinute"`
+	EndMinute   *int  `json:"endMinute"`
+}
+
 type GetSSHStateRsp struct {
 	Enabled bool `json:"enabled"`
 }

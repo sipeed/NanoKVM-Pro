@@ -46,6 +46,25 @@ export function setLCDTimeFormat(format: string) {
   });
 }
 
+export type LCDScreenOffConfig = {
+  supported: boolean;
+  enabled: boolean;
+  startMinute: number;
+  endMinute: number;
+};
+
+// get LCD scheduled screen-off configuration
+export function getLCDScreenOff() {
+  return http.get('/api/vm/lcd/screen-off');
+}
+
+// set LCD scheduled screen-off configuration
+export function setLCDScreenOff(
+  config: Pick<LCDScreenOffConfig, 'enabled' | 'startMinute' | 'endMinute'>
+) {
+  return http.post('/api/vm/lcd/screen-off', config);
+}
+
 // get HDMI capture status
 export function getHdmiCapture() {
   return http.get('/api/vm/hdmi/capture');

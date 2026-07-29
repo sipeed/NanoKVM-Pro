@@ -173,6 +173,14 @@ const th = {
           1800: '30 นาที',
           3600: '1 ชั่วโมง'
         },
+        scheduledScreenOff: {
+          title: 'Scheduled Screen Off',
+          description: 'Turn the Desk screen off during a time range',
+          start: 'Start',
+          end: 'End',
+          invalidRange: 'Start and end times must be different.',
+          saveFailed: 'Unable to save the scheduled screen-off settings.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'ตั้งค่า Wi-Fi'

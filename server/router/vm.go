@@ -33,6 +33,8 @@ func vmRouter(r *gin.Engine) {
 	api.POST("/vm/oled", service.SetOLED)                     // set OLED configuration
 	api.GET("/vm/lcd/time/format", service.GetLcdTimeFormat)  // get LCD time format
 	api.POST("/vm/lcd/time/format", service.SetLcdTimeFormat) // set LCD time format
+	api.GET("/vm/lcd/screen-off", service.GetLcdScreenOff)    // get LCD screen-off schedule
+	api.POST("/vm/lcd/screen-off", service.SetLcdScreenOff)   // set LCD screen-off schedule
 
 	api.GET("/vm/hdmi/capture", service.GetHdmiCapture)          // get HDMI capture status
 	api.POST("/vm/hdmi/capture", service.SetHdmiCapture)         // set HDMI capture status
