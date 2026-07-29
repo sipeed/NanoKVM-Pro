@@ -153,12 +153,12 @@ const vi = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Lịch tắt màn hình',
+          description: 'Tắt màn hình Desk trong khoảng thời gian đã đặt',
+          start: 'Bắt đầu',
+          end: 'Kết thúc',
+          invalidRange: 'Thời gian bắt đầu và kết thúc phải khác nhau.',
+          saveFailed: 'Không thể lưu cài đặt lịch tắt màn hình.'
         },
         wifi: {
           title: 'Wi-Fi',

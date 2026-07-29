@@ -362,10 +362,10 @@ const zh = {
         },
         scheduledScreenOff: {
           title: '定时熄屏',
-          description: '在指定时段熄灭 Desk 屏幕',
-          start: '开始时间',
-          end: '结束时间',
-          invalidRange: '开始和结束时间不能相同。',
+          description: '在指定时间段内关闭 Desk 屏幕',
+          start: '开始',
+          end: '结束',
+          invalidRange: '开始时间和结束时间不能相同。',
           saveFailed: '无法保存定时熄屏设置。'
         },
         wifi: {

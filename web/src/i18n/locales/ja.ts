@@ -162,12 +162,12 @@ const ja = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: '画面オフのスケジュール',
+          description: '指定した時間帯に Desk の画面をオフにします',
+          start: '開始',
+          end: '終了',
+          invalidRange: '開始時刻と終了時刻は異なる時刻にしてください。',
+          saveFailed: '画面オフのスケジュール設定を保存できませんでした。'
         },
         wifi: {
           title: 'Wi-Fi',

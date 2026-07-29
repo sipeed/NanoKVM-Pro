@@ -164,12 +164,12 @@ const id = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Jadwal Mematikan Layar',
+          description: 'Matikan layar Desk selama rentang waktu tertentu',
+          start: 'Mulai',
+          end: 'Selesai',
+          invalidRange: 'Waktu mulai dan selesai harus berbeda.',
+          saveFailed: 'Tidak dapat menyimpan pengaturan jadwal mematikan layar.'
         },
         wifi: {
           title: 'Wi-Fi',

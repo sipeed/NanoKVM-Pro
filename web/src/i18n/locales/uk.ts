@@ -199,12 +199,12 @@ const uk = {
           3600: '1 година'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Вимкнення екрана за розкладом',
+          description: 'Вимикати екран Desk у заданий проміжок часу',
+          start: 'Початок',
+          end: 'Кінець',
+          invalidRange: 'Час початку та завершення не може збігатися.',
+          saveFailed: 'Не вдалося зберегти налаштування вимкнення екрана за розкладом.'
         },
         wifi: {
           title: 'Wi-Fi',

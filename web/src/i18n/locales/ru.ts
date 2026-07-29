@@ -320,12 +320,12 @@ const ru = {
           3600: '1 час'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Выключение экрана по расписанию',
+          description: 'Выключать экран Desk в заданный период времени',
+          start: 'Начало',
+          end: 'Конец',
+          invalidRange: 'Время начала и окончания не должно совпадать.',
+          saveFailed: 'Не удалось сохранить настройки выключения экрана по расписанию.'
         },
         wifi: {
           title: 'Wi-Fi',

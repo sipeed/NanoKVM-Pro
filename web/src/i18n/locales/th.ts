@@ -174,12 +174,12 @@ const th = {
           3600: '1 ชั่วโมง'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'ตั้งเวลาปิดหน้าจอ',
+          description: 'ปิดหน้าจอ Desk ในช่วงเวลาที่กำหนด',
+          start: 'เริ่ม',
+          end: 'สิ้นสุด',
+          invalidRange: 'เวลาเริ่มต้นและสิ้นสุดต้องไม่ตรงกัน',
+          saveFailed: 'ไม่สามารถบันทึกการตั้งค่าปิดหน้าจอตามกำหนดเวลาได้'
         },
         wifi: {
           title: 'Wi-Fi',

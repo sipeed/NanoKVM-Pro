@@ -156,12 +156,12 @@ const pl = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Harmonogram wyłączania ekranu',
+          description: 'Wyłączaj ekran Desk w określonych godzinach',
+          start: 'Początek',
+          end: 'Koniec',
+          invalidRange: 'Godziny rozpoczęcia i zakończenia muszą się różnić.',
+          saveFailed: 'Nie udało się zapisać ustawień harmonogramu wyłączania ekranu.'
         },
         wifi: {
           title: 'Wi-Fi',

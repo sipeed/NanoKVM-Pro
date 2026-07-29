@@ -160,12 +160,12 @@ const da = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
+          title: 'Planlagt slukning af skærmen',
+          description: 'Sluk Desk-skærmen i et angivet tidsrum',
           start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          end: 'Slut',
+          invalidRange: 'Start- og sluttidspunkt skal være forskellige.',
+          saveFailed: 'Indstillingerne for planlagt slukning af skærmen kunne ikke gemmes.'
         },
         wifi: {
           title: 'Wi-Fi',

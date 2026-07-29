@@ -155,12 +155,12 @@ const it = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Spegnimento programmato dello schermo',
+          description: 'Spegni lo schermo Desk durante un intervallo di tempo',
+          start: 'Inizio',
+          end: 'Fine',
+          invalidRange: 'Gli orari di inizio e fine devono essere diversi.',
+          saveFailed: 'Impossibile salvare le impostazioni di spegnimento programmato dello schermo.'
         },
         wifi: {
           title: 'Wi-Fi',

@@ -155,12 +155,12 @@ const hu = {
           3600: '1 hour'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: 'Ütemezett képernyőkikapcsolás',
+          description: 'A Desk képernyőjének kikapcsolása egy megadott időszakban',
+          start: 'Kezdés',
+          end: 'Befejezés',
+          invalidRange: 'A kezdési és befejezési időpontnak különböznie kell.',
+          saveFailed: 'Nem sikerült menteni az ütemezett képernyőkikapcsolás beállításait.'
         },
         wifi: {
           title: 'Wi-Fi',

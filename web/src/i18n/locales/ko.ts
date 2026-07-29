@@ -167,12 +167,12 @@ const ko = {
           3600: '1시간'
         },
         scheduledScreenOff: {
-          title: 'Scheduled Screen Off',
-          description: 'Turn the Desk screen off during a time range',
-          start: 'Start',
-          end: 'End',
-          invalidRange: 'Start and end times must be different.',
-          saveFailed: 'Unable to save the scheduled screen-off settings.'
+          title: '화면 끄기 예약',
+          description: '지정한 시간 동안 Desk 화면을 끕니다',
+          start: '시작',
+          end: '종료',
+          invalidRange: '시작 시간과 종료 시간은 달라야 합니다.',
+          saveFailed: '화면 끄기 예약 설정을 저장할 수 없습니다.'
         },
         wifi: {
           title: 'Wi-Fi',
