@@ -61,6 +61,7 @@ func TestValidateLcdScreenOff(t *testing.T) {
 		wantErr bool
 	}{
 		{req: proto.SetLcdScreenOffReq{Enabled: boolPtr(false), StartMinute: intPtr(0), EndMinute: intPtr(1)}},
+		{req: proto.SetLcdScreenOffReq{Enabled: boolPtr(false), StartMinute: intPtr(1), EndMinute: intPtr(1)}},
 		{req: proto.SetLcdScreenOffReq{Enabled: boolPtr(true), StartMinute: intPtr(1438), EndMinute: intPtr(1439)}},
 		{req: proto.SetLcdScreenOffReq{Enabled: boolPtr(true), StartMinute: intPtr(1), EndMinute: intPtr(1)}, wantErr: true},
 		{req: proto.SetLcdScreenOffReq{Enabled: boolPtr(true), StartMinute: intPtr(-1), EndMinute: intPtr(1)}, wantErr: true},

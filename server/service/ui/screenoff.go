@@ -97,7 +97,7 @@ func validateScreenOff(screenOff ScreenOff) error {
 		screenOff.EndMinute < 0 || screenOff.EndMinute >= minutesPerDay {
 		return fmt.Errorf("screen-off minutes must be between 0 and %d", minutesPerDay-1)
 	}
-	if screenOff.StartMinute == screenOff.EndMinute {
+	if screenOff.Enabled && screenOff.StartMinute == screenOff.EndMinute {
 		return fmt.Errorf("screen-off start and end minutes must differ")
 	}
 	return nil

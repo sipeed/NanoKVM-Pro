@@ -82,7 +82,7 @@ func validateLcdScreenOff(req proto.SetLcdScreenOffReq) error {
 		*req.EndMinute < 0 || *req.EndMinute >= minutesPerDay {
 		return fmt.Errorf("startMinute and endMinute must be between 0 and %d", minutesPerDay-1)
 	}
-	if *req.StartMinute == *req.EndMinute {
+	if *req.Enabled && *req.StartMinute == *req.EndMinute {
 		return fmt.Errorf("startMinute and endMinute must differ")
 	}
 	return nil

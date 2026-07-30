@@ -35,9 +35,10 @@ func TestValidateScreenOff(t *testing.T) {
 		screen  ScreenOff
 		wantErr bool
 	}{
-		{name: "valid crossing midnight", screen: ScreenOff{StartMinute: 1020, EndMinute: 540}},
-		{name: "valid day", screen: ScreenOff{StartMinute: 540, EndMinute: 1020}},
-		{name: "same minute", screen: ScreenOff{StartMinute: 540, EndMinute: 540}, wantErr: true},
+		{name: "valid crossing midnight", screen: ScreenOff{Enabled: true, StartMinute: 1020, EndMinute: 540}},
+		{name: "valid day", screen: ScreenOff{Enabled: true, StartMinute: 540, EndMinute: 1020}},
+		{name: "disabled same minute", screen: ScreenOff{Enabled: false, StartMinute: 540, EndMinute: 540}},
+		{name: "enabled same minute", screen: ScreenOff{Enabled: true, StartMinute: 540, EndMinute: 540}, wantErr: true},
 		{name: "negative start", screen: ScreenOff{StartMinute: -1, EndMinute: 1}, wantErr: true},
 		{name: "end outside day", screen: ScreenOff{StartMinute: 1, EndMinute: 1440}, wantErr: true},
 	}
