@@ -159,6 +159,14 @@ const da = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Planlagt slukning af skærmen',
+          description: 'Sluk Desk-skærmen i et angivet tidsrum',
+          start: 'Start',
+          end: 'Slut',
+          invalidRange: 'Start- og sluttidspunkt skal være forskellige.',
+          saveFailed: 'Indstillingerne for planlagt slukning af skærmen kunne ikke gemmes.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

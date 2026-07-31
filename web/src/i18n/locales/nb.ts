@@ -153,6 +153,14 @@ const nb = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Planlagt avslåing av skjermen',
+          description: 'Slå av skjermen på Desk i et bestemt tidsrom',
+          start: 'Start',
+          end: 'Slutt',
+          invalidRange: 'Start- og sluttidspunkt må være forskjellige.',
+          saveFailed: 'Kunne ikke lagre innstillingene for planlagt avslåing av skjermen.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

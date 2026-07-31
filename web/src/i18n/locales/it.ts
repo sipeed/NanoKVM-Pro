@@ -154,6 +154,14 @@ const it = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Spegnimento programmato dello schermo',
+          description: 'Spegni lo schermo Desk durante un intervallo di tempo',
+          start: 'Inizio',
+          end: 'Fine',
+          invalidRange: 'Gli orari di inizio e fine devono essere diversi.',
+          saveFailed: 'Impossibile salvare le impostazioni di spegnimento programmato dello schermo.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

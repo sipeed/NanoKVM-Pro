@@ -163,6 +163,14 @@ const id = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Jadwal Mematikan Layar',
+          description: 'Matikan layar Desk selama rentang waktu tertentu',
+          start: 'Mulai',
+          end: 'Selesai',
+          invalidRange: 'Waktu mulai dan selesai harus berbeda.',
+          saveFailed: 'Tidak dapat menyimpan pengaturan jadwal mematikan layar.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

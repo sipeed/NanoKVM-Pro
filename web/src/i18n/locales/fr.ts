@@ -161,6 +161,14 @@ const fr = {
           1800: '30 min',
           3600: '1 heure'
         },
+        scheduledScreenOff: {
+          title: 'Extinction programmée de l’écran',
+          description: 'Éteindre l’écran Desk pendant une plage horaire',
+          start: 'Début',
+          end: 'Fin',
+          invalidRange: 'Les heures de début et de fin doivent être différentes.',
+          saveFailed: 'Impossible d’enregistrer les paramètres d’extinction programmée de l’écran.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configurez le Wi-Fi'

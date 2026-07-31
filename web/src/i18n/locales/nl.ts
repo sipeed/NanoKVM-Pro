@@ -154,6 +154,14 @@ const nl = {
           1800: '30 min',
           3600: '1 uur'
         },
+        scheduledScreenOff: {
+          title: 'Geplande schermuitschakeling',
+          description: 'Schakel het scherm van Desk uit gedurende een bepaalde periode',
+          start: 'Start',
+          end: 'Einde',
+          invalidRange: 'De begin- en eindtijd moeten verschillend zijn.',
+          saveFailed: 'Kan de instellingen voor geplande schermuitschakeling niet opslaan.'
+        },
         wifi: {
           title: 'Wifi',
           description: 'Configureer wifi'

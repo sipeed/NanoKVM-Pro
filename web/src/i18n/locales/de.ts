@@ -206,6 +206,14 @@ const de = {
           1800: '30 Min',
           3600: '1 Stunde'
         },
+        scheduledScreenOff: {
+          title: 'Geplante Bildschirmabschaltung',
+          description: 'Den Desk-Bildschirm während eines Zeitraums ausschalten',
+          start: 'Start',
+          end: 'Ende',
+          invalidRange: 'Start- und Endzeit müssen unterschiedlich sein.',
+          saveFailed: 'Die Einstellungen für die geplante Bildschirmabschaltung konnten nicht gespeichert werden.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Wi-Fi konfigurieren'

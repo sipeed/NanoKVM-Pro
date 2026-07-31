@@ -154,6 +154,14 @@ const hu = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Ütemezett képernyőkikapcsolás',
+          description: 'A Desk képernyőjének kikapcsolása egy megadott időszakban',
+          start: 'Kezdés',
+          end: 'Befejezés',
+          invalidRange: 'A kezdési és befejezési időpontnak különböznie kell.',
+          saveFailed: 'Nem sikerült menteni az ütemezett képernyőkikapcsolás beállításait.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'

@@ -154,6 +154,14 @@ const cz = {
           1800: '30 min',
           3600: '1 hour'
         },
+        scheduledScreenOff: {
+          title: 'Naplánované vypnutí obrazovky',
+          description: 'Vypnout obrazovku Desk v zadaném časovém rozmezí',
+          start: 'Začátek',
+          end: 'Konec',
+          invalidRange: 'Čas začátku a konce se musí lišit.',
+          saveFailed: 'Nastavení plánovaného vypnutí obrazovky se nepodařilo uložit.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi'
