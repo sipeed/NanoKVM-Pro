@@ -524,6 +524,17 @@ const en = {
         logoutDesc: 'Are you sure you want to logout?',
         uninstall: 'Uninstall Tailscale',
         uninstallDesc: 'Are you sure you want to uninstall Tailscale?',
+        enableHttps: 'Enable HTTPS',
+        enableHttpsTooltip:
+          'Provision automatic TLS certificates via Tailscale Serve to enable HTTPS access to the Web UI.\nWhile all Tailscale traffic is encrypted end-to-end, browsers require public CA-signed certificates to recognize the connection as secure.',
+        disableHttpsConfirm: 'Are you sure you want to disable HTTPS?',
+        disableHttpsDesc:
+          'You will no longer be able to access the Web UI via the Tailscale HTTPS URL.',
+        disableHttpsFallback: 'Use one of the following instead:',
+        enableHttpsCerts: 'Enable <1>HTTPS certificates</1> on your tailnet to continue',
+        enableHttpsCertsPlain: 'Enable HTTPS certificates on your tailnet to continue',
+        authSuccess: 'Authorization Success',
+        httpsUrl: 'HTTPS URL',
         okBtn: 'Yes',
         cancelBtn: 'No'
       },

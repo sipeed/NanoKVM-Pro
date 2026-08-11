@@ -9,6 +9,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	serveConfigSettleDelay = 1 * time.Second
+)
+
 type Service struct{}
 
 var StateMap = map[string]proto.TailscaleState{
@@ -211,13 +215,50 @@ func (s *Service) GetStatus(c *gin.Context) {
 		}
 	}
 
+	serve, serveUrl, err := NewCli().ServeStatus()
+	if err != nil {
+		log.Errorf("failed to get tailscale serve status: %s", err)
+	}
+
 	data := proto.GetTailscaleStatusRsp{
-		State:   state,
-		IP:      ipv4,
-		Name:    status.Self.HostName,
-		Account: status.CurrentTailnet.Name,
+		State:    state,
+		IP:       ipv4,
+		Name:     status.Self.HostName,
+		Account:  status.CurrentTailnet.Name,
+		Serve:    serve,
+		ServeUrl: serveUrl,
 	}
 
 	rsp.OkRspWithData(c, &data)
 	log.Debugf("get tailscale status successfully")
+}
+
+func (s *Service) Serve(c *gin.Context) {
+	var rsp proto.Response
+	var req proto.ServeTailscaleReq
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		rsp.ErrRsp(c, -1, "invalid request")
+		return
+	}
+
+	authUrl, err := NewCli().Serve(req.Enable)
+	if err != nil {
+		log.Errorf("failed to run tailscale serve: %s", err)
+		rsp.ErrRsp(c, -1, "serve failed")
+		return
+	}
+
+	var serveUrl string
+	if req.Enable && authUrl == "" {
+		// Sleep briefly to let the Tailscale daemon finish writing its config before querying serve status.
+		time.Sleep(serveConfigSettleDelay)
+		_, serveUrl, _ = NewCli().ServeStatus()
+	}
+
+	rsp.OkRspWithData(c, &proto.ServeTailscaleRsp{
+		AuthUrl:  authUrl,
+		ServeUrl: serveUrl,
+	})
+	log.Debugf("tailscale serve successfully")
 }
