@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import * as api from '@/api/hid.ts';
 import { client, MessageEvent } from '@/lib/websocket.ts';
+import { releaseMouseInput } from '@/pages/desktop/mouse/lifecycle.ts';
 
 export const ResetHid = () => {
   const { t } = useTranslation();
@@ -14,6 +15,9 @@ export const ResetHid = () => {
   function resetHid() {
     if (isResetting) return;
     setIsResetting(true);
+
+    // Clear host-visible mouse state before resetting and reopening the gadget endpoints.
+    releaseMouseInput();
 
     // Release keyboard keys
     const data = new Uint8Array([MessageEvent.Keyboard, 0, 0, 0, 0, 0, 0, 0, 0]);

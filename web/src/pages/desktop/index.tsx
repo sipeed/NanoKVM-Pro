@@ -14,6 +14,7 @@ import { Keyboard } from './keyboard';
 import { Menu } from './menu';
 import { Message } from './message.tsx';
 import { Mouse } from './mouse';
+import { initializeMouseInputLifecycle, releaseMouseInput } from './mouse/lifecycle.ts';
 import { Notification } from './notification.tsx';
 import { Screen } from './screen';
 import { VirtualKeyboard } from './virtual-keyboard';
@@ -25,12 +26,17 @@ export const Desktop = () => {
   const [videoMode, setVideoMode] = useAtom(videoModeAtom);
 
   useEffect(() => {
+    // Register mouse close/open hooks before the first WebSocket connection is created.
+    const disposeMouseInputLifecycle = initializeMouseInputLifecycle();
     client.connect();
 
     const mode = getVideoMode() as VideoMode;
     setVideoMode(mode);
 
     return () => {
+      // Release while the socket is writable, then detach hooks before the explicit close.
+      releaseMouseInput();
+      disposeMouseInputLifecycle();
       client.close();
     };
   }, []);

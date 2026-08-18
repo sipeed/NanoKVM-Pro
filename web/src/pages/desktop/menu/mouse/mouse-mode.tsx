@@ -4,8 +4,8 @@ import { CheckIcon, SquareDashedMousePointerIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 import * as ls from '@/lib/localstorage.ts';
-import { client } from '@/lib/websocket.ts';
 import { mouseModeAtom } from '@/jotai/mouse.ts';
+import { releaseMouseInput } from '@/pages/desktop/mouse/lifecycle.ts';
 
 export const MouseMode = () => {
   const { t } = useTranslation();
@@ -18,15 +18,12 @@ export const MouseMode = () => {
   ];
 
   function updateMouseMode(mode: string) {
+    if (mode === mouseMode) return;
+
+    // The old HID interface must receive neutral state before its component is replaced.
+    releaseMouseInput();
     setMouseMode(mode);
     ls.setMouseMode(mode);
-
-    if (mode === 'relative') {
-      client.close();
-      setTimeout(() => {
-        client.connect();
-      }, 500);
-    }
   }
 
   const content = (

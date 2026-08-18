@@ -37,6 +37,10 @@ function getMouseButtonBit(button: number): number {
 export class MouseReportRelative {
   private buttons: number = 0;
 
+  get hasPressedButtons(): boolean {
+    return this.buttons !== 0;
+  }
+
   buttonDown(button: number): void {
     this.buttons |= getMouseButtonBit(button);
   }
@@ -89,6 +93,10 @@ export class MouseReportRelative {
 export class MouseReportAbsolute {
   private buttons: number = 0;
 
+  get hasPressedButtons(): boolean {
+    return this.buttons !== 0;
+  }
+
   buttonDown(button: number): void {
     this.buttons |= getMouseButtonBit(button);
   }
@@ -99,18 +107,20 @@ export class MouseReportAbsolute {
 
   /**
    * Build absolute mouse report
-   * @param x X position (0.0 to 1.0, normalized)
-   * @param y Y position (0.0 to 1.0, normalized)
+   * @param x X position (0 to 32767)
+   * @param y Y position (0 to 32767)
    * @param wheel Scroll wheel (-127 to 127)
    */
   buildReport(x: number, y: number, wheel: number = 0): Uint8Array {
     const report = new Uint8Array(6);
+    const positionX = this.clamp(Math.round(x), 0, 0x7fff);
+    const positionY = this.clamp(Math.round(y), 0, 0x7fff);
 
     report[0] = this.buttons;
-    report[1] = x & 0xff;
-    report[2] = (x >> 8) & 0xff;
-    report[3] = y & 0xff;
-    report[4] = (y >> 8) & 0xff;
+    report[1] = positionX & 0xff;
+    report[2] = (positionX >> 8) & 0xff;
+    report[3] = positionY & 0xff;
+    report[4] = (positionY >> 8) & 0xff;
     report[5] = this.clamp(Math.round(wheel), -127, 127) & 0xff;
 
     return report;
@@ -123,9 +133,9 @@ export class MouseReportAbsolute {
     return this.buildReport(lastX, lastY, 0);
   }
 
-  reset(): Uint8Array {
+  reset(lastX: number = 0, lastY: number = 0): Uint8Array {
     this.buttons = 0;
-    return this.buildReport(0, 0, 0);
+    return this.buildReport(lastX, lastY, 0);
   }
 
   private clamp(value: number, min: number, max: number): number {
