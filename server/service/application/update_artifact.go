@@ -85,7 +85,8 @@ func inspectUpdateArtifact(artifactPath, originalName string) (artifactInspectio
 	if err != nil {
 		return artifactInspection{}, err
 	}
-	if app, err := inspectApplicationArchive(layout); err == nil {
+	app, appErr := inspectApplicationArchive(layout)
+	if appErr == nil {
 		return artifactInspection{
 			Kind:          artifactApplication,
 			Version:       app.Version,
@@ -93,7 +94,8 @@ func inspectUpdateArtifact(artifactPath, originalName string) (artifactInspectio
 			Application:   &app,
 		}, nil
 	}
-	if version, err := inspectFirmwareArchive(layout); err == nil {
+	version, firmwareErr := inspectFirmwareArchive(layout)
+	if firmwareErr == nil {
 		return artifactInspection{
 			Kind:          artifactFirmware,
 			Version:       version,
@@ -101,7 +103,9 @@ func inspectUpdateArtifact(artifactPath, originalName string) (artifactInspectio
 		}, nil
 	}
 
-	return artifactInspection{}, errors.New("unsupported update package layout")
+	// Preserve both branch errors so a legitimate package is diagnosable when a
+	// new archive member or metadata rule needs compatibility handling.
+	return artifactInspection{}, fmt.Errorf("unsupported update package layout: application: %v; firmware: %v", appErr, firmwareErr)
 }
 
 func inspectTarArchive(archivePath string) (archiveLayout, error) {
@@ -455,6 +459,12 @@ func validateFirmwareArchiveMember(name string, isFile bool) error {
 		}
 		return nil
 	}
+	if name == "firmware_update.sh" {
+		if !isFile {
+			return errors.New("firmware updater helper must be a regular file")
+		}
+		return nil
+	}
 	for _, required := range []string{
 		"firmware/u-boot_signed.bin",
 		"firmware/boot_signed.bin",
@@ -513,7 +523,7 @@ func validateFirmwareChecksums(layout archiveLayout) error {
 		covered[name] = struct{}{}
 	}
 	for name, entry := range layout.Entries {
-		if isRegularArchiveType(entry.Typeflag) && name != "b2sum.txt" {
+		if isRegularArchiveType(entry.Typeflag) && name != "b2sum.txt" && name != "firmware_update.sh" {
 			if _, ok := covered[name]; !ok {
 				return fmt.Errorf("firmware checksum manifest does not cover %q", name)
 			}

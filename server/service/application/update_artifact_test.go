@@ -72,6 +72,9 @@ func TestInspectFirmwareArchiveChecksEveryFile(t *testing.T) {
 		checksumLines = append(checksumLines, []byte(hex.EncodeToString(hash[:])+"  "+name+"\n")...)
 		entries = append(entries, testArchiveEntry{name: name, data: data, typeflag: tar.TypeReg})
 	}
+	// Official device-update archives carry this helper at the root, but the
+	// manifest intentionally covers only firmware and overlay payloads.
+	entries = append(entries, testArchiveEntry{name: "firmware_update.sh", data: []byte("#!/bin/sh\n"), typeflag: tar.TypeReg})
 	entries = append(entries, testArchiveEntry{name: "b2sum.txt", data: checksumLines, typeflag: tar.TypeReg})
 
 	path := writeGzipTar(t, entries)
