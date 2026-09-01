@@ -3,7 +3,7 @@ import { AppleOutlined, WindowsOutlined } from '@ant-design/icons';
 import clsx from 'clsx';
 import { useAtom } from 'jotai';
 import { XIcon } from 'lucide-react';
-import Keyboard, { KeyboardButtonTheme } from 'react-simple-keyboard';
+import { KeyboardButtonTheme, KeyboardReact as Keyboard } from 'react-simple-keyboard';
 import { Drawer } from 'vaul';
 
 import 'react-simple-keyboard/build/css/index.css';
