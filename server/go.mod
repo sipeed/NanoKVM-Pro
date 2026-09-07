@@ -18,6 +18,7 @@ require (
 	github.com/shirou/gopsutil/v4 v4.25.10
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/viper v1.19.0
+	github.com/ulikunitz/xz v0.5.15
 	github.com/unrolled/secure v1.15.0
 	golang.org/x/crypto v0.52.0
 	gopkg.in/yaml.v3 v3.0.1
