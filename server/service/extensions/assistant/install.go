@@ -26,7 +26,7 @@ func createRequirements() error {
 	requirements := []string{
 		"Flask>=3.1.1",
 		"flask-cors>=6.0.1",
-		"Flask-SocketIO==5.5.1",
+		"Flask-SocketIO==5.6.1",
 		"pillow>=11.3.0",
 		"openai>=1.107.3",
 		"requests>=2.32.3",
