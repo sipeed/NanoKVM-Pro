@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { Advanced } from './advanced';
 import { Datetime } from './datetime';
+import { DisplayPolicy } from './display-policy.tsx';
 import { HdmiCapture } from './hdmi-capture.tsx';
 import { HdmiPassthrough } from './hdmi-passthrough.tsx';
 import { LedStrip } from './led-strip.tsx';
@@ -34,6 +35,7 @@ export const Device = () => {
         <Divider className="opacity-50" />
 
         <Oled />
+        <DisplayPolicy />
         <ScheduledScreenOff />
         <Wifi />
         <MouseJiggler />

@@ -368,6 +368,16 @@ const zh = {
           invalidRange: '开始时间和结束时间不能相同。',
           saveFailed: '无法保存定时熄屏设置。'
         },
+        displayPolicy: {
+          title: 'Desk 屏幕',
+          description: '选择内置屏幕闲置时的显示方式',
+          modes: {
+            alwaysOn: '始终显示',
+            idleClock: '闲置时显示时钟',
+            idleOff: '闲置后熄屏'
+          },
+          saveFailed: '无法保存屏幕显示设置。'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: '配置 Wi-Fi 信息',

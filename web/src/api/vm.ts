@@ -65,6 +65,26 @@ export function setLCDScreenOff(
   return http.post('/api/vm/lcd/screen-off', config);
 }
 
+export type LCDDisplayMode = 'alwaysOn' | 'idleClock' | 'idleOff';
+export type LCDDisplayPolicy = {
+  screenType: string;
+  supportedModes: LCDDisplayMode[];
+  mode?: LCDDisplayMode;
+  modeTimeoutSeconds?: Record<string, number>;
+  schedule: LCDScreenOffConfig & { wakeTimeoutSeconds?: number };
+};
+
+export function getLCDDisplayPolicy() {
+  return http.get('/api/vm/lcd/display-policy');
+}
+
+export function setLCDDisplayPolicy(update: {
+  mode?: LCDDisplayMode;
+  schedule?: Pick<LCDScreenOffConfig, 'enabled' | 'startMinute' | 'endMinute'>;
+}) {
+  return http.post('/api/vm/lcd/display-policy', update);
+}
+
 // get HDMI capture status
 export function getHdmiCapture() {
   return http.get('/api/vm/hdmi/capture');
