@@ -3,6 +3,7 @@ import { IMessageEvent, w3cwebsocket as W3cWebSocket } from 'websocket';
 import { getBaseUrl } from '@/lib/service.ts';
 
 type MessageHandler = (message: IMessageEvent) => void;
+type ConnectionHandler = () => void;
 type SendData = number[] | ArrayBuffer | Uint8Array;
 
 export enum MessageEvent {
@@ -34,6 +35,9 @@ export class WsClient {
   private shouldReconnect = true;
 
   private readonly eventHandlers = new Map<string, Set<MessageHandler>>();
+  // Connection hooks are separate from JSON message handlers and also run for explicit close().
+  private readonly openHandlers = new Set<ConnectionHandler>();
+  private readonly closeHandlers = new Set<ConnectionHandler>();
 
   constructor(options: WsClientOptions = {}) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
@@ -49,11 +53,15 @@ export class WsClient {
     this.shouldReconnect = false;
     this.cleanup();
 
-    if (this.instance && this.instance.readyState === W3cWebSocket.OPEN) {
-      this.instance.close();
+    const instance = this.instance;
+    if (!instance) {
+      return;
     }
 
+    // Notify while the socket is still writable so input owners can send their neutral reports.
+    this.notifyConnectionHandlers(this.closeHandlers, 'close');
     this.instance = null;
+    this.closeConnection(instance);
   }
 
   public on(type: string, handler: MessageHandler): () => void {
@@ -88,15 +96,30 @@ export class WsClient {
     }
   }
 
+  public onOpen(handler: ConnectionHandler): () => void {
+    this.openHandlers.add(handler);
+    return () => this.openHandlers.delete(handler);
+  }
+
+  public onClose(handler: ConnectionHandler): () => void {
+    this.closeHandlers.add(handler);
+    return () => this.closeHandlers.delete(handler);
+  }
+
   public send(data: SendData): boolean {
     if (!this.instance || !this.isConnected) {
       return false;
     }
 
-    if (data instanceof ArrayBuffer || (data as unknown) instanceof Uint8Array) {
-      this.instance.send(data);
-    } else {
-      this.instance.send(JSON.stringify(data));
+    try {
+      if (data instanceof ArrayBuffer || (data as unknown) instanceof Uint8Array) {
+        this.instance.send(data);
+      } else {
+        this.instance.send(JSON.stringify(data));
+      }
+    } catch (error) {
+      console.error('[WebSocket] Send error:', error);
+      return false;
     }
 
     return true;
@@ -109,22 +132,54 @@ export class WsClient {
   private createConnection(): void {
     this.cleanup();
 
-    this.instance = new W3cWebSocket(this.options.url);
-    this.instance.binaryType = 'arraybuffer';
+    // Retire a replaced socket; identity checks below ignore any events it delivers later.
+    const previousInstance = this.instance;
+    if (previousInstance) {
+      this.instance = null;
+      this.closeConnection(previousInstance);
+    }
 
-    this.instance.onopen = this.handleOpen.bind(this);
-    this.instance.onclose = this.handleClose.bind(this);
-    this.instance.onerror = this.handleError.bind(this);
-    this.instance.onmessage = this.handleMessage.bind(this);
+    const instance = new W3cWebSocket(this.options.url);
+    instance.binaryType = 'arraybuffer';
+    this.instance = instance;
+
+    instance.onopen = () => {
+      // A CONNECTING socket may finish opening after close()/connect() has replaced it.
+      if (this.instance !== instance) {
+        this.closeConnection(instance);
+        return;
+      }
+      this.handleOpen();
+    };
+    instance.onclose = () => {
+      // Only the current socket may stop heartbeat, release input, or schedule reconnect.
+      if (this.instance !== instance) {
+        return;
+      }
+      this.instance = null;
+      this.handleClose();
+    };
+    instance.onerror = (error) => {
+      if (this.instance === instance) {
+        this.handleError(error);
+      }
+    };
+    instance.onmessage = (message) => {
+      if (this.instance === instance) {
+        this.handleMessage(message);
+      }
+    };
   }
 
   private handleOpen(): void {
     this.reconnectAttempts = 0;
+    this.notifyConnectionHandlers(this.openHandlers, 'open');
     this.startHeartbeat();
   }
 
   private handleClose(): void {
     this.stopHeartbeat();
+    this.notifyConnectionHandlers(this.closeHandlers, 'close');
     this.scheduleReconnect();
   }
 
@@ -184,6 +239,36 @@ export class WsClient {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+  }
+
+  private closeConnection(instance: W3cWebSocket): void {
+    // close() can race with CONNECTING; failure is harmless because stale callbacks are ignored.
+    if (
+      instance.readyState !== W3cWebSocket.CONNECTING &&
+      instance.readyState !== W3cWebSocket.OPEN
+    ) {
+      return;
+    }
+
+    try {
+      instance.close();
+    } catch (error) {
+      console.error('[WebSocket] Close error:', error);
+    }
+  }
+
+  private notifyConnectionHandlers(
+    handlers: Set<ConnectionHandler>,
+    event: 'close' | 'open'
+  ): void {
+    // One lifecycle consumer must not prevent heartbeat/reconnect or other cleanup handlers.
+    handlers.forEach((handler) => {
+      try {
+        handler();
+      } catch (error) {
+        console.error(`[WebSocket] ${event} handler error:`, error);
+      }
+    });
   }
 }
 

@@ -5,10 +5,14 @@ import { useTranslation } from 'react-i18next';
 
 import { MouseReportRelative } from '@/lib/mouse.ts';
 import { getScreenElement, inverseRotateDelta } from '@/lib/video-transform.ts';
-import { client, MessageEvent } from '@/lib/websocket.ts';
 import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
 import { videoModeAtom, videoParametersAtom } from '@/jotai/screen.ts';
 
+import {
+  registerMouseReleaseHandler,
+  sendMouseRelease,
+  sendMouseReport
+} from './lifecycle.ts';
 import { MouseRelativeEvent } from './types.ts';
 
 export const Relative = () => {
@@ -24,35 +28,6 @@ export const Relative = () => {
   const isLockedRef = useRef(false);
   const lastScrollTimeRef = useRef(0);
 
-  // Mouse handler
-  function handleMouseEvent(event: MouseRelativeEvent) {
-    let report: Uint8Array;
-    const mouse = mouseRef.current;
-
-    switch (event.type) {
-      case 'mousedown':
-        mouse.buttonDown(event.button);
-        report = mouse.buildButtonReport();
-        break;
-      case 'mouseup':
-        mouse.buttonUp(event.button);
-        report = mouse.buildButtonReport();
-        break;
-      case 'wheel':
-        report = mouse.buildReport(0, 0, event.deltaY);
-        break;
-      case 'move':
-        report = mouse.buildReport(event.deltaX, event.deltaY);
-        break;
-      default:
-        report = mouse.buildReport(0, 0);
-        break;
-    }
-
-    const data = new Uint8Array([MessageEvent.Mouse, ...report]);
-    client.send(data);
-  }
-
   useEffect(() => {
     const screen = getScreenElement();
     if (!screen) return;
@@ -66,6 +41,41 @@ export const Relative = () => {
     screen.addEventListener('wheel', handleMouseWheel, { passive: false });
     screen.addEventListener('contextmenu', handleContextMenu);
     document.addEventListener('pointerlockchange', handlePointerLockChange);
+    window.addEventListener('blur', handleWindowBlur);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    const unregisterMouseReleaseHandler = registerMouseReleaseHandler(releaseMouseAndExitPointerLock);
+
+    // Mouse event handler: keep local button state even when movement reports are separate.
+    function handleMouseEvent(event: MouseRelativeEvent) {
+      let report: Uint8Array;
+      const mouse = mouseRef.current;
+
+      switch (event.type) {
+        case 'mousedown':
+          mouse.buttonDown(event.button);
+          report = mouse.buildButtonReport();
+          break;
+        case 'mouseup':
+          mouse.buttonUp(event.button);
+          report = mouse.buildButtonReport();
+          break;
+        case 'wheel':
+          report = mouse.buildReport(0, 0, event.deltaY);
+          break;
+        case 'move':
+          report = mouse.buildReport(event.deltaX, event.deltaY);
+          break;
+        default:
+          report = mouse.buildReport(0, 0);
+          break;
+      }
+
+      const sent = sendMouseReport('relative', report);
+      if (!sent && (event.type === 'mouseup' || mouse.hasPressedButtons)) {
+        releaseMouse(true);
+      }
+    }
 
     function handleContextMenu(event: Event) {
       event.preventDefault();
@@ -126,10 +136,52 @@ export const Relative = () => {
     }
 
     function handlePointerLockChange() {
-      isLockedRef.current = document.pointerLockElement === screen;
+      const wasLocked = isLockedRef.current;
+      const isLocked = document.pointerLockElement === screen;
+      isLockedRef.current = isLocked;
+
+      // Esc/browser policy can drop pointer lock without delivering the matching mouseup.
+      if (wasLocked && !isLocked) {
+        releaseMouse();
+      }
+    }
+
+    function handleWindowBlur() {
+      releaseMouseAndExitPointerLock();
+    }
+
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        releaseMouseAndExitPointerLock();
+      }
+    }
+
+    function releaseMouse(force = false) {
+      const mouse = mouseRef.current;
+      const hadPressedButtons = mouse.hasPressedButtons;
+      const report = mouse.reset();
+      lastScrollTimeRef.current = 0;
+
+      // Local state is reset immediately; lifecycle.ts retains remote release on send failure.
+      if (hadPressedButtons || force) {
+        sendMouseRelease('relative', report);
+      }
+    }
+
+    function releaseMouseAndExitPointerLock() {
+      releaseMouse();
+
+      if (document.pointerLockElement === screen) {
+        document.exitPointerLock();
+      }
+
+      isLockedRef.current = false;
     }
 
     return () => {
+      releaseMouseAndExitPointerLock();
+      unregisterMouseReleaseHandler();
+
       screen.removeEventListener('click', handleMouseClick);
       screen.removeEventListener('mousemove', handleMouseMove);
       screen.removeEventListener('mousedown', handleMouseDown);
@@ -137,6 +189,8 @@ export const Relative = () => {
       screen.removeEventListener('wheel', handleMouseWheel);
       screen.removeEventListener('contextmenu', handleContextMenu);
       document.removeEventListener('pointerlockchange', handlePointerLockChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [scrollDirection, scrollInterval, videoMode, videoParameters.rotation]);
 
