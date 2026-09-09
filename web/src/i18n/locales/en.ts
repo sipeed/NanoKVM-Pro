@@ -390,6 +390,16 @@ const en = {
           invalidRange: 'Start and end times must be different.',
           saveFailed: 'Unable to save the scheduled screen-off settings.'
         },
+        displayPolicy: {
+          title: 'Desk screen',
+          description: 'Choose what the built-in screen shows while idle',
+          modes: {
+            alwaysOn: 'Always on',
+            idleClock: 'Show clock when idle',
+            idleOff: 'Turn off when idle'
+          },
+          saveFailed: 'Unable to save the screen display setting.'
+        },
         wifi: {
           title: 'Wi-Fi',
           description: 'Configure Wi-Fi',

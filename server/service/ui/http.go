@@ -2,6 +2,7 @@ package ui
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +14,19 @@ import (
 const (
 	BaseURL = "http://127.0.0.1:65501/api"
 )
+
+type HTTPStatusError struct {
+	StatusCode int
+}
+
+func (e *HTTPStatusError) Error() string {
+	return fmt.Sprintf("status code %d", e.StatusCode)
+}
+
+func IsNotFound(err error) bool {
+	var statusErr *HTTPStatusError
+	return errors.As(err, &statusErr) && statusErr.StatusCode == http.StatusNotFound
+}
 
 func Get(url string) ([]byte, error) {
 	resp, err := http.Get(BaseURL + url)
@@ -26,7 +40,7 @@ func Get(url string) ([]byte, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		log.Errorf("wrong stauts code: %d", resp.StatusCode)
-		return nil, fmt.Errorf("status code %d", resp.StatusCode)
+		return nil, &HTTPStatusError{StatusCode: resp.StatusCode}
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -63,7 +77,7 @@ func Post(url string, data []byte) ([]byte, error) {
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
 		log.Errorf("wrong status code: %d", resp.StatusCode)
-		return nil, fmt.Errorf("%d: %s", resp.StatusCode, body)
+		return nil, fmt.Errorf("%w: %s", &HTTPStatusError{StatusCode: resp.StatusCode}, body)
 	}
 
 	body, err := io.ReadAll(resp.Body)
