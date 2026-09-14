@@ -19,6 +19,7 @@ import { Microphone } from './microphone';
 import { Mouse } from './mouse';
 import { Collapse, Expand } from './operations';
 import { Power } from './power';
+import { Recorder } from './recorder';
 import { Screen } from './screen';
 import { Script } from './script';
 import { Settings } from './settings';
@@ -126,6 +127,13 @@ export const Menu = () => {
             {isEnabled('power') && (
               <>
                 <Power />
+                <Divider type="vertical" />
+              </>
+            )}
+
+            {isEnabled('recorder') && (
+              <>
+                <Recorder />
                 <Divider type="vertical" />
               </>
             )}
