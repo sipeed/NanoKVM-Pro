@@ -87,7 +87,9 @@ func (s *Streamer) run() {
 			continue
 		}
 
-		data, result := vision.ReadMjpeg(screen.Width, screen.Height, screen.Quality)
+		screen.RefreshSize()
+
+		data, result := vision.ReadMjpeg(screen.Width(), screen.Height(), screen.Quality)
 		if result < 0 || len(data) == 0 {
 			continue
 		}

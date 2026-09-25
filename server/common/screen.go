@@ -5,13 +5,11 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
 type Screen struct {
-	Width  uint16
-	Height uint16
-
 	StreamType      int
 	RateControlMode uint8
 	BitRate         uint16
@@ -21,12 +19,20 @@ type Screen struct {
 
 	RealFPS int
 
-	lastCheck time.Time
+	// width and height track the live HDMI input resolution. They are read from
+	// the streaming loops and written by RefreshSize, so they are kept atomic.
+	width  atomic.Uint32
+	height atomic.Uint32
+
+	sizeMu        sync.Mutex
+	lastSizeCheck time.Time
 }
 
 const (
 	WidthPath  = "/proc/lt6911_info/width"
 	HeightPath = "/proc/lt6911_info/height"
+
+	sizeCheckInterval = 5 * time.Second
 )
 
 var (
@@ -45,9 +51,6 @@ var StreamTypeMap = map[string]int{
 func GetScreen() *Screen {
 	screenOnce.Do(func() {
 		screen = &Screen{
-			Width:  readSize(WidthPath),
-			Height: readSize(HeightPath),
-
 			StreamType:      STREAM_TYPE_H264_WEBRTC,
 			RateControlMode: RATE_CONTROL_VBR,
 			BitRate:         8000,
@@ -56,20 +59,50 @@ func GetScreen() *Screen {
 			Quality:         80,
 
 			RealFPS: 0,
-
-			lastCheck: time.Now(),
 		}
+
+		screen.width.Store(uint32(readSize(WidthPath)))
+		screen.height.Store(uint32(readSize(HeightPath)))
+		screen.lastSizeCheck = time.Now()
 	})
 
 	return screen
 }
 
-func (s *Screen) Check() {
-	if time.Since(s.lastCheck) >= 5*time.Second {
-		s.Width = readSize(WidthPath)
-		s.Height = readSize(HeightPath)
-		s.lastCheck = time.Now()
+func (s *Screen) Width() uint16 {
+	return uint16(s.width.Load())
+}
+
+func (s *Screen) Height() uint16 {
+	return uint16(s.height.Load())
+}
+
+// RefreshSize re-reads the HDMI input resolution, at most once every
+// sizeCheckInterval. The encoder is configured from Width/Height, and the
+// capture path links VIN straight to VENC without a scaler, so a stale value
+// makes VENC reject every incoming frame and the stream never produces an
+// image. Every streaming loop must call this to follow resolution changes.
+func (s *Screen) RefreshSize() {
+	s.sizeMu.Lock()
+	defer s.sizeMu.Unlock()
+
+	if time.Since(s.lastSizeCheck) < sizeCheckInterval {
+		return
 	}
+	s.lastSizeCheck = time.Now()
+
+	// Keep the last known resolution when the driver reports nothing, so a
+	// transient read failure does not reconfigure the encoder to 0x0.
+	if width := readSize(WidthPath); width > 0 {
+		s.width.Store(uint32(width))
+	}
+	if height := readSize(HeightPath); height > 0 {
+		s.height.Store(uint32(height))
+	}
+}
+
+func (s *Screen) Check() {
+	s.RefreshSize()
 
 	if s.FPS < 0 || s.FPS > 120 {
 		s.FPS = 0

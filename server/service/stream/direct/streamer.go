@@ -93,7 +93,9 @@ func (s *Streamer) run() {
 			continue
 		}
 
-		data, result := vision.ReadH264(screen.Width, screen.Height, screen.BitRate)
+		screen.RefreshSize()
+
+		data, result := vision.ReadH264(screen.Width(), screen.Height(), screen.BitRate)
 		if result < 0 || len(data) == 0 {
 			continue
 		}

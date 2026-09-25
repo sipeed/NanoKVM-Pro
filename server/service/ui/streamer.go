@@ -14,8 +14,8 @@ func GetStreamer(c *gin.Context) {
 	screen.Check()
 
 	resolution := Resolution{
-		Width:  int(screen.Width),
-		Height: int(screen.Height),
+		Width:  int(screen.Width()),
+		Height: int(screen.Height()),
 	}
 	clients := 0
 	if screen.StreamType == 0 {
@@ -27,7 +27,7 @@ func GetStreamer(c *gin.Context) {
 		Result: Result{
 			Delay: 130,
 			Params: Params{
-				Resolution: fmt.Sprintf("%dx%d", screen.Width, screen.Height),
+				Resolution: fmt.Sprintf("%dx%d", screen.Width(), screen.Height()),
 			},
 			Streamer: Streamer{
 				H264: H264{
