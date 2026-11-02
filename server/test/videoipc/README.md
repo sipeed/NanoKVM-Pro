@@ -10,7 +10,7 @@ KVM_VIDEO_SOCKET_DIR=/run/kvm-stage4 LD_LIBRARY_PATH=/tmp/kvm-stage4-validation 
 ```
 
 Stop old video hardware consumers before starting a temporary
-`kvm_vin --video-ipc --socket-dir /run/kvm-stage4`, and restore those services
+`kvm_vin --socket-dir /run/kvm-stage4` (IPC is the default), and restore those services
 after testing. Do not run two hardware owners at once.
 
 The probe exposes the existing `/api/stream/*` paths, `/probe/state`, and
