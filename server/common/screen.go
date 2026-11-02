@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Screen struct {
+type ScreenState struct {
 	Width  uint16
 	Height uint16
 
@@ -20,7 +20,11 @@ type Screen struct {
 	Quality         uint16
 
 	RealFPS int
+}
 
+type Screen struct {
+	mutex sync.Mutex
+	ScreenState
 	lastCheck time.Time
 }
 
@@ -45,18 +49,19 @@ var StreamTypeMap = map[string]int{
 func GetScreen() *Screen {
 	screenOnce.Do(func() {
 		screen = &Screen{
-			Width:  readSize(WidthPath),
-			Height: readSize(HeightPath),
+			ScreenState: ScreenState{
+				Width:  readSize(WidthPath),
+				Height: readSize(HeightPath),
 
-			StreamType:      STREAM_TYPE_H264_WEBRTC,
-			RateControlMode: RATE_CONTROL_VBR,
-			BitRate:         8000,
-			FPS:             0,
-			GOP:             50,
-			Quality:         80,
+				StreamType:      STREAM_TYPE_H264_WEBRTC,
+				RateControlMode: RATE_CONTROL_VBR,
+				BitRate:         8000,
+				FPS:             0,
+				GOP:             50,
+				Quality:         80,
 
-			RealFPS: 0,
-
+				RealFPS: 0,
+			},
 			lastCheck: time.Now(),
 		}
 	})
@@ -64,18 +69,31 @@ func GetScreen() *Screen {
 	return screen
 }
 
-func (s *Screen) Check() {
+func (s *Screen) Snapshot() ScreenState {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	s.checkLocked()
+	return s.ScreenState
+}
+
+func (s *Screen) Update(update func(*ScreenState)) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	update(&s.ScreenState)
+}
+
+func (s *Screen) checkLocked() {
 	if time.Since(s.lastCheck) >= 5*time.Second {
 		s.Width = readSize(WidthPath)
 		s.Height = readSize(HeightPath)
 		s.lastCheck = time.Now()
 	}
 
-	if s.FPS < 0 || s.FPS > 120 {
+	if s.FPS > 120 {
 		s.FPS = 0
 	}
 
-	if s.BitRate < 1000 || s.BitRate > 20000 {
+	if s.BitRate < 100 || s.BitRate > 20000 {
 		if s.RateControlMode == RATE_CONTROL_CBR {
 			s.BitRate = 5000
 		} else {

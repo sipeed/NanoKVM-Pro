@@ -2,7 +2,6 @@ package webrtc
 
 import (
 	"runtime"
-	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -22,9 +21,7 @@ import (
 func NewWebRTCManager() *WebRTCManager {
 	m := &WebRTCManager{
 		clients:      make(map[*websocket.Conn]*Client),
-		videoSending: 0,
 		audioSending: 0,
-		videoStatus:  0,
 	}
 	m.updateClientSnapshotLocked()
 
@@ -39,13 +36,16 @@ func (m *WebRTCManager) AddClient(ws *websocket.Conn, client *Client) {
 	count := m.updateClientSnapshotLocked()
 	m.mutex.Unlock()
 
-	common.GetKvmVision().SetStreamType(common.STREAM_TYPE_H264_WEBRTC)
+	stream.GetVideoHub().SetMode(common.STREAM_TYPE_H264_WEBRTC)
 
 	log.Debugf("added client %s, total clients: %d", ws.RemoteAddr(), count)
 }
 
 func (m *WebRTCManager) RemoveClient(ws *websocket.Conn) {
 	m.mutex.Lock()
+	if client, ok := m.clients[ws]; ok {
+		client.stopVideoStream()
+	}
 	delete(m.clients, ws)
 	count := m.updateClientSnapshotLocked()
 	m.mutex.Unlock()
@@ -76,13 +76,6 @@ func (m *WebRTCManager) getClients() []*Client {
 	return *clients
 }
 
-func (m *WebRTCManager) StartVideoStream() {
-	if atomic.CompareAndSwapInt32(&m.videoSending, 0, 1) {
-		go m.sendVideoStream()
-		log.Debugf("start sending h264 stream")
-	}
-}
-
 func (m *WebRTCManager) StartAudioStream() {
 	if atomic.CompareAndSwapInt32(&m.audioSending, 0, 1) {
 		go m.sendAudioStream()
@@ -91,60 +84,6 @@ func (m *WebRTCManager) StartAudioStream() {
 
 func (m *WebRTCManager) StartMicStream(track *webrtc.TrackRemote) {
 	go m.receiveAudio(track)
-}
-
-func (m *WebRTCManager) sendVideoStream() {
-	defer atomic.StoreInt32(&m.videoSending, 0)
-
-	runtime.LockOSThread()
-	defer runtime.UnlockOSThread()
-	if err := stream.SetCPUAffinity(0); err != nil {
-		return
-	}
-
-	screen := common.GetScreen()
-	vision := common.GetKvmVision()
-	m.updateStatus(0)
-
-	duration := time.Second / time.Duration(120)
-	ticker := time.NewTicker(duration)
-	defer ticker.Stop()
-
-	startTime := time.Now()
-
-	for range ticker.C {
-		if m.GetClientCount() == 0 {
-			log.Debugf("stop sending h264 stream")
-			return
-		}
-
-		if vision.StreamType != common.STREAM_TYPE_H264_WEBRTC {
-			m.updateStatus(-4)
-			continue
-		}
-
-		data, result := vision.ReadH264(screen.Width, screen.Height, screen.BitRate)
-		m.updateStatus(result)
-
-		if result < 0 || len(data) == 0 {
-			continue
-		}
-
-		timestamp := time.Since(startTime)
-		startTime = time.Now()
-
-		sample := media.Sample{
-			Data:     data,
-			Duration: timestamp,
-		}
-
-		clients := m.getClients()
-		for _, client := range clients {
-			client.track.writeVideo(sample)
-		}
-
-		stream.GetFrameRateCounter().Update()
-	}
 }
 
 func (m *WebRTCManager) sendAudioStream() {
@@ -167,7 +106,7 @@ func (m *WebRTCManager) sendAudioStream() {
 			return
 		}
 
-		if vision.StreamType != common.STREAM_TYPE_H264_WEBRTC {
+		if !stream.GetVideoHub().IsMode(common.STREAM_TYPE_H264_WEBRTC) {
 			continue
 		}
 
@@ -227,26 +166,4 @@ func (m *WebRTCManager) receiveAudio(track *webrtc.TrackRemote) {
 	}
 
 	log.Debugf("audio microphone track ended")
-}
-
-func (m *WebRTCManager) updateStatus(videoStatus int) {
-	var newStatus int32
-	if videoStatus >= 0 {
-		newStatus = 1
-	} else {
-		newStatus = int32(videoStatus)
-	}
-
-	if atomic.LoadInt32(&m.videoStatus) == newStatus {
-		return
-	}
-
-	data := strconv.Itoa(int(newStatus))
-
-	clients := m.getClients()
-	for _, client := range clients {
-		_ = client.WriteMessage("video-status", data)
-	}
-
-	atomic.StoreInt32(&m.videoStatus, newStatus)
 }

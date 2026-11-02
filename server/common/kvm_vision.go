@@ -17,7 +17,10 @@ import (
 )
 
 type KvmVision struct {
-	StreamType uint8
+	// libkvm returns borrowed buffers. Keep read + GoBytes in one critical
+	// section, including readers running on different Go/native threads.
+	videoMutex sync.Mutex
+	audioMutex sync.Mutex
 }
 
 const (
@@ -52,9 +55,7 @@ var (
 
 func GetKvmVision() *KvmVision {
 	kvmVisionOnce.Do(func() {
-		kvmVision = &KvmVision{
-			StreamType: STREAM_TYPE_H264_WEBRTC,
-		}
+		kvmVision = &KvmVision{}
 
 		conf := config.GetInstance()
 		logLevel := strings.ToLower(conf.Logger.Level)
@@ -65,17 +66,22 @@ func GetKvmVision() *KvmVision {
 		}
 
 		C.kvmv_init(logEnable)
+		settings := GetScreen().Snapshot()
+		kvmVision.SetRateControl(settings.RateControlMode)
+		kvmVision.SetBitrate(settings.BitRate)
+		kvmVision.SetMjpegQuality(settings.Quality)
+		kvmVision.SetFps(settings.FPS)
+		kvmVision.SetGop(settings.GOP)
 		log.Debugf("kvm vision initialized")
 	})
 
 	return kvmVision
 }
 
-func (k *KvmVision) SetStreamType(streamType uint8) {
-	k.StreamType = streamType
-}
-
 func (k *KvmVision) SetRateControl(mode uint8) int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	if mode != RATE_CONTROL_CBR && mode != RATE_CONTROL_VBR {
 		log.Debugf("invalid rate control mode: %d", mode)
 		return -1
@@ -93,6 +99,9 @@ func (k *KvmVision) SetRateControl(mode uint8) int {
 }
 
 func (k *KvmVision) ReadMjpeg(width uint16, height uint16, quality uint16) (data []byte, result int) {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	var (
 		kvmData  *C.uint8_t
 		dataSize C.uint32_t
@@ -107,7 +116,7 @@ func (k *KvmVision) ReadMjpeg(width uint16, height uint16, quality uint16) (data
 		&dataSize,
 	))
 	if result < 0 {
-		log.Errorf("failed to read MJPEG: %v", result)
+		log.Debugf("failed to read MJPEG: %v", result)
 		return
 	}
 	if kvmData == nil || dataSize == 0 {
@@ -119,6 +128,9 @@ func (k *KvmVision) ReadMjpeg(width uint16, height uint16, quality uint16) (data
 }
 
 func (k *KvmVision) ReadH264(width uint16, height uint16, bitRate uint16) (data []byte, result int) {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	var (
 		kvmData  *C.uint8_t
 		dataSize C.uint32_t
@@ -133,7 +145,7 @@ func (k *KvmVision) ReadH264(width uint16, height uint16, bitRate uint16) (data 
 		&dataSize,
 	))
 	if result < 0 {
-		log.Errorf("failed to read H.264: %d", result)
+		log.Debugf("failed to read H.264: %d", result)
 		return
 	}
 	if kvmData == nil || dataSize == 0 {
@@ -145,6 +157,9 @@ func (k *KvmVision) ReadH264(width uint16, height uint16, bitRate uint16) (data 
 }
 
 func (k *KvmVision) ReadH265(width uint16, height uint16, bitRate uint16) (data []byte, result int) {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	var (
 		kvmData  *C.uint8_t
 		dataSize C.uint32_t
@@ -159,7 +174,7 @@ func (k *KvmVision) ReadH265(width uint16, height uint16, bitRate uint16) (data 
 		&dataSize,
 	))
 	if result < 0 {
-		log.Errorf("failed to read H.265: %d", result)
+		log.Debugf("failed to read H.265: %d", result)
 		return
 	}
 	if kvmData == nil || dataSize == 0 {
@@ -171,6 +186,9 @@ func (k *KvmVision) ReadH265(width uint16, height uint16, bitRate uint16) (data 
 }
 
 func (k *KvmVision) ReadAudio() (data []byte, result int) {
+	k.audioMutex.Lock()
+	defer k.audioMutex.Unlock()
+
 	var (
 		kvmData  *C.uint8_t
 		dataSize C.uint32_t
@@ -178,7 +196,7 @@ func (k *KvmVision) ReadAudio() (data []byte, result int) {
 
 	result = int(C.kvmv_read_audio(&kvmData, &dataSize))
 	if result < 0 {
-		log.Errorf("failed to read audio: %d", result)
+		log.Debugf("failed to read audio: %d", result)
 		return
 	}
 	if kvmData == nil || dataSize == 0 {
@@ -190,12 +208,18 @@ func (k *KvmVision) ReadAudio() (data []byte, result int) {
 }
 
 func (k *KvmVision) SetFps(fps uint8) int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	_fps := C.uint8_t(fps)
 	result := C.kvmv_set_fps(_fps)
 	return int(result)
 }
 
 func (k *KvmVision) GetFps() int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	return int(C.kvmv_get_fps())
 }
 
@@ -215,12 +239,42 @@ func (k *KvmVision) SetHDMI(enable bool) int {
 }
 
 func (k *KvmVision) SetGop(gop uint8) int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	_gop := C.uint8_t(gop)
 	result := C.kvmv_set_gop(_gop)
 	return int(result)
 }
 
 func (k *KvmVision) Close() {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+
 	C.kvmv_deinit()
 	log.Debugf("stop kvm vision...")
+}
+
+func (k *KvmVision) SetBitrate(bitrate uint16) int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+	return int(C.kvmv_set_bitrate(C.uint16_t(bitrate)))
+}
+
+func (k *KvmVision) SetMjpegQuality(quality uint16) int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+	return int(C.kvmv_set_mjpeg_quality(C.uint16_t(quality)))
+}
+
+func (k *KvmVision) RequestIDR() int {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+	return int(C.kvmv_request_idr())
+}
+
+func (k *KvmVision) CloseVideoStream() {
+	k.videoMutex.Lock()
+	defer k.videoMutex.Unlock()
+	C.kvmv_close_video_stream()
 }

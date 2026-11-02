@@ -10,8 +10,7 @@ import (
 )
 
 func GetStreamer(c *gin.Context) {
-	screen := common.GetScreen()
-	screen.Check()
+	screen := common.GetScreen().Snapshot()
 
 	resolution := Resolution{
 		Width:  int(screen.Width),

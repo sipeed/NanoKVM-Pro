@@ -1,6 +1,8 @@
 package webrtc
 
 import (
+	"NanoKVM-Server/common"
+	"NanoKVM-Server/service/stream"
 	"encoding/json"
 	"errors"
 
@@ -11,14 +13,16 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"sync"
+	"time"
 )
 
 func NewClient(ws *websocket.Conn, videoConn, audioConn *webrtc.PeerConnection) *Client {
 	return &Client{
-		ws:    ws,
-		video: videoConn,
-		audio: audioConn,
-		mutex: sync.Mutex{},
+		videoDone: make(chan struct{}),
+		ws:        ws,
+		video:     videoConn,
+		audio:     audioConn,
+		mutex:     sync.Mutex{},
 	}
 }
 
@@ -31,6 +35,7 @@ func (c *Client) WriteMessage(event string, data string) error {
 		Data:  data,
 	}
 
+	_ = c.ws.SetWriteDeadline(time.Now().Add(5 * time.Second))
 	if err := c.ws.WriteJSON(message); err != nil {
 		log.Errorf("failed to send message %s: %v", event, err)
 		return err
@@ -87,7 +92,9 @@ func (c *Client) AddTrack() error {
 		log.Errorf("failed to add video track: %s", err)
 		return err
 	}
-	go startRTCPReader(videoSender)
+	go stream.ReadRTCP(videoSender, func() {
+		stream.GetVideoHub().RequestKeyFrame(common.STREAM_TYPE_H264_WEBRTC)
+	})
 
 	// audio track
 	audioTrack, err := webrtc.NewTrackLocalStaticSample(
@@ -105,7 +112,7 @@ func (c *Client) AddTrack() error {
 		log.Errorf("failed to add audio track: %s", err)
 		return err
 	}
-	go startRTCPReader(audioSender)
+	go stream.ReadRTCP(audioSender, nil)
 
 	track := &Track{
 		videoPacketizer: videoPacketizer,
@@ -119,14 +126,4 @@ func (c *Client) AddTrack() error {
 	c.mutex.Unlock()
 
 	return nil
-}
-
-func startRTCPReader(sender *webrtc.RTPSender) {
-	rtcpBuf := make([]byte, 1500)
-	for {
-		if _, _, err := sender.Read(rtcpBuf); err != nil {
-			log.Debugf("RTCP reader error: %v", err)
-			return
-		}
-	}
 }

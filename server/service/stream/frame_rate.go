@@ -38,7 +38,7 @@ func GetFrameRateCounter() *FrameRateCounter {
 
 				counter.mutex.Unlock()
 
-				screen.RealFPS = int(counter.fps)
+				screen.Update(func(state *common.ScreenState) { state.RealFPS = int(counter.fps) })
 			}
 		}()
 	})

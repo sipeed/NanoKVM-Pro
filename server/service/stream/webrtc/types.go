@@ -12,18 +12,19 @@ import (
 type WebRTCManager struct {
 	clients        map[*websocket.Conn]*Client
 	clientSnapshot atomic.Pointer[[]*Client]
-	videoSending   int32
 	audioSending   int32
-	videoStatus    int32
 	mutex          sync.Mutex
 }
 
 type Client struct {
-	ws    *websocket.Conn
-	video *webrtc.PeerConnection
-	audio *webrtc.PeerConnection
-	track *Track
-	mutex sync.Mutex
+	videoOnce     sync.Once
+	videoStopOnce sync.Once
+	videoDone     chan struct{}
+	ws            *websocket.Conn
+	video         *webrtc.PeerConnection
+	audio         *webrtc.PeerConnection
+	track         *Track
+	mutex         sync.Mutex
 }
 
 type SignalingHandler struct {
@@ -31,7 +32,7 @@ type SignalingHandler struct {
 }
 
 type Track struct {
-	playoutDelayExtensionID   uint8
+	playoutDelayExtensionID   atomic.Uint32
 	playoutDelayExtensionData []byte
 	videoPacketizer           rtp.Packetizer
 	video                     *webrtc.TrackLocalStaticRTP

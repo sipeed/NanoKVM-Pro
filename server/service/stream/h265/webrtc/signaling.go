@@ -54,12 +54,15 @@ func (s *SignalingHandler) RegisterCallbacks() {
 
 	manager := getManager()
 
-	// video connection state change
-	s.client.video.OnICEConnectionStateChange(func(state webrtc.ICEConnectionState) {
-		if state == webrtc.ICEConnectionStateConnected {
-			manager.StartVideoStream()
+	// Wait for DTLS/SRTP as well as ICE before sending the startup IDR.
+	s.client.video.OnConnectionStateChange(func(state webrtc.PeerConnectionState) {
+		if state == webrtc.PeerConnectionStateConnected {
+			s.track.startVideoStream()
 		}
 
+		if state == webrtc.PeerConnectionStateFailed || state == webrtc.PeerConnectionStateClosed {
+			_ = s.client.ws.Close()
+		}
 		log.Debugf("video connection state changed to %s", state.String())
 	})
 
@@ -145,25 +148,17 @@ func (s *SignalingHandler) handleVideoOffer(data string) error {
 
 // set extension ID
 func (s *SignalingHandler) updateHeaderExtensionID() error {
-	receivers := s.client.video.GetReceivers()
-	if len(receivers) == 0 {
-		return errors.New("no RTP receiver found for video")
-	}
-
-	params := receivers[0].GetParameters()
-	if len(params.HeaderExtensions) == 0 {
-		return errors.New("no header extensions found in negotiated parameters")
-	}
-
-	for _, ext := range params.HeaderExtensions {
-		if ext.URI == "http://www.webrtc.org/experiments/rtp-hdrext/playout-delay" {
-			s.track.playoutDelayExtensionID = uint8(ext.ID)
-			log.Debugf("found and set playout delay extension ID to: %d", ext.ID)
-			return nil
+	// Playout delay is optional. Use only the negotiated sender extension ID;
+	// receivers without this extension must still receive an SDP answer.
+	s.track.playoutDelayExtensionID.Store(0)
+	for _, sender := range s.client.video.GetSenders() {
+		for _, extension := range sender.GetParameters().HeaderExtensions {
+			if extension.URI == "http://www.webrtc.org/experiments/rtp-hdrext/playout-delay" {
+				s.track.playoutDelayExtensionID.Store(uint32(extension.ID))
+				return nil
+			}
 		}
 	}
-
-	log.Warnf("no track extension found in negotiated parameters, use default value 5")
 	return nil
 }
 

@@ -7,10 +7,6 @@ import (
 )
 
 func (t *Track) updateExtension() {
-	if t.playoutDelayExtensionID == 0 {
-		t.playoutDelayExtensionID = 5
-	}
-
 	if t.playoutDelayExtensionData == nil || len(t.playoutDelayExtensionData) == 0 {
 		playoutDelay := &rtp.PlayoutDelayExtension{
 			MinDelay: 0,
@@ -28,12 +24,10 @@ func (t *Track) writeVideoSample(sample media.Sample) error {
 	packets := t.videoPacketizer.Packetize(sample.Data, samples)
 
 	for _, p := range packets {
-		p.Header.Extension = true
-		p.Header.ExtensionProfile = 0xBEDE
-
-		if err := p.Header.SetExtension(t.playoutDelayExtensionID, t.playoutDelayExtensionData); err != nil {
-			log.Errorf("Failed to set extension: %v", err)
-			return err
+		if id := t.playoutDelayExtensionID.Load(); id != 0 {
+			if err := p.Header.SetExtension(uint8(id), t.playoutDelayExtensionData); err != nil {
+				return err
+			}
 		}
 
 		if err := t.video.WriteRTP(p); err != nil {

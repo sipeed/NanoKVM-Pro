@@ -134,11 +134,13 @@ func createMediaEngine() (*webrtc.MediaEngine, error) {
 
 	codec := webrtc.RTPCodecParameters{
 		RTPCodecCapability: webrtc.RTPCodecCapability{
-			MimeType:     webrtc.MimeTypeH265,
-			ClockRate:    90000,
-			Channels:     0,
-			SDPFmtpLine:  "",
-			RTCPFeedback: nil,
+			MimeType:    webrtc.MimeTypeH265,
+			ClockRate:   90000,
+			Channels:    0,
+			SDPFmtpLine: "",
+			RTCPFeedback: []webrtc.RTCPFeedback{
+				{Type: "nack"}, {Type: "nack", Parameter: "pli"}, {Type: "ccm", Parameter: "fir"},
+			},
 		},
 		PayloadType: 96,
 	}

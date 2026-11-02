@@ -29,8 +29,9 @@ extern "C" {
 #define VENC_VBR 1
 
 void kvmv_init(uint8_t _debug_info_en);
-void kvmv_free_all_data();
-void kvmv_deinit();
+void kvmv_free_all_data(void);
+void kvmv_deinit(void);
+
 /**********************************************************************************
  * @name    kvmv_read_img
  * @author  Sipeed BuGu
@@ -40,7 +41,7 @@ void kvmv_deinit();
  * @param	_width				@input: 	Output image width
  * @param	_height				@input: 	Output image height
  * @param	_type				@input: 	Encode type
- * @param	_qlty				@input: 	MJPEG: (50-100) | H264:  (500-10000)
+ * @param	_qlty				@input: 	MJPEG: 1-100 | H264/H265: 100-20000 kbit/s
  * @param	_pp_kvm_data		@output: 	Encode data
  * @param	_p_kvmv_data_size	@output: 	Encode data size
  * @return
@@ -53,6 +54,20 @@ void kvmv_deinit();
          3: Acquire H264 encoded images(I)
          4: Acquire H264 encoded images(P)
  **********************************************************************************/
+/* width/height retain the legacy ABI; dimensions follow the HDMI input.
+ * Nonzero quality is applied through IPC on change. Zero uses the last explicit
+ * bitrate/JPEG-quality setting. IPC I/O shares a 1000 ms deadline after acquiring
+ * the video mutex. Errors always clear both outputs.
+ *
+ * Borrowed data is process-owned and valid until the next successful read or
+ * explicit free on ANY thread. Close/deinit and the idle monitor do not
+ * invalidate it. SPS/PPS have separate buffers, refreshed on keyframes.
+ * C API operations are serialized internally, but callers MUST serialize the
+ * read + copy (including C.GoBytes) as a unit. A Go goroutine is not a native
+ * thread; keep this critical section across the copy and any SPS/PPS access.
+ * No native thread binding is required.
+ * Never free these pointers with free(). Audio has its own legacy buffer.
+ */
 int kvmv_read_img(uint16_t _width,
                   uint16_t _height,
                   uint8_t _type,
@@ -65,6 +80,15 @@ int kvmv_free_data(uint8_t** _pp_kvm_data);
 int kvmv_set_fps(uint8_t _fps);
 int kvmv_get_fps(void);
 int kvmv_set_gop(uint8_t _gop);
+/* Keep the Pro uint8_t GOP ABI; zero retains its default of 30000 frames.
+ * The wider explicit API accepts the complete producer range, 1-65536. */
+int kvmv_set_gop_ex(uint32_t gop);
+int kvmv_set_bitrate(uint16_t bitrate_kbps);
+int kvmv_set_mjpeg_quality(uint16_t quality);
+int kvmv_request_idr(void);
+/* Release only video IPC; confirmed settings and audio capture are preserved.
+ * The next read reconnects. Legacy callers also release after 5s without reads. */
+void kvmv_close_video_stream(void);
 int kvmv_hdmi_control(uint8_t _en);
 int kvmv_read_audio(uint8_t** _pp_kvm_data, uint32_t* _p_kvmv_data_size);
 int kvmv_set_rate_control(uint8_t mode);

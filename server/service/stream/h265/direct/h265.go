@@ -10,7 +10,6 @@ import (
 )
 
 var (
-	streamer = newStreamer()
 	upgrader = websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
 			return true
@@ -32,8 +31,10 @@ func Connect(c *gin.Context) {
 
 	_ = ws.SetReadDeadline(time.Time{})
 
-	streamer.addClient(ws)
-	defer streamer.removeClient(ws)
+	done := make(chan struct{})
+	stopped := make(chan struct{})
+	go func() { defer close(stopped); writeStream(ws, done) }()
+	defer func() { close(done); _ = ws.Close(); <-stopped }()
 
 	for {
 		if _, _, err := ws.ReadMessage(); err != nil {

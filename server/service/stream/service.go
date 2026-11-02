@@ -10,10 +10,12 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Service struct{}
+type Service struct {
+	video func() *VideoHub
+}
 
 func NewService() *Service {
-	return &Service{}
+	return &Service{video: GetVideoHub}
 }
 
 func (s *Service) SetRateControlMode(c *gin.Context) {
@@ -37,7 +39,7 @@ func (s *Service) SetRateControlMode(c *gin.Context) {
 		return
 	}
 
-	if err := common.GetKvmVision().SetRateControl(mode); err != 0 {
+	if err := s.video().SetRateControl(mode); err != 0 {
 		rsp.ErrRsp(c, -3, "set rate control failed")
 		return
 	}
@@ -61,8 +63,7 @@ func (s *Service) SetMode(c *gin.Context) {
 		return
 	}
 
-	common.GetScreen().StreamType = streamType
-	common.GetKvmVision().SetStreamType(uint8(streamType))
+	s.video().SetMode(streamType)
 
 	rsp.OkRsp(c)
 	log.Debugf("update video mode to %s", req.Mode)
@@ -77,18 +78,14 @@ func (s *Service) SetQuality(c *gin.Context) {
 		return
 	}
 
-	screen := common.GetScreen()
-
 	if req.Quality < 1 || req.Quality > 20000 {
 		rsp.ErrRsp(c, -2, "invalid arguments")
 		return
 	}
 
-	value := uint16(req.Quality)
-	if req.Quality <= 100 {
-		screen.Quality = value
-	} else {
-		screen.BitRate = value
+	if s.video().SetQuality(uint16(req.Quality)) != 0 {
+		rsp.ErrRsp(c, -3, "set quality failed")
+		return
 	}
 
 	rsp.OkRsp(c)
@@ -110,14 +107,12 @@ func (s *Service) SetGop(c *gin.Context) {
 	}
 
 	gop := uint8(req.Gop)
-	result := common.GetKvmVision().SetGop(gop)
+	result := s.video().SetGop(gop)
 	if result < 0 {
 		log.Errorf("failed to set GOP: %d", result)
 		rsp.ErrRsp(c, -3, "failed to set GOP")
 		return
 	}
-
-	common.GetScreen().GOP = gop
 
 	rsp.OkRsp(c)
 	log.Debugf("update GOP to %d", req.Gop)
@@ -138,14 +133,13 @@ func (s *Service) SetFps(c *gin.Context) {
 	}
 
 	fps := uint8(req.Fps)
-	result := common.GetKvmVision().SetFps(fps)
+	result := s.video().SetFps(fps)
 	if result < 0 {
 		log.Errorf("failed to set FPS: %d", result)
 		rsp.ErrRsp(c, -3, "set FPS failed")
 		return
 	}
 
-	common.GetScreen().FPS = fps
 	rsp.OkRsp(c)
 	log.Debugf("update FPS to %d", req.Fps)
 }

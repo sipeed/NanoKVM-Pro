@@ -1,4 +1,5 @@
 
+#include "../include/kvm_vision.h"
 #include <fcntl.h> /* low-level i/o */
 #include <pthread.h>
 #include <stdexcept>
@@ -38,11 +39,11 @@ void kvmv_init(uint8_t _debug_info_en) {
   __throw_error();
 }
 
-void kvmv_free_all_data() {
+void kvmv_free_all_data(void) {
   __throw_error();
 }
 
-void kvmv_deinit() {
+void kvmv_deinit(void) {
   __throw_error();
 }
 
@@ -94,3 +95,10 @@ int kvmv_set_rate_control(uint8_t mode) {
 #ifdef __cplusplus
 }
 #endif
+extern "C" {
+int kvmv_set_gop_ex(uint32_t gop) { return __throw_error(); }
+int kvmv_set_bitrate(uint16_t bitrate_kbps) { return __throw_error(); }
+int kvmv_set_mjpeg_quality(uint16_t quality) { return __throw_error(); }
+int kvmv_request_idr(void) { return __throw_error(); }
+void kvmv_close_video_stream(void) { __throw_error(); }
+}
