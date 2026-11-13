@@ -105,7 +105,21 @@ const ru = {
       placeholder: 'Текст для ввода',
       submit: 'Вставить',
       virtual: 'Клавиатура',
-      ctrlaltdel: 'Ctrl+Alt+Del'
+      ctrlaltdel: 'Ctrl+Alt+Del',
+      macro: {
+        title: 'Макросы',
+        custom: 'Настроить',
+        empty: 'Макросов пока нет',
+        namePlaceholder: 'Название макроса',
+        tips: 'STRING текст — напечатать текст\nENTER TAB ESC BACKSPACE DELETE — спецклавиши\nCTRL c / ALT F4 / GUI r / CTRL-ALT DELETE — комбинации\nDELAY 500 — пауза в мс\nCLICK 50 30 — клик по координатам в % экрана\nDBLCLICK 20 20 RIGHT — двойной клик\nRUN Имя — запустить другой макрос (1 уровень)',
+        placeholder: 'DELAY 300\nRUN Login\nSTRING Hello\nENTER\nCLICK 50 50',
+        parseError: 'Строка {{line}}: {{error}}',
+        pickHint: 'Кликните по удалённому экрану, чтобы снять координаты. Esc или ПКМ — отмена.',
+        save: 'Сохранить',
+        edit: 'Изменить',
+        playing: 'Воспроизведение...',
+        stepsCount: '{{count}} ком.'
+      }
     },
     mouse: {
       title: 'Мышь',

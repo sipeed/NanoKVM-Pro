@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { MenuItem } from '@/components/menu-item.tsx';
 
 import { LeaderKey } from './leader-key.tsx';
+import { Macros } from './macros';
 import { Paste } from './paste.tsx';
 import { Shortcuts } from './shortcuts';
 import { VirtualKeyboard } from './virtual-keyboard.tsx';
@@ -17,6 +18,7 @@ export const Keyboard = () => {
       <Paste />
       <VirtualKeyboard />
       <Shortcuts />
+      <Macros />
 
       <Divider style={{ margin: '5px 0', opacity: 0.5 }} />
 

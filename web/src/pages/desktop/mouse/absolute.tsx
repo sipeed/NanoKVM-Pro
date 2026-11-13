@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useAtomValue } from 'jotai';
+import { getDefaultStore, useAtomValue } from 'jotai';
 import { useMediaQuery } from 'react-responsive';
 
 import { MouseReportAbsolute } from '@/lib/mouse.ts';
 import { getScreenElement, inverseRotatePoint, isQuarterTurn } from '@/lib/video-transform.ts';
-import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { isMacroPlayingAtom, scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
 import { videoModeAtom, videoParametersAtom } from '@/jotai/screen.ts';
 
 import {
@@ -182,6 +182,10 @@ export const Absolute = () => {
     }
 
     function handleMouseEvent(event: MouseAbsoluteEvent): boolean {
+      if (getDefaultStore().get(isMacroPlayingAtom)) {
+        return false;
+      }
+
       let report: Uint8Array;
       const mouse = mouseRef.current;
 

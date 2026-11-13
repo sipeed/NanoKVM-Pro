@@ -37,3 +37,28 @@ type SetLeaderKeyReq struct {
 type GetLeaderKeyRsp struct {
 	Key string `json:"key"`
 }
+
+type Macro struct {
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Script string `json:"script"`
+}
+
+type GetMacrosRsp struct {
+	Macros []Macro `json:"macros"`
+}
+
+type AddMacroReq struct {
+	Name   string `json:"name" validate:"required,max=64"`
+	Script string `json:"script" validate:"required,min=1,max=16384"`
+}
+
+type UpdateMacroReq struct {
+	ID     string `json:"id" validate:"required"`
+	Name   string `json:"name" validate:"required,max=64"`
+	Script string `json:"script" validate:"required,min=1,max=16384"`
+}
+
+type DeleteMacroReq struct {
+	ID string `json:"id" validate:"required"`
+}

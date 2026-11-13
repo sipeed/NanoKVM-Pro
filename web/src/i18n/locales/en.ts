@@ -155,6 +155,20 @@ const en = {
           activate: 'Activate keys',
           input: 'Please press the shortcut...'
         }
+      },
+      macro: {
+        title: 'Macros',
+        custom: 'Custom',
+        empty: 'No macros yet',
+        namePlaceholder: 'Macro name',
+        tips: 'STRING text — type text\nENTER TAB ESC BACKSPACE DELETE — special keys\nCTRL c / ALT F4 / GUI r / CTRL-ALT DELETE — key combos\nDELAY 500 — pause in ms\nCLICK 50 30 — click at % of the screen\nDBLCLICK 20 20 RIGHT — double click\nRUN Name — run another macro (1 level)',
+        placeholder: 'DELAY 300\nRUN Login\nSTRING Hello\nENTER\nCLICK 50 50',
+        parseError: 'Line {{line}}: {{error}}',
+        pickHint: 'Click the remote screen to capture coordinates. Esc or right-click to cancel.',
+        save: 'Save',
+        edit: 'Edit',
+        playing: 'Playing...',
+        stepsCount: '{{count}} cmds'
       }
     },
     mouse: {

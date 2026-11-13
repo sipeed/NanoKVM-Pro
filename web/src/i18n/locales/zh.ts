@@ -139,6 +139,20 @@ const zh = {
           activate: '激活按键',
           input: '请按下快捷键...'
         }
+      },
+      macro: {
+        title: '宏',
+        custom: '自定义',
+        empty: '暂无宏',
+        namePlaceholder: '宏名称',
+        tips: 'STRING 文本 — 输入文字\nENTER TAB ESC BACKSPACE DELETE — 特殊按键\nCTRL c / ALT F4 / GUI r / CTRL-ALT DELETE — 组合键\nDELAY 500 — 延时（毫秒）\nCLICK 50 30 — 按屏幕百分比点击\nDBLCLICK 20 20 RIGHT — 双击\nRUN Name — 运行另一个宏（1 层）',
+        placeholder: 'DELAY 300\nRUN Login\nSTRING Hello\nENTER\nCLICK 50 50',
+        parseError: '第 {{line}} 行：{{error}}',
+        pickHint: '点击远程画面以捕获坐标。Esc 或右键取消。',
+        save: '保存',
+        edit: '编辑',
+        playing: '正在播放...',
+        stepsCount: '{{count}} 条'
       }
     },
     assistant: {
