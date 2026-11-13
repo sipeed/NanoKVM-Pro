@@ -26,6 +26,7 @@ func extensionsRouter(r *gin.Engine) {
 	api.POST("/tailscale/start", ts.Start)         // tailscale start
 	api.POST("/tailscale/stop", ts.Stop)           // tailscale stop
 	api.POST("/tailscale/restart", ts.Restart)     // tailscale restart
+	api.POST("/tailscale/serve", ts.Serve)         // tailscale serve
 
 	api.POST("/assistant/install", assist.Install) // install assistant dependencies
 	api.POST("/assistant/start", assist.Start)     // start assistant dependencies

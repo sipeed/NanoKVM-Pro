@@ -11,10 +11,22 @@ const (
 )
 
 type GetTailscaleStatusRsp struct {
-	State   TailscaleState `json:"state"`
-	Name    string         `json:"name"`
-	IP      string         `json:"ip"`
-	Account string         `json:"account"`
+	State    TailscaleState `json:"state"`
+	Name     string         `json:"name"`
+	IP       string         `json:"ip"`
+	Account  string         `json:"account"`
+	Serve    bool           `json:"serve"`
+	ServeUrl string         `json:"serveUrl"`
+}
+
+type ServeTailscaleReq struct {
+	Enable bool `json:"enable"`
+}
+
+// ServeTailscaleRsp carries the consent/authorization URL (if any) and the resulting HTTPS serve URL.
+type ServeTailscaleRsp struct {
+	AuthUrl  string `json:"authUrl"`
+	ServeUrl string `json:"serveUrl"`
 }
 
 type LoginTailscaleRsp struct {
