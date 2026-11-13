@@ -130,6 +130,12 @@ export const VirtualKeyboard = () => {
       return getKeycode(base);
     }
 
+    // Russian: Key*_rus use same physical positions as QWERTY → strip _rus and use base code
+    if (keyboardLanguage === 'ru' && key.endsWith('_rus')) {
+      const base = key.replace('_rus', '');
+      return getKeycode(base);
+    }
+
     const specialKey = specialKeyMap.get(key);
     if (specialKey) {
       return getKeycode(specialKey);
