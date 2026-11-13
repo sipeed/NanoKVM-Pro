@@ -18,7 +18,7 @@ const (
 	FirmwareUpdateScript   = "/kvmcomm/scripts/firmware_update.sh"
 )
 
-var appNames = []string{"nanokvmpro", "pikvm", "kvmcomm"}
+var appNames = []string{"pikvm", "kvmcomm", "nanokvmpro"}
 
 type Service struct{}
 

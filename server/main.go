@@ -14,6 +14,7 @@ import (
 	"NanoKVM-Server/logger"
 	"NanoKVM-Server/middleware"
 	"NanoKVM-Server/router"
+	"NanoKVM-Server/service/application"
 	"NanoKVM-Server/service/vm/jiggler"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +22,9 @@ import (
 )
 
 func main() {
+	if handled, code := application.RunUpdateWorkerCommand(os.Args[1:]); handled {
+		os.Exit(code)
+	}
 	initialize()
 	defer dispose()
 

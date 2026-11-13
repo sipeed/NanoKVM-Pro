@@ -10,6 +10,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -42,6 +43,8 @@ type manualUpdateJob struct {
 	Size      int64        `json:"size"`
 	State     string       `json:"state"`
 	Error     string       `json:"error,omitempty"`
+	Step      string       `json:"step,omitempty"`
+	Progress  int          `json:"progress"`
 	CreatedAt time.Time    `json:"createdAt"`
 	UpdatedAt time.Time    `json:"updatedAt"`
 	ExpiresAt time.Time    `json:"expiresAt"`
@@ -106,20 +109,22 @@ func (s *Service) ConfirmManualUpdate(c *gin.Context) {
 		rsp.ErrRsp(c, -5, err.Error())
 		return
 	}
+	defer releaseLock()
 	job.State = "installing"
+	job.Step = "install"
 	job.Error = ""
 	job.UpdatedAt = time.Now().UTC()
 	if err := saveManualJob(job); err != nil {
-		releaseLock()
 		log.Errorf("persist installing update job: %v", err)
 		rsp.ErrRsp(c, -6, "failed to start update")
 		return
 	}
 
-	go func() {
-		defer releaseLock()
-		runManualUpdateJob(job.ID)
-	}()
+	if err := updateWorkerStarter(job.ID); err != nil {
+		_ = failUpdateJob(job.ID, err)
+		rsp.ErrRsp(c, -6, "failed to start independent update")
+		return
+	}
 	rsp.OkRspWithData(c, manualJobResponse(job))
 }
 
@@ -159,6 +164,10 @@ func (s *Service) GetManualUpdate(c *gin.Context) {
 	id := c.Param("id")
 	if _, err := uuid.Parse(id); err != nil {
 		rsp.ErrRsp(c, -1, "invalid update job")
+		return
+	}
+	if err := recoverInterruptedManualUpdates(); err != nil {
+		rsp.ErrRsp(c, -2, "failed to inspect update job")
 		return
 	}
 	job, err := loadManualJob(id)
@@ -323,42 +332,38 @@ func writeStagedUpload(part *multipart.Part, target string) (string, int64, erro
 	return hex.EncodeToString(hash.Sum(nil)), written, nil
 }
 
-func runManualUpdateJob(id string) {
-	// The job is persisted before this goroutine starts; every terminal result is
-	// written back so polling clients can distinguish failure from interruption.
+func runManualUpdateJob(id string) error {
 	job, err := loadManualJob(id)
 	if err != nil {
-		log.Errorf("load update job %s: %v", id, err)
-		return
+		return err
 	}
-	if err = installManualJob(job); err != nil {
-		job.State = "failed"
-		job.Error = safeUpdateError(err)
-		log.Errorf("manual update job %s failed: %v", id, err)
-		job.UpdatedAt = time.Now().UTC()
-		if saveErr := saveManualJob(job); saveErr != nil {
-			log.Errorf("persist update job %s result: %v", id, saveErr)
+	if job.State != "installing" {
+		return errors.New("update job is not ready to install")
+	}
+	if err := installManualJob(job); err != nil {
+		if saveErr := failUpdateJob(id, err); saveErr != nil {
+			return errors.Join(err, saveErr)
 		}
-		return
+		return err
 	}
-
 	if job.Kind == artifactFirmware {
-		if err := completeFirmwareRebootScheduling(&job); err != nil {
-			log.Errorf("manual firmware update job %s: %v", id, err)
-			return
+		return completeFirmwareRebootScheduling(&job)
+	}
+	for _, appName := range appNames {
+		packageName := appName
+		if packageName == "nanokvmpro" {
+			packageName = "nanokvm"
 		}
-		log.Infof("manual firmware update job %s reboot scheduled", id)
-		return
+		output, err := exec.Command("dpkg-query", "-W", "-f=${Version}", packageName).Output()
+		if err != nil || strings.TrimSpace(string(output)) != job.Version {
+			cause := fmt.Errorf("installed %s version does not match %s", packageName, job.Version)
+			_ = failUpdateJob(id, cause)
+			return cause
+		}
 	}
-
-	job.State = "succeeded"
-	job.Error = ""
+	job.State, job.Step, job.Progress, job.Error = "succeeded", "restart", 100, ""
 	job.UpdatedAt = time.Now().UTC()
-	if saveErr := saveManualJob(job); saveErr != nil {
-		log.Errorf("persist update job %s result: %v", id, saveErr)
-		return
-	}
-	log.Infof("manual update job %s succeeded", id)
+	return saveManualJob(job)
 }
 
 // Persist the terminal state before asking systemd to reboot. The reboot may
@@ -415,12 +420,11 @@ func installManualJob(job manualUpdateJob) error {
 		if err != nil {
 			return err
 		}
-		_ = sendMessage("install", 0)
-		if err := install(root, inspection.Version); err != nil {
+		report := func(step string, progress int) error { return reportUpdateJob(job.ID, step, progress) }
+		if err := install(root, inspection.Version, report); err != nil {
 			return err
 		}
-		_ = sendMessage("restart", 0)
-		return nil
+		return report("restart", 100)
 	case artifactFirmware:
 		_ = sendMessage("install", 0)
 		return installFirmwarePackage(artifactPath)
@@ -431,11 +435,13 @@ func installManualJob(job manualUpdateJob) error {
 
 func manualJobResponse(job manualUpdateJob) *proto.ManualUpdateRsp {
 	return &proto.ManualUpdateRsp{
-		ID:      job.ID,
-		Version: job.Version,
-		Size:    job.Size,
-		State:   job.State,
-		Error:   job.Error,
+		ID:       job.ID,
+		Version:  job.Version,
+		Size:     job.Size,
+		State:    job.State,
+		Error:    job.Error,
+		Step:     job.Step,
+		Progress: job.Progress,
 	}
 }
 
@@ -569,8 +575,21 @@ func cleanupExpiredManualJobs() error {
 }
 
 func recoverInterruptedManualUpdates() error {
-	// Only "installing" is ambiguous after restart. A reboot_scheduled firmware
-	// job already records its terminal pre-reboot state and must be preserved.
+	// Holding the admission lock prevents racing a handler which has persisted
+	// its job but has not handed it to systemd yet. A running worker owns this
+	// same lock; application restarts must leave its job intact.
+	release, err := acquireUpdateFileLock()
+	if errors.Is(err, errUpdateInProgress) {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	defer release()
+	info, err := updateWorkerInspector()
+	if err != nil {
+		return err
+	}
 	if err := ensureUpdateJobRoot(); err != nil {
 		return err
 	}
@@ -584,6 +603,9 @@ func recoverInterruptedManualUpdates() error {
 		}
 		job, err := loadManualJob(entry.Name())
 		if err != nil || job.State != "installing" {
+			continue
+		}
+		if info.Active && info.JobID == job.ID {
 			continue
 		}
 		job.State = "failed"

@@ -26,7 +26,7 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
   const [errMsg, setErrMsg] = useState('');
   const [tipMsg, setTipMsg] = useState('');
   const [isCustomSource, setIsCustomSource] = useState(false);
-  const [manualJobID, setManualJobID] = useState('');
+  const [updateJobID, setUpdateJobID] = useState('');
   // Ignore late responses from an earlier check after the source changes.
   const versionRequestID = useRef(0);
 
@@ -45,7 +45,8 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
           return;
         }
 
-        const current = typeof rsp.data.current === 'string' ? semver.valid(rsp.data.current) : null;
+        const current =
+          typeof rsp.data.current === 'string' ? semver.valid(rsp.data.current) : null;
         const latest = typeof rsp.data.latest === 'string' ? semver.valid(rsp.data.latest) : null;
         if (!current || !latest) {
           setStatus('failed');
@@ -71,41 +72,81 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
   }, [t]);
 
   useEffect(() => {
-    checkForUpdates();
-  }, [checkForUpdates]);
+    let active = true;
+    api
+      .getUpdateStatus()
+      .then((rsp) => {
+        if (!active) return;
+        if (rsp.code === 0 && rsp.data?.state === 'installing') {
+          setUpdateJobID(rsp.data.id);
+          setIsLocked(true);
+          setStatus('updating');
+        } else {
+          checkForUpdates();
+        }
+      })
+      .catch(() => {
+        if (active) checkForUpdates();
+      });
+    return () => {
+      active = false;
+    };
+  }, [checkForUpdates, setIsLocked]);
 
   function update() {
     if (status !== 'outdated') return;
 
-    setManualJobID('');
+    setUpdateJobID('');
     setIsLocked(true);
     setStatus('updating');
 
-    api.update().then((rsp: any) => {
-      if (rsp.code !== 0) {
+    api
+      .update()
+      .then((rsp: any) => {
+        if (rsp.code !== 0 || !rsp.data?.id) {
+          setIsLocked(false);
+          setStatus('failed');
+          setErrMsg(t('settings.update.updateFailed'));
+          return;
+        }
+        setUpdateJobID(rsp.data.id);
+      })
+      .catch(async () => {
+        // A service restart can close a response. Recover the submitted job
+        // before deciding that the update failed.
+        try {
+          const rsp = await api.getUpdateStatus();
+          if (rsp.code === 0 && rsp.data?.id && rsp.data.state !== 'staged') {
+            setUpdateJobID(rsp.data.id);
+            return;
+          }
+        } catch {
+          /* The progress screen cannot recover an unreachable server. */
+        }
+        setIsLocked(false);
         setStatus('failed');
         setErrMsg(t('settings.update.updateFailed'));
-      }
-    });
+      });
   }
 
-  // Manual jobs use the same progress screen but are polled instead of using
-  // the online updater's WebSocket progress events.
+  // Both update paths hand installation to the same independent worker.
   const startManualUpdate = useCallback((jobID: string) => {
-    setManualJobID(jobID);
+    setUpdateJobID(jobID);
     setErrMsg('');
     setStatus('updating');
   }, []);
 
-  const failManualUpdate = useCallback((message: string) => {
-    setIsLocked(false);
-    setStatus('failed');
-    setErrMsg(message);
-  }, [setIsLocked]);
+  const failUpdate = useCallback(
+    (message: string) => {
+      setIsLocked(false);
+      setStatus('failed');
+      setErrMsg(message);
+    },
+    [setIsLocked]
+  );
 
-  const finishManualUpdate = useCallback(() => {
+  const finishUpdate = useCallback(() => {
     setIsLocked(false);
-    setManualJobID('');
   }, [setIsLocked]);
 
   const handleUpdateSourceChanged = useCallback(() => {
@@ -134,7 +175,7 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
         disabled={status === 'loading' || status === 'updating'}
         setIsLocked={setIsLocked}
         onInstallStarted={startManualUpdate}
-        onInstallFailed={failManualUpdate}
+        onInstallFailed={failUpdate}
       />
       <Divider className="opacity-50" />
 
@@ -147,9 +188,9 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
 
         {status === 'updating' && (
           <Updating
-            manualJobID={manualJobID}
-            onManualUpdateFailed={failManualUpdate}
-            onManualUpdateSucceeded={finishManualUpdate}
+            jobID={updateJobID}
+            onUpdateFailed={failUpdate}
+            onUpdateSucceeded={finishUpdate}
           />
         )}
 
@@ -157,9 +198,7 @@ export const Update = ({ setIsLocked }: UpdateProps) => {
           <Result
             status="info"
             title={t('settings.update.source.ready')}
-            extra={
-              <Button onClick={checkForUpdates}>{t('settings.update.title')}</Button>
-            }
+            extra={<Button onClick={checkForUpdates}>{t('settings.update.title')}</Button>}
           />
         )}
 

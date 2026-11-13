@@ -86,6 +86,7 @@ func TestCompleteFirmwareRebootSchedulingPersistsManualRecoveryState(t *testing.
 }
 
 func TestRecoverInterruptedManualUpdate(t *testing.T) {
+	prepareUpdateWorkerTest(t)
 	previousRoot := updateJobRoot
 	updateJobRoot = t.TempDir()
 	defer func() { updateJobRoot = previousRoot }()

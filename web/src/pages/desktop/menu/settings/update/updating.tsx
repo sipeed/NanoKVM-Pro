@@ -3,141 +3,87 @@ import { Button, Result, Spin, Steps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { IMessageEvent } from 'websocket';
 
-import { client } from '@/lib/websocket.ts';
 import * as api from '@/api/application.ts';
+import { client } from '@/lib/websocket.ts';
 
 type UpdatingProps = {
-  manualJobID?: string;
-  onManualUpdateFailed?: (message: string) => void;
-  onManualUpdateSucceeded?: () => void;
+  jobID?: string;
+  onUpdateFailed: (message: string) => void;
+  onUpdateSucceeded: () => void;
 };
 
-export const Updating = ({
-  manualJobID,
-  onManualUpdateFailed,
-  onManualUpdateSucceeded
-}: UpdatingProps) => {
+export const Updating = ({ jobID, onUpdateFailed, onUpdateSucceeded }: UpdatingProps) => {
   const { t } = useTranslation();
-
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState<'process' | 'error' | 'finish'>('process');
 
   useEffect(() => {
+    // Download progress still comes from the HTTP server. Once installation
+    // is handed off, the independent worker's persisted job is authoritative.
+    if (jobID) return;
+    function handleMessage(message: IMessageEvent) {
+      try {
+        const data = JSON.parse(JSON.parse(message.data as string).data);
+        setStep(data.step === 'download' ? 0 : data.step === 'install' ? 1 : 2);
+        if (data.progress === -1) setStatus('error');
+        else setProgress(data.progress);
+      } catch (err) {
+        console.log(err);
+      }
+    }
     client.on('update', handleMessage);
-
     return () => {
       client.off('update');
     };
-  }, []);
+  }, [jobID]);
 
   useEffect(() => {
-    // Manual jobs survive a service restart, so polling treats transient API
-    // errors as retryable and only terminal states end the update screen.
-    if (!manualJobID || !onManualUpdateFailed || !onManualUpdateSucceeded) return;
+    if (!jobID) return;
+    const id = jobID;
+    let active = true;
+    let failures = 0;
+    let timer: ReturnType<typeof setTimeout>;
 
-    const jobID = manualJobID;
-    const failManualUpdate = onManualUpdateFailed;
-    const finishManualUpdate = onManualUpdateSucceeded;
-    let isActive = true;
-    let terminal = false;
-
-    function checkManualUpdate() {
-      api
-        .getManualUpdate(jobID)
-        .then((rsp) => {
-          if (!isActive || terminal || rsp.code !== 0 || !rsp.data) return;
-
-          const data = rsp.data as {
-            state?: api.ManualUpdateState;
-            error?: string;
-          };
-          if (data.state === 'failed') {
-            terminal = true;
-            setStatus('error');
-            failManualUpdate(data.error || t('settings.update.manual.installFailed'));
-            return;
-          }
-
-          if (data.state === 'succeeded' || data.state === 'reboot_scheduled') {
-            terminal = true;
-            setStep(2);
-            setProgress(100);
-            setStatus('finish');
-            finishManualUpdate();
-          }
-        })
-        // A restart can temporarily make the API unavailable; wait for the next poll instead.
-        .catch(() => undefined);
-    }
-
-    checkManualUpdate();
-    const intervalID = window.setInterval(checkManualUpdate, 2000);
-
-    return () => {
-      isActive = false;
-      window.clearInterval(intervalID);
-    };
-  }, [manualJobID, onManualUpdateFailed, onManualUpdateSucceeded, t]);
-
-  function handleMessage(message: IMessageEvent) {
-    try {
-      const msg = JSON.parse(message.data as string);
-      const data = JSON.parse(msg.data);
-
-      handleStep(data.step);
-      handleProgress(data.progress);
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  function handleStep(value: string) {
-    switch (value) {
-      case 'download':
-        setStep(0);
-        break;
-      case 'install':
-        setStep(1);
-        break;
-      case 'restart':
-        restart();
-        break;
-      default:
-        break;
-    }
-  }
-
-  function handleProgress(value: number) {
-    switch (value) {
-      case -1:
-        setStatus('error');
-        break;
-      default:
-        setProgress(value);
-        break;
-    }
-  }
-
-  function restart() {
-    setStep(2);
-
-    setTimeout(() => {
-      window.location.reload();
-    }, 20 * 1000);
-
-    let i = 0;
-
-    const intervalId = setInterval(() => {
-      setProgress(i * 5);
-
-      if (i === 20) {
-        clearInterval(intervalId);
-        window.location.reload();
+    async function checkUpdate() {
+      let terminal = false;
+      try {
+        const rsp = await api.getManualUpdate(id);
+        if (!active) return;
+        if (rsp.code !== 0 || !rsp.data) throw new Error('invalid update status');
+        failures = 0;
+        const data = rsp.data as api.ManualUpdateInspection;
+        setStep(data.step === 'restart' ? 2 : 1);
+        setProgress(data.progress ?? 0);
+        if (data.state === 'failed') {
+          terminal = true;
+          setStatus('error');
+          onUpdateFailed(data.error || t('settings.update.manual.installFailed'));
+        } else if (data.state === 'succeeded' || data.state === 'reboot_scheduled') {
+          terminal = true;
+          setStep(2);
+          setProgress(100);
+          setStatus('finish');
+          onUpdateSucceeded();
+        }
+      } catch {
+        if (!active) return;
+        // The application is expected to disappear while its DEB restarts it.
+        failures += 1;
+        if (failures >= 120) {
+          terminal = true;
+          onUpdateFailed(t('settings.update.updateFailed'));
+        }
       }
-      i++;
-    }, 1000);
-  }
+      if (active && !terminal) timer = setTimeout(checkUpdate, 2000);
+    }
+
+    void checkUpdate();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [jobID, onUpdateFailed, onUpdateSucceeded, t]);
 
   return (
     <div className="flex flex-col items-center justify-center space-y-20 py-20">
@@ -159,15 +105,9 @@ export const Updating = ({
             percent={progress}
             status={status}
             items={[
-              {
-                title: t('settings.update.download')
-              },
-              {
-                title: t('settings.update.install')
-              },
-              {
-                title: t('settings.update.restart')
-              }
+              { title: t('settings.update.download') },
+              { title: t('settings.update.install') },
+              { title: t('settings.update.restart') }
             ]}
           />
         </>

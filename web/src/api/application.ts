@@ -21,6 +21,9 @@ export type ManualUpdateInspection = {
   version: string;
   size?: number;
   state: ManualUpdateState;
+  step?: string;
+  progress?: number;
+  error?: string;
 };
 
 // get application version
@@ -96,4 +99,9 @@ export function getManualUpdate(id: string) {
 // discard a staged package that will not be installed
 export function cancelManualUpdate(id: string) {
   return http.delete(`/api/application/update/manual/${encodeURIComponent(id)}`);
+}
+
+// Recover the durable online or manual update after reconnecting.
+export function getUpdateStatus() {
+  return http.get('/api/application/update/status');
 }

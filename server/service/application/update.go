@@ -30,10 +30,23 @@ func acquireUpdate() (func(), error) {
 	if updateInProgress {
 		return nil, errors.New("update already in progress")
 	}
+	releaseFile, err := acquireUpdateFileLock()
+	if err != nil {
+		return nil, err
+	}
+	info, err := updateWorkerInspector()
+	if err != nil || info.Active {
+		releaseFile()
+		if err != nil {
+			return nil, err
+		}
+		return nil, errUpdateInProgress
+	}
 	updateInProgress = true
 	var once sync.Once
 	return func() {
 		once.Do(func() {
+			releaseFile()
 			updateMu.Lock()
 			updateInProgress = false
 			updateMu.Unlock()
@@ -51,28 +64,29 @@ func (s *Service) Update(c *gin.Context) {
 	}
 	defer releaseLock()
 
-	if err := update(); err != nil {
+	job, err := update()
+	if err != nil {
 		log.Errorf("failed to update application: %v", err)
 		rsp.ErrRsp(c, -2, "failed to update service")
 		return
 	}
 
-	rsp.OkRsp(c)
-	log.Debug("application update succeeded")
+	rsp.OkRspWithData(c, manualJobResponse(job))
+	log.Debug("independent application update started")
 }
 
 // update is the online application path. It deliberately uses the same safe
 // package inspection and Debian installer as a manually uploaded package.
-func update() error {
+func update() (manualUpdateJob, error) {
 	// Query the manifest before creating a workspace so a failed source check
 	// does not leave a cache directory behind.
 	latest, err := getLatest()
 	if err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
 	workspace, err := newOnlineUpdateWorkspace()
 	if err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
 	defer func() { _ = os.RemoveAll(workspace) }()
 
@@ -81,35 +95,33 @@ func update() error {
 	_ = sendMessage("download", 0)
 	packagePath := filepath.Join(workspace, "application.tar.gz")
 	if err := download(latest.Url, packagePath); err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
 	if err := checksum(packagePath, latest.Sha512); err != nil {
-		return fmt.Errorf("check application package checksum: %w", err)
+		return manualUpdateJob{}, fmt.Errorf("check application package checksum: %w", err)
 	}
 
 	// Inspect the archive before extracting it, then require its version to
 	// match the manifest selected above.
 	inspection, err := inspectUpdateArtifact(packagePath, latest.Name)
 	if err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
 	if inspection.Kind != artifactApplication || inspection.Version != latest.Version {
-		return errors.New("application package does not match its manifest")
+		return manualUpdateJob{}, errors.New("application package does not match its manifest")
 	}
 	if err := ensureFreeSpaceAt(workspace, inspection.ExpandedBytes+minimumFreeUpdateSpace); err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
-	// Extract only the validated application members into the same workspace.
-	_ = sendMessage("install", 0)
-	root, err := extractApplicationArchive(packagePath, filepath.Join(workspace, "extracted"), *inspection.Application)
+	job, err := stageOnlineUpdate(packagePath, inspection)
 	if err != nil {
-		return err
+		return manualUpdateJob{}, err
 	}
-	if err := install(root, inspection.Version); err != nil {
-		return err
+	if err := updateWorkerStarter(job.ID); err != nil {
+		_ = failUpdateJob(job.ID, err)
+		return manualUpdateJob{}, err
 	}
-	_ = sendMessage("restart", 0)
-	return nil
+	return job, nil
 }
 
 func newOnlineUpdateWorkspace() (string, error) {
@@ -153,14 +165,16 @@ func download(rawURL, target string) error {
 	return errors.New("downloading application package failed")
 }
 
-func install(dir string, version string) error {
+func install(dir string, version string, report func(string, int) error) error {
 	// Validate every package and checksum before invoking dpkg for any package.
 	if err := validateApplicationInstallFiles(dir, version); err != nil {
 		return err
 	}
 
 	for index, appName := range appNames {
-		_ = sendMessage("install", index*30+10)
+		if err := report("install", index*100/len(appNames)); err != nil {
+			return err
+		}
 		filePath := filepath.Join(dir, fmt.Sprintf("%s_%s_arm64.deb", appName, version))
 		installed := false
 		var packageInstallErr error
@@ -194,8 +208,7 @@ func install(dir string, version string) error {
 			return packageInstallErr
 		}
 	}
-	_ = sendMessage("install", 100)
-	return nil
+	return report("install", 100)
 }
 
 func validateApplicationInstallFiles(dir string, version string) error {

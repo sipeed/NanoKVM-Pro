@@ -32,9 +32,11 @@ type ConfirmManualUpdateReq struct {
 
 type ManualUpdateRsp struct {
 	// State is staged, installing, succeeded, failed, or reboot_scheduled.
-	ID      string `json:"id"`
-	Version string `json:"version"`
-	Size    int64  `json:"size"`
-	State   string `json:"state"`
-	Error   string `json:"error,omitempty"`
+	ID       string `json:"id"`
+	Version  string `json:"version"`
+	Size     int64  `json:"size"`
+	State    string `json:"state"`
+	Error    string `json:"error,omitempty"`
+	Step     string `json:"step,omitempty"`
+	Progress int    `json:"progress"`
 }
