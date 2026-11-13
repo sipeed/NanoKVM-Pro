@@ -23,12 +23,11 @@ export const Edid = () => {
   const inputRef = useRef<any>(null);
 
   const edidList = [
-    { key: 'E18-4K30FPS', width: 3840, height: 2160, rate: '30Hz' },
-    { key: 'E48-4K39FPS', width: 3840, height: 2160, rate: '39Hz' },
-    { key: 'E56-2K60FPS', width: 2560, height: 1440, rate: '60Hz' },
-    { key: 'E54-1080P60FPS', width: 1920, height: 1080, rate: '60Hz' },
-    { key: 'E58-4K16-10', width: 3840, height: 2400, rate: '30Hz' },
-    { key: 'E63-Ultrawide', width: 3440, height: 1440, rate: '60Hz' }
+    { key: 'nanokvm-pro-3840x2160-30', width: 3840, height: 2160, rate: '30Hz' },
+    { key: 'nanokvm-pro-3840x2160-39', width: 3840, height: 2160, rate: '39Hz' },
+    { key: 'nanokvm-pro-2560x1440-60', width: 2560, height: 1440, rate: '60Hz' },
+    { key: 'nanokvm-pro-1920x1080-60', width: 1920, height: 1080, rate: '60Hz' },
+    { key: 'nanokvm-pro-3440x1440-60', width: 3440, height: 1440, rate: '60Hz' }
   ];
 
   useEffect(() => {

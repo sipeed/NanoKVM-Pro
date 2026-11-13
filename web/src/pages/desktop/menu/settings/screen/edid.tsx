@@ -6,12 +6,11 @@ import { useTranslation } from 'react-i18next';
 import * as api from '@/api/vm.ts';
 
 const defaultEdidList = [
-  { value: 'E18-4K30FPS', label: '3840 x 2160 30Hz' },
-  { value: 'E48-4K39FPS', label: '3840 x 2160 39Hz' },
-  { value: 'E56-2K60FPS', label: '2560 x 1440 60Hz' },
-  { value: 'E54-1080P60FPS', label: '1920 x 1080 60Hz' },
-  { value: 'E58-4K16-10', label: '3840 x 2400 30Hz' },
-  { value: 'E63-Ultrawide', label: '3440 x 1440 60Hz' }
+  { value: 'nanokvm-pro-3840x2160-30', label: '3840 x 2160 30Hz' },
+  { value: 'nanokvm-pro-3840x2160-39', label: '3840 x 2160 39Hz' },
+  { value: 'nanokvm-pro-2560x1440-60', label: '2560 x 1440 60Hz' },
+  { value: 'nanokvm-pro-1920x1080-60', label: '1920 x 1080 60Hz' },
+  { value: 'nanokvm-pro-3440x1440-60', label: '3440 x 1440 60Hz' }
 ];
 
 export const Edid = () => {

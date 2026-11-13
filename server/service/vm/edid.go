@@ -23,12 +23,11 @@ const (
 )
 
 var EDIDMap = map[byte]string{
-	0x12: "E18-4K30FPS",
-	0x30: "E48-4K39FPS",
-	0x36: "E54-1080P60FPS",
-	0x38: "E56-2K60FPS",
-	0x3a: "E58-4K16-10",
-	0x3f: "E63-Ultrawide",
+	0x12: "nanokvm-pro-3840x2160-30",
+	0x30: "nanokvm-pro-3840x2160-39",
+	0x36: "nanokvm-pro-1920x1080-60",
+	0x39: "nanokvm-pro-2560x1440-60",
+	0x3f: "nanokvm-pro-3440x1440-60",
 }
 
 func (s *Service) GetEdid(ctx *gin.Context) {
