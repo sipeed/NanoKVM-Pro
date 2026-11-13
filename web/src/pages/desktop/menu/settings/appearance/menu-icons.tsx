@@ -10,6 +10,7 @@ import {
   NetworkIcon,
   PowerIcon,
   TerminalSquareIcon,
+  VideoIcon,
   Volume2Icon,
   XIcon
 } from 'lucide-react';
@@ -34,6 +35,7 @@ export const MenuIcons = () => {
     { key: 'terminal', icon: <TerminalSquareIcon size={16} /> },
     { key: 'wol', icon: <NetworkIcon size={16} /> },
     { key: 'power', icon: <PowerIcon size={16} /> },
+    { key: 'recorder', icon: <VideoIcon size={16} /> },
     { key: 'fullscreen', icon: <MaximizeIcon size={16} />, label: 'fullscreen.toggle' },
     { key: 'collapse', icon: <XIcon size={16} />, label: 'menu.collapse' }
   ];
