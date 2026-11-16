@@ -15,6 +15,25 @@ const languages = [
   { value: 'ru', labelKey: 'keyboard.dropdownRussian' }
 ];
 
+const shiftMap: Record<string, string> = {
+  '`': '~',
+  '-': '_',
+  '=': '+',
+  '[': '{',
+  ']': '}',
+  '\\': '|',
+  ';': ':',
+  "'": '"',
+  ',': '<',
+  '.': '>',
+  '/': '?'
+};
+
+function withShift(key: string): string {
+  if (key >= 'a' && key <= 'z') return key.toUpperCase();
+  return shiftMap[key] ?? key;
+}
+
 // Extended RU → EN translation including punctuation (Russian keyboard layout to US key codes)
 function translateRuToEnWithPunctuation(value: string): string {
   const letterMap: Record<string, string> = {
@@ -25,14 +44,14 @@ function translateRuToEnWithPunctuation(value: string): string {
     я: 'z', ч: 'x', с: 'c', м: 'v', и: 'b', т: 'n', ь: 'm', б: ',', ю: '.'
   };
   const punctuationMap: Record<string, string> = {
-    '"': '@', '№': '#', ';': '$', ':': '^', '?': '&', 'Ё': '~', '/': '|', '.': '/', ',': '?'
+    '"': '@', '№': '#', ';': '$', ':': '^', '?': '&', '/': '|', '.': '/', ',': '?'
   };
   return Array.from(value)
     .map((ch) => {
       const lower = ch.toLowerCase();
       if (letterMap[lower]) {
         const translated = letterMap[lower];
-        return ch === lower ? translated : translated.toUpperCase();
+        return ch === lower ? translated : withShift(translated);
       }
       if (punctuationMap[ch]) return punctuationMap[ch];
       return ch;
