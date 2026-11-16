@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { message } from 'antd';
-import { useAtomValue } from 'jotai';
+import { getDefaultStore, useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
 import { MouseReportRelative } from '@/lib/mouse.ts';
 import { getScreenElement, inverseRotateDelta } from '@/lib/video-transform.ts';
-import { scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
+import { isMacroPlayingAtom, scrollDirectionAtom, scrollIntervalAtom } from '@/jotai/mouse.ts';
 import { videoModeAtom, videoParametersAtom } from '@/jotai/screen.ts';
 
 import {
@@ -48,6 +48,10 @@ export const Relative = () => {
 
     // Mouse event handler: keep local button state even when movement reports are separate.
     function handleMouseEvent(event: MouseRelativeEvent) {
+      if (getDefaultStore().get(isMacroPlayingAtom)) {
+        return;
+      }
+
       let report: Uint8Array;
       const mouse = mouseRef.current;
 

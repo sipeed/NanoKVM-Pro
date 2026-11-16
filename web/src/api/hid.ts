@@ -53,3 +53,19 @@ export function getLeaderKey() {
 export function setLeaderKey(key: string) {
   return http.post('/api/hid/shortcut/leader-key', { key });
 }
+
+export function getMacros() {
+  return http.get('/api/hid/macros');
+}
+
+export function addMacro(name: string, script: string) {
+  return http.post('/api/hid/macro', { name, script });
+}
+
+export function updateMacro(id: string, name: string, script: string) {
+  return http.post('/api/hid/macro/update', { id, name, script });
+}
+
+export function deleteMacro(id: string) {
+  return http.delete('/api/hid/macro', { id });
+}

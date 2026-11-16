@@ -11,3 +11,6 @@ export const scrollDirectionAtom = atom(-1);
 
 // mouse scroll interval (unit: ms)
 export const scrollIntervalAtom = atom(0);
+
+// true while a HID macro is playing, to ignore live mouse input
+export const isMacroPlayingAtom = atom(false);
