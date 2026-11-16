@@ -257,6 +257,27 @@ const zh = {
       cancelBtn: '取消'
     },
     settings: {
+      ai: {
+        title: 'AI',
+        mcpService: 'MCP 服务',
+        description: '让 MCP 客户端通过键盘、鼠标和截图控制远端主机。',
+        endpoint: '端点',
+        apiKey: 'API Key',
+        showApiKey: '显示 API Key',
+        copyApiKey: '复制 API Key',
+        copyEndpoint: '复制端点',
+        copied: '已复制',
+        copyManually: '请选中文本后手动复制。',
+        regenerate: '重新生成',
+        regenerateConfirm: '当前 API Key 将立即失效，请在 MCP 客户端中换用新密钥。',
+        regenerated: '已重新生成 API Key',
+        cancel: '取消',
+        close: '关闭',
+        authentication:
+          '使用 Streamable HTTP，并设置 Authorization: Bearer <API Key>。MCP 密钥独立于网页登录凭据。',
+        loadFailed: '加载 MCP 设置失败',
+        operationFailed: '操作失败'
+      },
       title: '设置',
       about: {
         title: '关于 NanoKVM',

@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   BadgeInfoIcon,
+  BotIcon,
   CircleArrowUpIcon,
   MonitorIcon,
   PaletteIcon,
@@ -23,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
 import { About } from './about';
 import { Account } from './account';
+import { AI } from './ai';
 import { Appearance } from './appearance';
 import { Device } from './device';
 import { Screen } from './screen';
@@ -45,6 +47,7 @@ export const Settings = () => {
     { id: 'about', icon: <BadgeInfoIcon size={16} />, component: <About /> },
     { id: 'appearance', icon: <PaletteIcon size={16} />, component: <Appearance /> },
     { id: 'screen', icon: <MonitorIcon size={16} />, component: <Screen /> },
+    { id: 'ai', icon: <BotIcon size={16} />, component: <AI /> },
     { id: 'device', icon: <SmartphoneIcon size={16} />, component: <Device /> },
     {
       id: 'tailscale',

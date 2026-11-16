@@ -272,6 +272,29 @@ const en = {
       cancelBtn: 'No'
     },
     settings: {
+      ai: {
+        title: 'AI',
+        mcpService: 'MCP Service',
+        description:
+          'Control the remote host with keyboard, mouse and screenshots from an MCP client.',
+        endpoint: 'Endpoint',
+        apiKey: 'API Key',
+        showApiKey: 'Show API key',
+        copyApiKey: 'Copy API key',
+        copyEndpoint: 'Copy endpoint',
+        copied: 'Copied',
+        copyManually: 'Select and copy the text manually.',
+        regenerate: 'Regenerate',
+        regenerateConfirm:
+          'The current API key will stop working immediately. Update your MCP clients with the new key.',
+        regenerated: 'API key regenerated',
+        cancel: 'Cancel',
+        close: 'Close',
+        authentication:
+          'Use Streamable HTTP with Authorization: Bearer <API Key>. The MCP key is separate from your web login.',
+        loadFailed: 'Failed to load MCP settings',
+        operationFailed: 'Operation failed'
+      },
       title: 'Settings',
       about: {
         title: 'About NanoKVM',

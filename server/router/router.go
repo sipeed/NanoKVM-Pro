@@ -35,6 +35,7 @@ func web(r *gin.Engine) {
 func server(r *gin.Engine) {
 	routers := []func(c *gin.Engine){
 		authRouter,
+		aiRouter,
 		applicationRouter,
 		vmRouter,
 		streamRouter,

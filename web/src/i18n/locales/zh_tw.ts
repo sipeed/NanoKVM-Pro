@@ -120,6 +120,27 @@ const zh_tw = {
       powerLong: '電源 (長按)'
     },
     settings: {
+      ai: {
+        title: 'AI',
+        mcpService: 'MCP 服務',
+        description: '讓 MCP 用戶端透過鍵盤、滑鼠和截圖控制遠端主機。',
+        endpoint: '端點',
+        apiKey: 'API Key',
+        showApiKey: '顯示 API Key',
+        copyApiKey: '複製 API Key',
+        copyEndpoint: '複製端點',
+        copied: '已複製',
+        copyManually: '請選取文字後手動複製。',
+        regenerate: '重新產生',
+        regenerateConfirm: '目前的 API Key 將立即失效，請在 MCP 用戶端中換用新金鑰。',
+        regenerated: '已重新產生 API Key',
+        cancel: '取消',
+        close: '關閉',
+        authentication:
+          '使用 Streamable HTTP，並設定 Authorization: Bearer <API Key>。MCP 金鑰獨立於網頁登入憑證。',
+        loadFailed: '載入 MCP 設定失敗',
+        operationFailed: '操作失敗'
+      },
       title: '設定',
       about: {
         title: '關於 NanoKVM',
