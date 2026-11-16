@@ -1,13 +1,20 @@
+import { getDefaultStore } from 'jotai';
+
+import { videoParametersAtom } from '@/jotai/screen.ts';
+import { getScreenElement, inverseRotatePoint, isQuarterTurn } from '@/lib/video-transform.ts';
+import type { VideoRotation } from '@/types';
+
 export function clientToScreenPercent(
   clientX: number,
   clientY: number
 ): { x: number; y: number } | null {
-  const screen = document.getElementById('screen') as HTMLVideoElement | HTMLImageElement | null;
+  const screen = getScreenElement();
   if (!screen) {
     return null;
   }
 
-  const { x, y } = getCorrectedCoords(screen, clientX, clientY);
+  const rotation = getDefaultStore().get(videoParametersAtom).rotation;
+  const { x, y } = getCorrectedCoords(screen, clientX, clientY, rotation);
   return {
     x: roundPercent(x * 100),
     y: roundPercent(y * 100)
@@ -20,23 +27,25 @@ export function percentToHid(percent: number): number {
 }
 
 function getCorrectedCoords(
-  screen: HTMLVideoElement | HTMLImageElement,
+  screen: Element,
   clientX: number,
-  clientY: number
+  clientY: number,
+  rotation: VideoRotation
 ) {
   const rect = screen.getBoundingClientRect();
+  const mediaSize = getMediaSize(screen);
 
-  const mediaWidth = getMediaWidth(screen);
-  const mediaHeight = getMediaHeight(screen);
-
-  if (!mediaWidth || !mediaHeight) {
-    return {
-      x: clamp01((clientX - rect.left) / rect.width),
-      y: clamp01((clientY - rect.top) / rect.height)
-    };
+  if (!mediaSize || !rect.width || !rect.height) {
+    const x = rect.width ? (clientX - rect.left) / rect.width : 0;
+    const y = rect.height ? (clientY - rect.top) / rect.height : 0;
+    const rotated = inverseRotatePoint(x, y, rotation);
+    return { x: clamp01(rotated.x), y: clamp01(rotated.y) };
   }
 
-  const videoRatio = mediaWidth / mediaHeight;
+  const rotatedMediaSize = isQuarterTurn(rotation)
+    ? { width: mediaSize.height, height: mediaSize.width }
+    : mediaSize;
+  const videoRatio = rotatedMediaSize.width / rotatedMediaSize.height;
   const elementRatio = rect.width / rect.height;
 
   let renderedWidth = rect.width;
@@ -52,30 +61,23 @@ function getCorrectedCoords(
     offsetX = (rect.width - renderedWidth) / 2;
   }
 
-  return {
-    x: clamp01((clientX - rect.left - offsetX) / renderedWidth),
-    y: clamp01((clientY - rect.top - offsetY) / renderedHeight)
-  };
+  const x = (clientX - rect.left - offsetX) / renderedWidth;
+  const y = (clientY - rect.top - offsetY) / renderedHeight;
+  const rotated = inverseRotatePoint(x, y, rotation);
+  return { x: clamp01(rotated.x), y: clamp01(rotated.y) };
 }
 
-function getMediaWidth(screen: HTMLVideoElement | HTMLImageElement): number {
-  if ('videoWidth' in screen && screen.videoWidth) {
-    return screen.videoWidth;
+function getMediaSize(screen: Element): { width: number; height: number } | null {
+  if (screen instanceof HTMLVideoElement && screen.videoWidth > 0 && screen.videoHeight > 0) {
+    return { width: screen.videoWidth, height: screen.videoHeight };
   }
-  if ('naturalWidth' in screen && screen.naturalWidth) {
-    return screen.naturalWidth;
+  if (screen instanceof HTMLImageElement && screen.naturalWidth > 0 && screen.naturalHeight > 0) {
+    return { width: screen.naturalWidth, height: screen.naturalHeight };
   }
-  return 0;
-}
-
-function getMediaHeight(screen: HTMLVideoElement | HTMLImageElement): number {
-  if ('videoHeight' in screen && screen.videoHeight) {
-    return screen.videoHeight;
+  if (screen instanceof HTMLCanvasElement && screen.width > 0 && screen.height > 0) {
+    return { width: screen.width, height: screen.height };
   }
-  if ('naturalHeight' in screen && screen.naturalHeight) {
-    return screen.naturalHeight;
-  }
-  return 0;
+  return null;
 }
 
 function clamp01(value: number): number {
