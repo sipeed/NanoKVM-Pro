@@ -56,7 +56,7 @@ NanoKVM-Pro uses the AX630 as its main control core, featuring an ARM 1.2G dual-
 
 ## Where to buy
 
-- [AliExpress](https://www.aliexpress.com/item/1005010048471263.html)
+- [AliExpress](https://www.aliexpress.us/w/wholesale-Sipeed-KVM.html)
 - [Pre-sale Page](https://sipeed.com/nanokvm/pro)
 
 ## 💬 Community & Support
