@@ -80,10 +80,15 @@ async function typeText(text: string) {
   }
 }
 
+export const MACRO_ALREADY_PLAYING = 'another macro is already playing';
+
 export async function playMacro(macro: Macro, macros: Macro[] = []): Promise<string | null> {
   const store = getDefaultStore();
-  const previousKeyboard = store.get(isKeyboardEnableAtom);
+  if (store.get(isMacroPlayingAtom)) {
+    return MACRO_ALREADY_PLAYING;
+  }
 
+  const previousKeyboard = store.get(isKeyboardEnableAtom);
   store.set(isKeyboardEnableAtom, false);
   store.set(isMacroPlayingAtom, true);
 

@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { getDefaultStore, useAtomValue } from 'jotai';
 import { useTranslation } from 'react-i18next';
 
-import { playMacro } from './player.ts';
+import { isMacroPlayingAtom } from '@/jotai/mouse.ts';
+
+import { MACRO_ALREADY_PLAYING, playMacro } from './player.ts';
 import { countScriptCommands } from './script.ts';
 import type { Macro } from './types.ts';
 
@@ -12,15 +15,18 @@ type MacroItemProps = {
 
 export const MacroItem = ({ macro, macros }: MacroItemProps) => {
   const { t } = useTranslation();
+  const isPlaying = useAtomValue(isMacroPlayingAtom);
   const [isLoading, setIsLoading] = useState(false);
 
   async function handleClick() {
-    if (isLoading || !macro.script.trim()) return;
+    if (isLoading || isPlaying || !macro.script.trim()) return;
+    if (getDefaultStore().get(isMacroPlayingAtom)) return;
+
     setIsLoading(true);
 
     try {
       const error = await playMacro(macro, macros);
-      if (error) {
+      if (error && error !== MACRO_ALREADY_PLAYING) {
         console.log(error);
       }
     } catch (err) {
