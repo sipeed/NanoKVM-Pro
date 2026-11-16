@@ -1,3 +1,31 @@
+## 1.2.16 (2026-11-16)
+
+### Features
+
+- Added MCP remote control with keyboard, mouse, and screenshot tools
+- Added support for custom update sources and manual application and firmware updates
+- Added video rotation with matching mouse coordinate mapping
+- Added MD5, SHA-1, and SHA-256 checksum calculation for image files
+- Added scheduled screen-off and idle display options for the built-in Desk screen
+
+### Bug Fixes
+
+- Fixed application updates being interrupted by service restarts by running installation in an independent systemd worker
+- Fixed mouse input reliability issues in absolute and relative modes
+- Fixed virtual keyboard crashes and Russian key mappings
+- Fixed duplicate React roots and mocked login requests in development mode
+
+### Improvements
+
+- Improved video streaming
+- Aligned Pro EDID preset names and identifiers
+- Highlighted the Images menu icon when an image is mounted
+
+### Chores
+
+- Upgraded frontend tooling to Vite 8 and TypeScript 6
+- Upgraded Flask-SocketIO to 5.6.1
+
 ## 1.2.15 (2026-05-29)
 
 ### Features
