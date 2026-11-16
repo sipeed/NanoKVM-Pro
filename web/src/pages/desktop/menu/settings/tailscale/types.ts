@@ -5,4 +5,6 @@ export type Status = {
   name: string;
   ip: string;
   account: string;
+  serve: boolean;
+  serveUrl?: string;
 };

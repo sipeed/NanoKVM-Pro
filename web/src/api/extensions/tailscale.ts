@@ -49,3 +49,8 @@ export function login() {
 export function logout() {
   return http.post('/api/extensions/tailscale/logout');
 }
+
+// serve tailscale
+export function serve(enable: boolean) {
+  return http.post('/api/extensions/tailscale/serve', { enable });
+}
