@@ -74,6 +74,15 @@ func (s *Service) SetMode(c *gin.Context) {
 	log.Debugf("update video mode to %s", req.Mode)
 }
 
+func (s *Service) GetMode(c *gin.Context) {
+	var rsp proto.Response
+	hub := s.video()
+	rsp.OkRspWithData(c, &proto.GetModeRsp{
+		Mode:   common.StreamTypeName(hub.Selected()),
+		Active: common.StreamTypeName(hub.Mode()),
+	})
+}
+
 func (s *Service) Snapshot(c *gin.Context) {
 	var rsp proto.Response
 

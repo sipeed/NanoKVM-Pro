@@ -375,3 +375,70 @@ func TestStreamSnapshotRejectsInvalidQualityAndCaptureErrors(t *testing.T) {
 		t.Fatal(failed.Body.String())
 	}
 }
+
+func TestVideoMjpegBorrowRestoresSelectedMode(t *testing.T) {
+	h, f := testHub()
+	live := h.Subscribe(common.STREAM_TYPE_H264_WEBRTC)
+	defer live.Close()
+	eventually(t, func() bool { return f.reads.Load() == 1 })
+	h.Borrow(common.STREAM_TYPE_MJPEG)
+	if h.Selected() != common.STREAM_TYPE_H264_WEBRTC {
+		t.Fatal("borrow changed selected mode")
+	}
+	if h.screen.Snapshot().StreamType != common.STREAM_TYPE_H264_WEBRTC {
+		t.Fatal("borrow persisted MJPEG in screen state")
+	}
+	mjpeg := h.Subscribe(common.STREAM_TYPE_MJPEG)
+	if frame := receive(t, mjpeg); frame.Result != 0 || !frame.KeyFrame {
+		t.Fatal("bad JPEG frame")
+	}
+	select {
+	case status := <-live.Updates:
+		if status != -4 {
+			t.Fatalf("status %d, want -4", status)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("H.264 viewer was not paused")
+	}
+	mjpeg.Close()
+	eventually(t, func() bool { return h.IsMode(common.STREAM_TYPE_H264_WEBRTC) })
+	if receive(t, live).Result != 3 {
+		t.Fatal("H.264 did not resume")
+	}
+}
+
+func TestVideoExplicitMjpegModeDoesNotRestore(t *testing.T) {
+	h, _ := testHub()
+	h.SetMode(common.STREAM_TYPE_MJPEG)
+	sub := h.Subscribe(common.STREAM_TYPE_MJPEG)
+	receive(t, sub)
+	sub.Close()
+	eventually(t, func() bool { h.mutex.Lock(); defer h.mutex.Unlock(); return !h.running })
+	if !h.IsMode(common.STREAM_TYPE_MJPEG) || h.Selected() != common.STREAM_TYPE_MJPEG {
+		t.Fatal("explicit MJPEG selection was rolled back")
+	}
+}
+
+func TestStreamGetModeReportsSelectedAndActive(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h, _ := testHub()
+	service := &Service{video: func() *VideoHub { return h }}
+	router := gin.New()
+	router.GET("/mode", service.GetMode)
+	h.Borrow(common.STREAM_TYPE_MJPEG)
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/mode", nil))
+	var response struct {
+		Code int `json:"code"`
+		Data struct {
+			Mode   string `json:"mode"`
+			Active string `json:"active"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(recorder.Body.Bytes(), &response); err != nil {
+		t.Fatal(err)
+	}
+	if response.Code != 0 || response.Data.Mode != "h264-webrtc" || response.Data.Active != "mjpeg" {
+		t.Fatal(recorder.Body.String())
+	}
+}

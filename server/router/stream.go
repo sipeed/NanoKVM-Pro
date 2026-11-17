@@ -19,6 +19,7 @@ func streamRouter(r *gin.Engine) {
 
 	api.POST("/stream/rate-control", service.SetRateControlMode) // set rate control mode
 	api.POST("/stream/mode", service.SetMode)                    // set stream mode
+	api.GET("/stream/mode", service.GetMode)                     // selected and active stream mode
 	api.POST("/stream/quality", service.SetQuality)              // set stream quality / bit-rate
 	api.POST("/stream/gop", service.SetGop)                      // set stream gop
 	api.POST("/stream/fps", service.SetFps)                      // set stream fps

@@ -86,6 +86,9 @@ type VideoHub struct {
 	lastFrame  time.Time
 	lastIDR    time.Time
 	onFrame    func()
+	// selected is the last POST /stream/mode. Borrow() may move the encoder
+	// without changing it; the last MJPEG viewer restores this mode.
+	selected int
 }
 
 var videoHubOnce sync.Once
@@ -100,18 +103,40 @@ func GetVideoHub() *VideoHub {
 }
 
 func newVideoHub(source videoSource, screen *common.Screen) *VideoHub {
-	h := &VideoHub{source: source, screen: screen, subs: make(map[*VideoSubscription]struct{}), started: time.Now(), modeDone: make(chan struct{})}
-	h.mode.Store(int32(screen.Snapshot().StreamType))
+	streamType := screen.Snapshot().StreamType
+	h := &VideoHub{source: source, screen: screen, subs: make(map[*VideoSubscription]struct{}), started: time.Now(), modeDone: make(chan struct{}), selected: streamType}
+	h.mode.Store(int32(streamType))
 	h.generation.Store(1)
 	return h
 }
 
 func (h *VideoHub) IsMode(mode int) bool            { return int(h.mode.Load()) == mode }
 func (h *VideoHub) IsCurrent(frame VideoFrame) bool { return h.generation.Load() == frame.Generation }
+func (h *VideoHub) Mode() int                       { return int(h.mode.Load()) }
+
+func (h *VideoHub) Selected() int {
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+	return h.selected
+}
 
 func (h *VideoHub) SetMode(mode int) {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
+	h.selected = mode
+	h.screen.Update(func(s *common.ScreenState) { s.StreamType = mode })
+	h.setActiveLocked(mode)
+}
+
+// Borrow switches the encoder without changing the user's selected mode.
+// Used by GET /stream/mjpeg so a thumbnail client cannot pin the device on MJPEG.
+func (h *VideoHub) Borrow(mode int) {
+	h.mutex.Lock()
+	defer h.mutex.Unlock()
+	h.setActiveLocked(mode)
+}
+
+func (h *VideoHub) setActiveLocked(mode int) {
 	if !h.IsMode(mode) {
 		// Complete the old read and release its socket before a new reader can
 		// configure the codec. Reconnection replays libkvm's confirmed settings.
@@ -123,7 +148,6 @@ func (h *VideoHub) SetMode(mode int) {
 		h.lastFrame = time.Time{}
 		h.lastIDR = time.Time{}
 		h.idrPending.Store(true)
-		h.screen.Update(func(s *common.ScreenState) { s.StreamType = mode })
 		for sub := range h.subs {
 			sub.waitKey = true
 			if sub.mode != mode {
@@ -161,6 +185,9 @@ func (h *VideoHub) unsubscribe(sub *VideoSubscription) {
 	}
 	delete(h.subs, sub)
 	close(sub.done) // Frames stays open: a handoff may be outside the mutex.
+	if h.IsMode(common.STREAM_TYPE_MJPEG) && !h.hasActiveLocked() && h.selected != common.STREAM_TYPE_MJPEG {
+		h.setActiveLocked(h.selected)
+	}
 	if !h.hasActiveLocked() {
 		h.source.CloseVideoStream()
 		h.lastFrame = time.Time{}

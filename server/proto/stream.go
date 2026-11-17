@@ -8,6 +8,11 @@ type SetModeReq struct {
 	Mode string `form:"mode" validate:"required"`
 }
 
+type GetModeRsp struct {
+	Mode   string `json:"mode"`
+	Active string `json:"active"`
+}
+
 type SetQualityReq struct {
 	Quality int `form:"quality" validate:"required"`
 }
