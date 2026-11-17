@@ -1,14 +1,19 @@
 package stream
 
 import (
+	"net/http"
+	"strconv"
 	"strings"
 
 	"NanoKVM-Server/common"
 	"NanoKVM-Server/proto"
+	"NanoKVM-Server/service/ai"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
+
+var captureJPEG = ai.CaptureSnapshotContext
 
 type Service struct {
 	video func() *VideoHub
@@ -67,6 +72,53 @@ func (s *Service) SetMode(c *gin.Context) {
 
 	rsp.OkRsp(c)
 	log.Debugf("update video mode to %s", req.Mode)
+}
+
+func (s *Service) Snapshot(c *gin.Context) {
+	var rsp proto.Response
+
+	quality := 85
+	if raw := c.Query("quality"); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed < 1 || parsed > 100 {
+			rsp.ErrRsp(c, -1, "invalid arguments")
+			return
+		}
+		quality = parsed
+	}
+
+	req := ai.SnapshotRequest{Quality: quality}
+	if raw := c.Query("timeoutMs"); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed < 0 {
+			rsp.ErrRsp(c, -1, "invalid arguments")
+			return
+		}
+		req.TimeoutMS = &parsed
+	}
+
+	header, jpeg, err := captureJPEG(c.Request.Context(), req)
+	if err != nil || !header.OK || len(jpeg) == 0 {
+		msg := header.Message
+		if msg == "" && err != nil {
+			msg = err.Error()
+		}
+		if msg == "" {
+			msg = "snapshot failed"
+		}
+		code := header.RetCode
+		if code == 0 {
+			code = -1
+		}
+		log.Debugf("stream snapshot failed: %s", msg)
+		rsp.Err(code, msg)
+		c.JSON(http.StatusServiceUnavailable, rsp)
+		return
+	}
+
+	c.Header("X-Width", strconv.Itoa(header.Width))
+	c.Header("X-Height", strconv.Itoa(header.Height))
+	c.Data(http.StatusOK, "image/jpeg", jpeg)
 }
 
 func (s *Service) SetQuality(c *gin.Context) {

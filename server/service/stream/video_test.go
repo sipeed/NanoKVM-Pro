@@ -1,7 +1,10 @@
 package stream
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -10,6 +13,8 @@ import (
 	"time"
 
 	"NanoKVM-Server/common"
+	"NanoKVM-Server/service/ai"
+
 	"github.com/gin-gonic/gin"
 	"github.com/pion/rtcp"
 )
@@ -295,5 +300,78 @@ func TestStreamHTTPControlsCommitOnlySuccessfulSettings(t *testing.T) {
 		if post(pair[0], pair[1]) == 0 {
 			t.Fatal("invalid argument accepted")
 		}
+	}
+}
+
+func TestStreamSnapshotReturnsJPEGWithoutChangingMode(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h, _ := testHub()
+	previous := captureJPEG
+	t.Cleanup(func() { captureJPEG = previous })
+	captureJPEG = func(_ context.Context, req ai.SnapshotRequest) (ai.SnapshotHeader, []byte, error) {
+		if req.Quality != 70 {
+			t.Fatalf("quality = %d, want 70", req.Quality)
+		}
+		return ai.SnapshotHeader{OK: true, Width: 1920, Height: 1080}, []byte{0xff, 0xd8, 0xff}, nil
+	}
+
+	service := &Service{video: func() *VideoHub { return h }}
+	router := gin.New()
+	router.GET("/snapshot", service.Snapshot)
+	recorder := httptest.NewRecorder()
+	router.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/snapshot?quality=70", nil))
+	if recorder.Code != http.StatusOK {
+		t.Fatal(recorder.Body.String())
+	}
+	if recorder.Header().Get("Content-Type") != "image/jpeg" {
+		t.Fatal(recorder.Header().Get("Content-Type"))
+	}
+	if recorder.Header().Get("X-Width") != "1920" || recorder.Header().Get("X-Height") != "1080" {
+		t.Fatal(recorder.Header())
+	}
+	if !bytes.Equal(recorder.Body.Bytes(), []byte{0xff, 0xd8, 0xff}) {
+		t.Fatal("missing JPEG body")
+	}
+	if !h.IsMode(common.STREAM_TYPE_H264_WEBRTC) {
+		t.Fatal("snapshot changed the live stream mode")
+	}
+}
+
+func TestStreamSnapshotRejectsInvalidQualityAndCaptureErrors(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	h, _ := testHub()
+	previous := captureJPEG
+	t.Cleanup(func() { captureJPEG = previous })
+	captureJPEG = func(context.Context, ai.SnapshotRequest) (ai.SnapshotHeader, []byte, error) {
+		return ai.SnapshotHeader{OK: false, RetCode: -16, Message: "busy"}, nil, errors.New("busy")
+	}
+
+	service := &Service{video: func() *VideoHub { return h }}
+	router := gin.New()
+	router.GET("/snapshot", service.Snapshot)
+
+	bad := httptest.NewRecorder()
+	router.ServeHTTP(bad, httptest.NewRequest(http.MethodGet, "/snapshot?quality=0", nil))
+	if bad.Code != http.StatusOK {
+		t.Fatal(bad.Code)
+	}
+	var invalid struct {
+		Code int `json:"code"`
+	}
+	if err := json.Unmarshal(bad.Body.Bytes(), &invalid); err != nil || invalid.Code != -1 {
+		t.Fatal(bad.Body.String())
+	}
+
+	failed := httptest.NewRecorder()
+	router.ServeHTTP(failed, httptest.NewRequest(http.MethodGet, "/snapshot", nil))
+	if failed.Code != http.StatusServiceUnavailable {
+		t.Fatal(failed.Code)
+	}
+	var unavailable struct {
+		Code int    `json:"code"`
+		Msg  string `json:"msg"`
+	}
+	if err := json.Unmarshal(failed.Body.Bytes(), &unavailable); err != nil || unavailable.Code != -16 || unavailable.Msg != "busy" {
+		t.Fatal(failed.Body.String())
 	}
 }
