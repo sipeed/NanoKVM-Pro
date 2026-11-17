@@ -16,7 +16,7 @@ func Connect(c *gin.Context) {
 	c.Header("X-Server-Date", time.Now().Format(time.RFC1123))
 
 	hub := stream.GetVideoHub()
-	hub.SetMode(common.STREAM_TYPE_MJPEG)
+	hub.Borrow(common.STREAM_TYPE_MJPEG)
 	subscription := hub.Subscribe(common.STREAM_TYPE_MJPEG)
 	defer subscription.Close()
 	for {

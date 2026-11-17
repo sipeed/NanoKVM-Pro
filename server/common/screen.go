@@ -46,6 +46,15 @@ var StreamTypeMap = map[string]int{
 	"h265-direct": STREAM_TYPE_H265_DIRECT,
 }
 
+func StreamTypeName(mode int) string {
+	for name, value := range StreamTypeMap {
+		if value == mode {
+			return name
+		}
+	}
+	return ""
+}
+
 func GetScreen() *Screen {
 	screenOnce.Do(func() {
 		screen = &Screen{
